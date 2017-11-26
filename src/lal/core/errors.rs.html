@@ -302,6 +302,26 @@
 <span id="257">257</span>
 <span id="258">258</span>
 <span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;
@@ -329,6 +349,8 @@
     <span class="ident">MissingConfig</span>,
     <span class="doccomment">/// Component not found in manifest</span>
     <span class="ident">MissingComponent</span>(<span class="ident">String</span>),
+    <span class="doccomment">/// Value in manifest is not lowercase</span>
+    <span class="ident">InvalidComponentName</span>(<span class="ident">String</span>),
     <span class="doccomment">/// Manifest cannot be overwritten without forcing</span>
     <span class="ident">ManifestExists</span>,
     <span class="doccomment">/// Executable we shell out to is missing</span>
@@ -361,12 +383,16 @@
     <span class="ident">EnvironmentMismatch</span>(<span class="ident">String</span>, <span class="ident">String</span>),
     <span class="doccomment">/// Custom versions are stashed in INPUT which will not fly on Jenkins</span>
     <span class="ident">NonGlobalDependencies</span>(<span class="ident">String</span>),
+    <span class="doccomment">/// No supported environments in the manifest</span>
+    <span class="ident">NoSupportedEnvironments</span>,
+    <span class="doccomment">/// Environment in manifest is not in the supported environments</span>
+    <span class="ident">UnsupportedEnvironment</span>,
 
     <span class="comment">// env related errors</span>
     <span class="doccomment">/// Specified environment is not present in the main config</span>
     <span class="ident">MissingEnvironment</span>(<span class="ident">String</span>),
-    <span class="doccomment">/// Default environment explicitly specified</span>
-    <span class="ident">InvalidEnvironment</span>,
+    <span class="doccomment">/// Command now requires an environment specified</span>
+    <span class="ident">EnvironmentUnspecified</span>,
 
     <span class="comment">// build errors</span>
     <span class="doccomment">/// Build configurations does not match manifest or user input</span>
@@ -404,6 +430,8 @@
     <span class="ident">InstallFailure</span>,
     <span class="doccomment">/// Fetch failure related to backend</span>
     <span class="ident">BackendFailure</span>(<span class="ident">String</span>),
+    <span class="doccomment">/// No version found at same version across `supportedEnvironments`</span>
+    <span class="ident">NoIntersectedVersion</span>(<span class="ident">String</span>),
 
     <span class="comment">// publish errors</span>
     <span class="doccomment">/// Missing release build</span>
@@ -456,6 +484,9 @@
             <span class="ident">CliError</span>::<span class="ident">MissingComponent</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=&gt;</span> {
                 <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Component &#39;{}&#39; not found in manifest&quot;</span>, <span class="ident">s</span>)
             }
+            <span class="ident">CliError</span>::<span class="ident">InvalidComponentName</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=&gt;</span> {
+                <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Invalid component name {} - not lowercase&quot;</span>, <span class="ident">s</span>)
+            }
             <span class="ident">CliError</span>::<span class="ident">ManifestExists</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Manifest already exists (use -f to force)&quot;</span>),
             <span class="ident">CliError</span>::<span class="ident">MissingDependencies</span> <span class="op">=&gt;</span> {
                 <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>,
@@ -485,11 +516,17 @@
                        <span class="string">&quot;Depending on a custom version of {} (use -s to allow stashed versions)&quot;</span>,
                        <span class="ident">s</span>)
             }
+            <span class="ident">CliError</span>::<span class="ident">NoSupportedEnvironments</span> <span class="op">=&gt;</span> {
+                <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Need to specify supported environments in the manifest&quot;</span>)
+            }
+            <span class="ident">CliError</span>::<span class="ident">UnsupportedEnvironment</span> <span class="op">=&gt;</span> {
+                <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;manifest.environment must exist in manifest.supportedEnvironments&quot;</span>)
+            }
             <span class="ident">CliError</span>::<span class="ident">MissingEnvironment</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=&gt;</span> {
                 <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Environment &#39;{}&#39; not found in ~/.lal/config&quot;</span>, <span class="ident">s</span>)
             }
-            <span class="ident">CliError</span>::<span class="ident">InvalidEnvironment</span> <span class="op">=&gt;</span> {
-                <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Environment &#39;default&#39; is reserved for internal use&quot;</span>)
+            <span class="ident">CliError</span>::<span class="ident">EnvironmentUnspecified</span> <span class="op">=&gt;</span> {
+                <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Environment must be specified for this operation&quot;</span>)
             }
             <span class="ident">CliError</span>::<span class="ident">InvalidBuildConfiguration</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=&gt;</span> {
                 <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Invalid build configuration - {}&quot;</span>, <span class="ident">s</span>)
@@ -522,6 +559,9 @@
             <span class="ident">CliError</span>::<span class="ident">DockerImageNotFound</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Could not find docker image {}&quot;</span>, <span class="ident">s</span>),
             <span class="ident">CliError</span>::<span class="ident">InstallFailure</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Install failed&quot;</span>),
             <span class="ident">CliError</span>::<span class="ident">BackendFailure</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Backend - {}&quot;</span>, <span class="ident">s</span>),
+            <span class="ident">CliError</span>::<span class="ident">NoIntersectedVersion</span>(<span class="kw-2">ref</span> <span class="ident">s</span>) <span class="op">=&gt;</span> {
+                <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;No version of {} found across all environments&quot;</span>, <span class="ident">s</span>)
+            }
             <span class="ident">CliError</span>::<span class="ident">MissingReleaseBuild</span> <span class="op">=&gt;</span> <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Missing release build&quot;</span>),
             <span class="ident">CliError</span>::<span class="ident">MissingBackendCredentials</span> <span class="op">=&gt;</span> {
                 <span class="macro">write</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="string">&quot;Missing backend credentials in ~/.lal/config&quot;</span>)

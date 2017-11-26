@@ -73,11 +73,11 @@ is to a proxy.</p>
 </blockquote>
 </div><h2 id='variants' class='variants small-section-header'>
                    Variants<a href='#variants' class='anchor'></a></h2>
-<span id='variant.AbsolutePath' class='variant'><span id='AbsolutePath.v' class='invisible'><code>AbsolutePath(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</code></span></span><div class='docblock'><p>The most common request target, an absolute path and optional query.</p>
+<span id="variant.AbsolutePath" class="variant small-section-header"><a href="#variant.AbsolutePath" class="anchor field"></a><span id='AbsolutePath.v' class='invisible'><code>AbsolutePath(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</code></span></span><div class='docblock'><p>The most common request target, an absolute path and optional query.</p>
 
 <p>For example, the line <code>GET /where?q=now HTTP/1.1</code> would parse the URI
 as <code>AbsolutePath(&quot;/where?q=now&quot;.to_string())</code>.</p>
-</div><span id='variant.AbsoluteUri' class='variant'><span id='AbsoluteUri.v' class='invisible'><code>AbsoluteUri(<a class="struct" href="../../hyper/struct.Url.html" title="struct hyper::Url">Url</a>)</code></span></span><div class='docblock'><p>An absolute URI. Used in conjunction with proxies.</p>
+</div><span id="variant.AbsoluteUri" class="variant small-section-header"><a href="#variant.AbsoluteUri" class="anchor field"></a><span id='AbsoluteUri.v' class='invisible'><code>AbsoluteUri(<a class="struct" href="../../hyper/struct.Url.html" title="struct hyper::Url">Url</a>)</code></span></span><div class='docblock'><p>An absolute URI. Used in conjunction with proxies.</p>
 
 <blockquote>
 <p>When making a request to a proxy, other than a CONNECT or server-wide
@@ -87,10 +87,10 @@ URI in absolute-form as the request-target.</p>
 
 <p>An example StartLine with an <code>AbsoluteUri</code> would be
 <code>GET http://www.example.org/pub/WWW/TheProject.html HTTP/1.1</code>.</p>
-</div><span id='variant.Authority' class='variant'><span id='Authority.v' class='invisible'><code>Authority(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</code></span></span><div class='docblock'><p>The authority form is only for use with <code>CONNECT</code> requests.</p>
+</div><span id="variant.Authority" class="variant small-section-header"><a href="#variant.Authority" class="anchor field"></a><span id='Authority.v' class='invisible'><code>Authority(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</code></span></span><div class='docblock'><p>The authority form is only for use with <code>CONNECT</code> requests.</p>
 
 <p>An example StartLine: <code>CONNECT www.example.com:80 HTTP/1.1</code>.</p>
-</div><span id='variant.Star' class='variant'><span id='Star.v' class='invisible'><code>Star</code></span></span><div class='docblock'><p>The star is used to target the entire server, instead of a specific resource.</p>
+</div><span id="variant.Star" class="variant small-section-header"><a href="#variant.Star" class="anchor field"></a><span id='Star.v' class='invisible'><code>Star</code></span></span><div class='docblock'><p>The star is used to target the entire server, instead of a specific resource.</p>
 
 <p>This is only used for a server-wide <code>OPTIONS</code> request.</p>
 </div>

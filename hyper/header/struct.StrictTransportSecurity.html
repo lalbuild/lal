@@ -87,13 +87,15 @@ such as user agent configuration, for example.</p>
    <span class="ident">StrictTransportSecurity</span>::<span class="ident">including_subdomains</span>(<span class="number">31536000u64</span>)
 );</pre>
 </div><h2 id='fields' class='fields small-section-header'>
-                       Fields<a href='#fields' class='anchor'></a></h2><span id='structfield.include_subdomains' class="structfield">
-                           <span id='include_subdomains.v' class='invisible'>
+                       Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.include_subdomains" class="structfield small-section-header">
+                           <a href="#structfield.include_subdomains" class="anchor field"></a>
+                           <span id="include_subdomains.v" class='invisible'>
                            <code>include_subdomains: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code>
                            </span></span><div class='docblock'><p>Signals the UA that the HSTS Policy applies to this HSTS Host as well as
 any subdomains of the host&#39;s domain name.</p>
-</div><span id='structfield.max_age' class="structfield">
-                           <span id='max_age.v' class='invisible'>
+</div><span id="structfield.max_age" class="structfield small-section-header">
+                           <a href="#structfield.max_age" class="anchor field"></a>
+                           <span id="max_age.v" class='invisible'>
                            <code>max_age: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code>
                            </span></span><div class='docblock'><p>Specifies the number of seconds, after the reception of the STS header
 field, during which the UA regards the host (from whom the message was
@@ -103,9 +105,9 @@ received) as a Known HSTS Host.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../../hyper/header/struct.StrictTransportSecurity.html" title="struct hyper::header::StrictTransportSecurity">StrictTransportSecurity</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/header/common/strict_transport_security.rs.html#58-74' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.including_subdomains' class="method"><span id='including_subdomains.v' class='invisible'><code>fn <a href='#method.including_subdomains' class='fnname'>including_subdomains</a>(max_age: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="struct" href="../../hyper/header/struct.StrictTransportSecurity.html" title="struct hyper::header::StrictTransportSecurity">StrictTransportSecurity</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/header/common/strict_transport_security.rs.html#60-65' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.including_subdomains' class="method"><span id='including_subdomains.v' class='invisible'><code>pub fn <a href='#method.including_subdomains' class='fnname'>including_subdomains</a>(max_age: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="struct" href="../../hyper/header/struct.StrictTransportSecurity.html" title="struct hyper::header::StrictTransportSecurity">StrictTransportSecurity</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/header/common/strict_transport_security.rs.html#60-65' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Create an STS header that includes subdomains</p>
-</div><h4 id='method.excluding_subdomains' class="method"><span id='excluding_subdomains.v' class='invisible'><code>fn <a href='#method.excluding_subdomains' class='fnname'>excluding_subdomains</a>(max_age: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="struct" href="../../hyper/header/struct.StrictTransportSecurity.html" title="struct hyper::header::StrictTransportSecurity">StrictTransportSecurity</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/header/common/strict_transport_security.rs.html#68-73' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.excluding_subdomains' class="method"><span id='excluding_subdomains.v' class='invisible'><code>pub fn <a href='#method.excluding_subdomains' class='fnname'>excluding_subdomains</a>(max_age: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>) -&gt; <a class="struct" href="../../hyper/header/struct.StrictTransportSecurity.html" title="struct hyper::header::StrictTransportSecurity">StrictTransportSecurity</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/header/common/strict_transport_security.rs.html#68-73' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Create an STS header that excludes subdomains</p>
 </div></div>
             <h2 id='implementations' class='small-section-header'>

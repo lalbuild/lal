@@ -55,11 +55,11 @@
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../parking_lot_core/struct.SpinWait.html" title="struct parking_lot_core::SpinWait">SpinWait</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#87-143' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class="struct" href="../parking_lot_core/struct.SpinWait.html" title="struct parking_lot_core::SpinWait">SpinWait</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#98-100' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class="struct" href="../parking_lot_core/struct.SpinWait.html" title="struct parking_lot_core::SpinWait">SpinWait</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#98-100' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Creates a new <code>SpinWait</code>.</p>
-</div><h4 id='method.reset' class="method"><span id='reset.v' class='invisible'><code>fn <a href='#method.reset' class='fnname'>reset</a>(&amp;mut self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#104-106' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.reset' class="method"><span id='reset.v' class='invisible'><code>pub fn <a href='#method.reset' class='fnname'>reset</a>(&amp;mut self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#104-106' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Resets a <code>SpinWait</code> to its initial state.</p>
-</div><h4 id='method.spin' class="method"><span id='spin.v' class='invisible'><code>fn <a href='#method.spin' class='fnname'>spin</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#117-128' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.spin' class="method"><span id='spin.v' class='invisible'><code>pub fn <a href='#method.spin' class='fnname'>spin</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#117-128' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Spins until the sleep threshold has been reached.</p>
 
 <p>This function returns whether the sleep threshold has been reached, at
@@ -68,7 +68,7 @@ should be parked instead.</p>
 
 <p>The spin strategy will initially use a CPU-bound loop but will fall back
 to yielding the CPU to the OS after a few iterations.</p>
-</div><h4 id='method.spin_no_yield' class="method"><span id='spin_no_yield.v' class='invisible'><code>fn <a href='#method.spin_no_yield' class='fnname'>spin_no_yield</a>(&amp;mut self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#136-142' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.spin_no_yield' class="method"><span id='spin_no_yield.v' class='invisible'><code>pub fn <a href='#method.spin_no_yield' class='fnname'>spin_no_yield</a>(&amp;mut self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/spinwait.rs.html#136-142' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Spins without yielding the thread to the OS.</p>
 
 <p>Instead, the backoff is simply capped at a maximum value. This can be

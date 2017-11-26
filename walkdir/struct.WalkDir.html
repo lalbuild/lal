@@ -106,19 +106,19 @@ error is reported.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../walkdir/struct.WalkDir.html" title="struct walkdir::WalkDir">WalkDir</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#197-306' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>&lt;P:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;&gt;(root: P) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#203-214' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>&lt;P:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;&gt;(root: P) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#203-214' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Create a builder for a recursive directory iterator starting at the
 file path <code>root</code>. If <code>root</code> is a directory, then it is the first item
 yielded by the iterator. If <code>root</code> is a file, then it is the first
 and only item yielded by the iterator. If <code>root</code> is a symlink, then it
 is always followed.</p>
-</div><h4 id='method.min_depth' class="method"><span id='min_depth.v' class='invisible'><code>fn <a href='#method.min_depth' class='fnname'>min_depth</a>(self, depth: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#221-227' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.min_depth' class="method"><span id='min_depth.v' class='invisible'><code>pub fn <a href='#method.min_depth' class='fnname'>min_depth</a>(self, depth: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#221-227' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Set the minimum depth of entries yielded by the iterator.</p>
 
 <p>The smallest depth is <code>0</code> and always corresponds to the path given
 to the <code>new</code> function on this type. Its direct descendents have depth
 <code>1</code>, and their descendents have depth <code>2</code>, and so on.</p>
-</div><h4 id='method.max_depth' class="method"><span id='max_depth.v' class='invisible'><code>fn <a href='#method.max_depth' class='fnname'>max_depth</a>(self, depth: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#238-244' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.max_depth' class="method"><span id='max_depth.v' class='invisible'><code>pub fn <a href='#method.max_depth' class='fnname'>max_depth</a>(self, depth: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#238-244' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Set the maximum depth of entries yield by the iterator.</p>
 
 <p>The smallest depth is <code>0</code> and always corresponds to the path given
@@ -128,7 +128,7 @@ to the <code>new</code> function on this type. Its direct descendents have depth
 <p>Note that this will not simply filter the entries of the iterator, but
 it will actually avoid descending into directories when the depth is
 exceeded.</p>
-</div><h4 id='method.follow_links' class="method"><span id='follow_links.v' class='invisible'><code>fn <a href='#method.follow_links' class='fnname'>follow_links</a>(self, yes: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#255-258' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.follow_links' class="method"><span id='follow_links.v' class='invisible'><code>pub fn <a href='#method.follow_links' class='fnname'>follow_links</a>(self, yes: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#255-258' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Follow symbolic links. By default, this is disabled.</p>
 
 <p>When <code>yes</code> is <code>true</code>, symbolic links are followed as if they were
@@ -138,7 +138,7 @@ involved in a loop, an error is yielded.</p>
 <p>When enabled, the yielded <code>DirEntry</code> values represent the target of
 the link while the path corresponds to the link. See the <code>DirEntry</code>
 type for more details.</p>
-</div><h4 id='method.max_open' class="method"><span id='max_open.v' class='invisible'><code>fn <a href='#method.max_open' class='fnname'>max_open</a>(self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#279-285' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.max_open' class="method"><span id='max_open.v' class='invisible'><code>pub fn <a href='#method.max_open' class='fnname'>max_open</a>(self, n: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#279-285' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Set the maximum number of simultaneously open file descriptors used
 by the iterator.</p>
 
@@ -158,7 +158,7 @@ acceptable.</p>
 
 <p>Note that this value does not impact the number of system calls made by
 an exhausted iterator.</p>
-</div><h4 id='method.sort_by' class="method"><span id='sort_by.v' class='invisible'><code>fn <a href='#method.sort_by' class='fnname'>sort_by</a>&lt;F&gt;(self, cmp: F) -&gt; Self <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/os_str/struct.OsString.html" title="struct std::ffi::os_str::OsString">OsString</a>, &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/os_str/struct.OsString.html" title="struct std::ffi::os_str::OsString">OsString</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html" title="enum core::cmp::Ordering">Ordering</a> + 'static,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#301-305' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.sort_by' class="method"><span id='sort_by.v' class='invisible'><code>pub fn <a href='#method.sort_by' class='fnname'>sort_by</a>&lt;F&gt;(self, cmp: F) -&gt; Self <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/os_str/struct.OsString.html" title="struct std::ffi::os_str::OsString">OsString</a>, &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/os_str/struct.OsString.html" title="struct std::ffi::os_str::OsString">OsString</a>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/cmp/enum.Ordering.html" title="enum core::cmp::Ordering">Ordering</a> + 'static,&nbsp;</span></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#301-305' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Set a function for sorting directory entries.</p>
 
 <p>If a compare function is set, the resulting iterator will return all

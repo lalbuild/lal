@@ -120,7 +120,7 @@
     <span class="ident">m</span>.<span class="ident">verify</span>()<span class="question-mark">?</span>;
 
     <span class="comment">// 2. dependencies in `INPUT` match `manifest.json`.</span>
-    <span class="kw">if</span> <span class="ident">m</span>.<span class="ident">dependencies</span>.<span class="ident">is_empty</span>() {
+    <span class="kw">if</span> <span class="ident">m</span>.<span class="ident">dependencies</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">input</span>::<span class="ident">present</span>() {
         <span class="comment">// special case where lal fetch is not required and so INPUT may not exist</span>
         <span class="comment">// nothing needs to be verified in this case, so allow missing INPUT</span>
         <span class="kw">return</span> <span class="prelude-val">Ok</span>(());

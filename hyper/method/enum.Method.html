@@ -70,28 +70,28 @@ and an Extension variant for all extensions.</p>
 registered with IANA, if they are at all common to use.</p>
 </div><h2 id='variants' class='variants small-section-header'>
                    Variants<a href='#variants' class='anchor'></a></h2>
-<span id='variant.Options' class='variant'><span id='Options.v' class='invisible'><code>Options</code></span></span><div class='docblock'><p>OPTIONS</p>
-</div><span id='variant.Get' class='variant'><span id='Get.v' class='invisible'><code>Get</code></span></span><div class='docblock'><p>GET</p>
-</div><span id='variant.Post' class='variant'><span id='Post.v' class='invisible'><code>Post</code></span></span><div class='docblock'><p>POST</p>
-</div><span id='variant.Put' class='variant'><span id='Put.v' class='invisible'><code>Put</code></span></span><div class='docblock'><p>PUT</p>
-</div><span id='variant.Delete' class='variant'><span id='Delete.v' class='invisible'><code>Delete</code></span></span><div class='docblock'><p>DELETE</p>
-</div><span id='variant.Head' class='variant'><span id='Head.v' class='invisible'><code>Head</code></span></span><div class='docblock'><p>HEAD</p>
-</div><span id='variant.Trace' class='variant'><span id='Trace.v' class='invisible'><code>Trace</code></span></span><div class='docblock'><p>TRACE</p>
-</div><span id='variant.Connect' class='variant'><span id='Connect.v' class='invisible'><code>Connect</code></span></span><div class='docblock'><p>CONNECT</p>
-</div><span id='variant.Patch' class='variant'><span id='Patch.v' class='invisible'><code>Patch</code></span></span><div class='docblock'><p>PATCH</p>
-</div><span id='variant.Extension' class='variant'><span id='Extension.v' class='invisible'><code>Extension(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</code></span></span><div class='docblock'><p>Method extensions. An example would be <code>let m = Extension(&quot;FOO&quot;.to_string())</code>.</p>
+<span id="variant.Options" class="variant small-section-header"><a href="#variant.Options" class="anchor field"></a><span id='Options.v' class='invisible'><code>Options</code></span></span><div class='docblock'><p>OPTIONS</p>
+</div><span id="variant.Get" class="variant small-section-header"><a href="#variant.Get" class="anchor field"></a><span id='Get.v' class='invisible'><code>Get</code></span></span><div class='docblock'><p>GET</p>
+</div><span id="variant.Post" class="variant small-section-header"><a href="#variant.Post" class="anchor field"></a><span id='Post.v' class='invisible'><code>Post</code></span></span><div class='docblock'><p>POST</p>
+</div><span id="variant.Put" class="variant small-section-header"><a href="#variant.Put" class="anchor field"></a><span id='Put.v' class='invisible'><code>Put</code></span></span><div class='docblock'><p>PUT</p>
+</div><span id="variant.Delete" class="variant small-section-header"><a href="#variant.Delete" class="anchor field"></a><span id='Delete.v' class='invisible'><code>Delete</code></span></span><div class='docblock'><p>DELETE</p>
+</div><span id="variant.Head" class="variant small-section-header"><a href="#variant.Head" class="anchor field"></a><span id='Head.v' class='invisible'><code>Head</code></span></span><div class='docblock'><p>HEAD</p>
+</div><span id="variant.Trace" class="variant small-section-header"><a href="#variant.Trace" class="anchor field"></a><span id='Trace.v' class='invisible'><code>Trace</code></span></span><div class='docblock'><p>TRACE</p>
+</div><span id="variant.Connect" class="variant small-section-header"><a href="#variant.Connect" class="anchor field"></a><span id='Connect.v' class='invisible'><code>Connect</code></span></span><div class='docblock'><p>CONNECT</p>
+</div><span id="variant.Patch" class="variant small-section-header"><a href="#variant.Patch" class="anchor field"></a><span id='Patch.v' class='invisible'><code>Patch</code></span></span><div class='docblock'><p>PATCH</p>
+</div><span id="variant.Extension" class="variant small-section-header"><a href="#variant.Extension" class="anchor field"></a><span id='Extension.v' class='invisible'><code>Extension(<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</code></span></span><div class='docblock'><p>Method extensions. An example would be <code>let m = Extension(&quot;FOO&quot;.to_string())</code>.</p>
 </div>
                     <h2 id='methods' class='small-section-header'>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="enum" href="../../hyper/method/enum.Method.html" title="enum hyper::method::Method">Method</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#60-88' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.safe' class="method"><span id='safe.v' class='invisible'><code>fn <a href='#method.safe' class='fnname'>safe</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#66-71' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.safe' class="method"><span id='safe.v' class='invisible'><code>pub fn <a href='#method.safe' class='fnname'>safe</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#66-71' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Whether a method is considered &quot;safe&quot;, meaning the request is
 essentially read-only.</p>
 
 <p>See <a href="https://tools.ietf.org/html/rfc7231#section-4.2.1">the spec</a>
 for more words.</p>
-</div><h4 id='method.idempotent' class="method"><span id='idempotent.v' class='invisible'><code>fn <a href='#method.idempotent' class='fnname'>idempotent</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#78-87' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.idempotent' class="method"><span id='idempotent.v' class='invisible'><code>pub fn <a href='#method.idempotent' class='fnname'>idempotent</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#78-87' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Whether a method is considered &quot;idempotent&quot;, meaning the request has
 the same result is executed multiple times.</p>
 

@@ -29,7 +29,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'>Crate loggerv</p><div class="block items"><ul><li><a href="#functions">Functions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'loggerv', ty: 'mod', relpath: '../'};</script>
+        <p class='location'>Crate loggerv</p><div class="block items"><ul><li><a href="#structs">Structs</a></li><li><a href="#constants">Constants</a></li><li><a href="#functions">Functions</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'loggerv', ty: 'mod', relpath: '../'};</script>
     </nav>
 
     <nav class="sub">
@@ -48,17 +48,25 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/loggerv/lib.rs.html#1-177' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/loggerv/lib.rs.html#1-561' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A simple <code>io::stdout</code> and <code>io::stderr</code> writing <code>Logger</code> implementation from the
-<code>log</code> crate, using the <code>ansi_term</code> crate for colors and configured at runtime,
-or at compile time with simple function calls. Designed for simple CLIs.</p>
+<code>log</code> crate, using the <code>ansi_term</code> crate for colors and configured at runtime via a verbosity
+or at compile time with simple function calls. Designed for simple Command Line Interfaces
+(CLIs).</p>
 
-<p>This library only comes with 3 public ways to initialize the global logger.
-Ensure you call one of these exactly once early in your rust program as shown
-in one of the examples below.</p>
+<p>This library includes a Builder pattern API for configuring a logger and three initializing
+helper functions to create a default logger. Ensure you create and initialize only once
+a global logger with the Builder pattern API or use one of the three public helper functions
+early in your program as shown in the examples below.</p>
+
+<p>The default configuration colorizes the &quot;tag&quot; portion of the log statement, where the tag is
+the text to the left of a separator, defaulted as the colon (<code>:</code>). The message is the
+portion to the right of the separator and it is <em>not</em> ever colorized. The tag includes only the
+module path and the separator by default.</p>
 
 <h2 id='example' class='section-header'><a href='#example'>Example</a></h2>
-<p>The standard example with <code>clap</code> as the arg parser.</p>
+<p>The standard example with <a href="https://crates.io/crates/clap">clap</a> as the arg parser using the
+default configuration.</p>
 
 <pre class="rust rust-example-rendered">
 <span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
@@ -87,8 +95,8 @@ in one of the examples below.</p>
 <p>But obviously use whatever argument parsing methods you prefer.</p>
 
 <h2 id='example-1' class='section-header'><a href='#example-1'>Example</a></h2>
-<p>For a compile time switch, all you really need is <code>log</code> (for the macros)
-and <code>loggerv</code> for how to print what&#39;s being sent to the macros.</p>
+<p>For a compile time switch, all you really need is <code>log</code> (for the macros) and <code>loggerv</code> for how
+to print what&#39;s being sent to the macros with the default configuration.</p>
 
 <pre class="rust rust-example-rendered">
 <span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
@@ -102,9 +110,9 @@ and <code>loggerv</code> for how to print what&#39;s being sent to the macros.</
     <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;this is printed by default&quot;</span>);
 }</pre>
 
-<h1 id='example-2' class='section-header'><a href='#example-2'>Example</a></h1>
-<p>If you don&#39;t really care at all you could just use the plain <code>init_quiet</code> function
-to only show warnings and errors:</p>
+<h2 id='example-2' class='section-header'><a href='#example-2'>Example</a></h2>
+<p>If you don&#39;t really care at all you could just use the plain <code>init_quiet</code> function to only show
+warnings and errors with the default configuration:</p>
 
 <pre class="rust rust-example-rendered">
 <span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
@@ -116,8 +124,135 @@ to only show warnings and errors:</p>
     <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;this is printed by default&quot;</span>);
 }</pre>
 
-<p>See the documentation for the log crate for more information about its API.</p>
-</div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<h2 id='example-3' class='section-header'><a href='#example-3'>Example</a></h2>
+<p>If you want to configure the output, the Builder pattern API can be used.</p>
+
+<pre class="rust rust-example-rendered">
+<span class="attribute">#[<span class="ident">macro_use</span>]</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">log</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">clap</span>;
+<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">loggerv</span>;
+
+<span class="kw">use</span> <span class="ident">clap</span>::{<span class="ident">Arg</span>, <span class="ident">App</span>};
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+    <span class="kw">let</span> <span class="ident">args</span> <span class="op">=</span> <span class="ident">App</span>::<span class="ident">new</span>(<span class="string">&quot;app&quot;</span>)
+                   .<span class="ident">arg</span>(<span class="ident">Arg</span>::<span class="ident">with_name</span>(<span class="string">&quot;v&quot;</span>)
+                            .<span class="ident">short</span>(<span class="string">&quot;v&quot;</span>)
+                            .<span class="ident">multiple</span>(<span class="bool-val">true</span>)
+                            .<span class="ident">help</span>(<span class="string">&quot;Sets the level of verbosity&quot;</span>))
+                   .<span class="ident">get_matches</span>();
+
+    <span class="comment">// This will change the log configuration to include line numbers in the &quot;tag&quot; portion of</span>
+    <span class="comment">// the statement, which is the text to the left of the separator, change the separator from</span>
+    <span class="comment">// a colon to an equal sign, hide or disable the module path, and disable colorized output.</span>
+    <span class="comment">// See the Logger documentation for more configuration methods and the ability to change</span>
+    <span class="comment">// the colors for each log level.</span>
+    <span class="ident">loggerv</span>::<span class="ident">Logger</span>::<span class="ident">new</span>()
+        .<span class="ident">verbosity</span>(<span class="ident">args</span>.<span class="ident">occurrences_of</span>(<span class="string">&quot;v&quot;</span>))
+        .<span class="ident">level</span>(<span class="bool-val">true</span>)
+        .<span class="ident">line_numbers</span>(<span class="bool-val">true</span>)
+        .<span class="ident">separator</span>(<span class="string">&quot; = &quot;</span>)
+        .<span class="ident">module_path</span>(<span class="bool-val">false</span>)
+        .<span class="ident">colors</span>(<span class="bool-val">false</span>)
+        .<span class="ident">init</span>()
+        .<span class="ident">unwrap</span>();
+
+    <span class="macro">error</span><span class="macro">!</span>(<span class="string">&quot;this is always printed&quot;</span>);
+    <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;this too, and it&#39;s printed to stderr&quot;</span>);
+    <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;this is optional&quot;</span>);  <span class="comment">// for ./app -v or higher</span>
+    <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;this is optional&quot;</span>); <span class="comment">// for ./app -vv or higher</span>
+    <span class="macro">trace</span><span class="macro">!</span>(<span class="string">&quot;this is optional&quot;</span>); <span class="comment">// for ./app -vvv</span>
+}</pre>
+
+<p>See the <a href="https://docs.rs/log/0.3.8/log/">documentation</a> for the
+<a href="https://crates.io/crates/log">log</a> crate for more information about its API.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Logger.html"
+                                  title='struct loggerv::Logger'>Logger</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_COLORS.html"
+                                  title='constant loggerv::DEFAULT_COLORS'>DEFAULT_COLORS</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_DEBUG_COLOR.html"
+                                  title='constant loggerv::DEFAULT_DEBUG_COLOR'>DEFAULT_DEBUG_COLOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_ERROR_COLOR.html"
+                                  title='constant loggerv::DEFAULT_ERROR_COLOR'>DEFAULT_ERROR_COLOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_INCLUDE_LEVEL.html"
+                                  title='constant loggerv::DEFAULT_INCLUDE_LEVEL'>DEFAULT_INCLUDE_LEVEL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_INCLUDE_LINE_NUMBERS.html"
+                                  title='constant loggerv::DEFAULT_INCLUDE_LINE_NUMBERS'>DEFAULT_INCLUDE_LINE_NUMBERS</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_INCLUDE_MODULE_PATH.html"
+                                  title='constant loggerv::DEFAULT_INCLUDE_MODULE_PATH'>DEFAULT_INCLUDE_MODULE_PATH</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_INFO_COLOR.html"
+                                  title='constant loggerv::DEFAULT_INFO_COLOR'>DEFAULT_INFO_COLOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_LEVEL.html"
+                                  title='constant loggerv::DEFAULT_LEVEL'>DEFAULT_LEVEL</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_SEPARATOR.html"
+                                  title='constant loggerv::DEFAULT_SEPARATOR'>DEFAULT_SEPARATOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_TRACE_COLOR.html"
+                                  title='constant loggerv::DEFAULT_TRACE_COLOR'>DEFAULT_TRACE_COLOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="constant" href="constant.DEFAULT_WARN_COLOR.html"
+                                  title='constant loggerv::DEFAULT_WARN_COLOR'>DEFAULT_WARN_COLOR</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class="fn" href="fn.init_quiet.html"

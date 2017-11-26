@@ -274,7 +274,6 @@
 <span id="229">229</span>
 <span id="230">230</span>
 <span id="231">231</span>
-<span id="232">232</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">path</span>::{<span class="ident">Path</span>, <span class="ident">PathBuf</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>;
@@ -473,7 +472,6 @@
 <span class="doccomment">/// A defaults file must be supplied to seed the new config with defined environments</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">configure</span>(<span class="ident">save</span>: <span class="ident">bool</span>, <span class="ident">interactive</span>: <span class="ident">bool</span>, <span class="ident">defaults</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">LalResult</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span> {
     <span class="kw">let</span> _ <span class="op">=</span> <span class="ident">create_lal_dir</span>()<span class="question-mark">?</span>;
-    <span class="comment">// TODO: root id check</span>
 
     <span class="kw">for</span> <span class="ident">exe</span> <span class="kw">in</span> [
         <span class="string">&quot;docker&quot;</span>,

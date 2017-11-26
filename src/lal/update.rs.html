@@ -144,9 +144,33 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">storage</span>::<span class="ident">CachedBackend</span>;
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">LalResult</span>, <span class="ident">Manifest</span>};
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">LalResult</span>, <span class="ident">Manifest</span>, <span class="ident">CliError</span>};
 
 <span class="doccomment">/// Update specific dependencies outside the manifest</span>
 <span class="doccomment">///</span>
@@ -173,8 +197,11 @@
         <span class="kw">if</span> <span class="ident">comp</span>.<span class="ident">contains</span>(<span class="string">&#39;=&#39;</span>) {
             <span class="kw">let</span> <span class="ident">pair</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">comp</span>.<span class="ident">split</span>(<span class="string">&#39;=&#39;</span>).<span class="ident">collect</span>();
             <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="op">=</span> <span class="ident">pair</span>[<span class="number">1</span>].<span class="ident">parse</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>() {
+                <span class="kw">if</span> <span class="ident">pair</span>[<span class="number">0</span>].<span class="ident">to_lowercase</span>() <span class="op">!=</span> <span class="ident">pair</span>[<span class="number">0</span>] {
+                    <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">CliError</span>::<span class="ident">InvalidComponentName</span>(<span class="ident">pair</span>[<span class="number">0</span>].<span class="ident">into</span>()));
+                }
                 <span class="comment">// standard fetch with an integer version</span>
-                <span class="kw">match</span> <span class="ident">backend</span>.<span class="ident">unpack_published_component</span>(<span class="ident">pair</span>[<span class="number">0</span>], <span class="prelude-val">Some</span>(<span class="ident">n</span>), <span class="prelude-val">Some</span>(<span class="ident">env</span>)) {
+                <span class="kw">match</span> <span class="ident">backend</span>.<span class="ident">unpack_published_component</span>(<span class="ident">pair</span>[<span class="number">0</span>], <span class="prelude-val">Some</span>(<span class="ident">n</span>), <span class="ident">env</span>) {
                     <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=&gt;</span> <span class="ident">updated</span>.<span class="ident">push</span>(<span class="ident">c</span>),
                     <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
                         <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Failed to update {} ({})&quot;</span>, <span class="ident">pair</span>[<span class="number">0</span>], <span class="ident">e</span>);
@@ -190,8 +217,21 @@
                 });
             }
         } <span class="kw">else</span> {
+            <span class="kw">if</span> <span class="kw-2">&amp;</span><span class="ident">comp</span>.<span class="ident">to_lowercase</span>() <span class="op">!=</span> <span class="ident">comp</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">CliError</span>::<span class="ident">InvalidComponentName</span>(<span class="ident">comp</span>.<span class="ident">clone</span>()));
+            }
             <span class="comment">// fetch without a specific version (latest)</span>
-            <span class="kw">match</span> <span class="ident">backend</span>.<span class="ident">unpack_published_component</span>(<span class="ident">comp</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="ident">env</span>)) {
+
+            <span class="comment">// First, since this potentially goes in the manifest</span>
+            <span class="comment">// make sure the version is found for all supported environments:</span>
+            <span class="kw">let</span> <span class="ident">ver</span> <span class="op">=</span> <span class="ident">backend</span>
+                .<span class="ident">get_latest_supported_versions</span>(<span class="ident">comp</span>, <span class="ident">manifest</span>.<span class="ident">supportedEnvironments</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>
+                .<span class="ident">into_iter</span>()
+                .<span class="ident">max</span>()
+                .<span class="ident">ok_or</span>(<span class="ident">CliError</span>::<span class="ident">NoIntersectedVersion</span>(<span class="ident">comp</span>.<span class="ident">clone</span>()))<span class="question-mark">?</span>;
+            <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Fetch {} {}={}&quot;</span>, <span class="ident">env</span>, <span class="ident">comp</span>, <span class="ident">ver</span>);
+
+            <span class="kw">match</span> <span class="ident">backend</span>.<span class="ident">unpack_published_component</span>(<span class="ident">comp</span>, <span class="prelude-val">Some</span>(<span class="ident">ver</span>), <span class="ident">env</span>) {
                 <span class="prelude-val">Ok</span>(<span class="ident">c</span>) <span class="op">=&gt;</span> <span class="ident">updated</span>.<span class="ident">push</span>(<span class="ident">c</span>),
                 <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=&gt;</span> {
                     <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Failed to update {} ({})&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">comp</span>, <span class="ident">e</span>);
@@ -212,7 +252,15 @@
         <span class="kw">for</span> <span class="ident">c</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">updated</span> {
             <span class="macro">debug</span><span class="macro">!</span>(<span class="string">&quot;Successfully updated {} at version {}&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">name</span>, <span class="ident">c</span>.<span class="ident">version</span>);
             <span class="kw">if</span> <span class="ident">hmap</span>.<span class="ident">contains_key</span>(<span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">name</span>) {
-                <span class="kw-2">*</span><span class="ident">hmap</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">name</span>).<span class="ident">unwrap</span>() <span class="op">=</span> <span class="ident">c</span>.<span class="ident">version</span>;
+                <span class="kw">let</span> <span class="ident">val</span> <span class="op">=</span> <span class="ident">hmap</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">name</span>).<span class="ident">unwrap</span>();
+                <span class="kw">if</span> <span class="ident">c</span>.<span class="ident">version</span> <span class="op">&lt;</span> <span class="kw-2">*</span><span class="ident">val</span> {
+                    <span class="macro">warn</span><span class="macro">!</span>(<span class="string">&quot;Downgrading {} from {} to {}&quot;</span>, <span class="ident">c</span>.<span class="ident">name</span>, <span class="kw-2">*</span><span class="ident">val</span>, <span class="ident">c</span>.<span class="ident">version</span>);
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">c</span>.<span class="ident">version</span> <span class="op">&gt;</span> <span class="kw-2">*</span><span class="ident">val</span> {
+                    <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Upgrading {} from {} to {}&quot;</span>, <span class="ident">c</span>.<span class="ident">name</span>, <span class="kw-2">*</span><span class="ident">val</span>, <span class="ident">c</span>.<span class="ident">version</span>);
+                } <span class="kw">else</span> {
+                    <span class="macro">info</span><span class="macro">!</span>(<span class="string">&quot;Maintaining {} at version {}&quot;</span>, <span class="ident">c</span>.<span class="ident">name</span>, <span class="ident">c</span>.<span class="ident">version</span>);
+                }
+                <span class="kw-2">*</span><span class="ident">val</span> <span class="op">=</span> <span class="ident">c</span>.<span class="ident">version</span>;
             } <span class="kw">else</span> {
                 <span class="ident">hmap</span>.<span class="ident">insert</span>(<span class="ident">c</span>.<span class="ident">name</span>.<span class="ident">clone</span>(), <span class="ident">c</span>.<span class="ident">version</span>);
             }

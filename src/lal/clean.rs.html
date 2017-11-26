@@ -134,7 +134,7 @@
     <span class="kw">let</span> <span class="ident">edirs</span> <span class="op">=</span> <span class="ident">WalkDir</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">edir</span>).<span class="ident">min_depth</span>(<span class="number">3</span>).<span class="ident">max_depth</span>(<span class="number">3</span>);
     <span class="ident">clean_in_dir</span>(<span class="ident">cutoff</span>, <span class="ident">edirs</span>)<span class="question-mark">?</span>;
 
-    <span class="comment">// clean out stash + globals</span>
+    <span class="comment">// clean out stash</span>
     <span class="kw">let</span> <span class="ident">dirs</span> <span class="op">=</span> <span class="ident">WalkDir</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">cachedir</span>).<span class="ident">min_depth</span>(<span class="number">3</span>).<span class="ident">max_depth</span>(<span class="number">3</span>);
     <span class="ident">clean_in_dir</span>(<span class="ident">cutoff</span>, <span class="ident">dirs</span>)<span class="question-mark">?</span>;
 

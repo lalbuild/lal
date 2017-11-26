@@ -1098,10 +1098,10 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Advanced time zone handling is not yet supported (but is planned in 0.3).</span>
 
-<span class="attribute">#<span class="op">!</span>[<span class="ident">doc</span>(<span class="ident">html_root_url</span> <span class="op">=</span> <span class="string">&quot;https://lifthrasiir.github.io/rust-chrono/&quot;</span>)]</span>
+<span class="attribute">#![<span class="ident">doc</span>(<span class="ident">html_root_url</span> <span class="op">=</span> <span class="string">&quot;https://lifthrasiir.github.io/rust-chrono/&quot;</span>)]</span>
 
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">bench</span>, <span class="ident">feature</span>(<span class="ident">test</span>))]</span> <span class="comment">// lib stability features as per RFC #507</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">bench</span>, <span class="ident">feature</span>(<span class="ident">test</span>))]</span> <span class="comment">// lib stability features as per RFC #507</span>
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
 
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">time</span> <span class="kw">as</span> <span class="ident">stdtime</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">num</span>;

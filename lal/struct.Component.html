@@ -48,27 +48,32 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/lal/storage/traits.rs.html#26-33' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/lal/storage/traits.rs.html#30-39' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Component {
     pub name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>,
     pub version: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>,
-    pub tarball: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>,
+    pub location: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>,
 }</pre><div class='docblock'><p>The basic definition of a component as it exists online</p>
 
 <p>A component may have many build artifacts from many environments.</p>
 </div><h2 id='fields' class='fields small-section-header'>
-                       Fields<a href='#fields' class='anchor'></a></h2><span id='structfield.name' class="structfield">
-                           <span id='name.v' class='invisible'>
+                       Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.name" class="structfield small-section-header">
+                           <a href="#structfield.name" class="anchor field"></a>
+                           <span id="name.v" class='invisible'>
                            <code>name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
                            </span></span><div class='docblock'><p>Name of the component</p>
-</div><span id='structfield.version' class="structfield">
-                           <span id='version.v' class='invisible'>
+</div><span id="structfield.version" class="structfield small-section-header">
+                           <a href="#structfield.version" class="anchor field"></a>
+                           <span id="version.v" class='invisible'>
                            <code>version: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a></code>
                            </span></span><div class='docblock'><p>Version number</p>
-</div><span id='structfield.tarball' class="structfield">
-                           <span id='tarball.v' class='invisible'>
-                           <code>tarball: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
-                           </span></span><div class='docblock'><p>The raw URL of the tarball at the specified version number</p>
+</div><span id="structfield.location" class="structfield small-section-header">
+                           <a href="#structfield.location" class="anchor field"></a>
+                           <span id="location.v" class='invisible'>
+                           <code>location: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
+                           </span></span><div class='docblock'><p>The raw location of the component at the specified version number</p>
+
+<p>No restriction on how this information is encoded, but it must work with <code>raw_fetch</code></p>
 </div></section>
     <section id='search' class="content hidden"></section>
 

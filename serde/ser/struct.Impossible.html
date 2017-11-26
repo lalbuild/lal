@@ -57,7 +57,7 @@ corresponding to the <code>Serializer</code> compound types: <code>SerializeSeq<
 <code>SerializeTuple</code>, <code>SerializeTupleStruct</code>, <code>SerializeTupleVariant</code>,
 <code>SerializeMap</code>, <code>SerializeStruct</code>, and <code>SerializeStructVariant</code>.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">impl</span> <span class="ident">Serializer</span> <span class="kw">for</span> <span class="ident">MySerializer</span> {
     <span class="kw">type</span> <span class="prelude-val">Ok</span> <span class="op">=</span> ();
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;

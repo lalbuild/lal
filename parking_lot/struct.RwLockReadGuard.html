@@ -57,7 +57,7 @@ dropped.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl&lt;'a, T:&nbsp;?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + 'a&gt; <a class="struct" href="../parking_lot/struct.RwLockReadGuard.html" title="struct parking_lot::RwLockReadGuard">RwLockReadGuard</a>&lt;'a, T&gt;</code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/rwlock.rs.html#459-476' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.unlock_fair' class="method"><span id='unlock_fair.v' class='invisible'><code>fn <a href='#method.unlock_fair' class='fnname'>unlock_fair</a>(self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/rwlock.rs.html#473-475' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.unlock_fair' class="method"><span id='unlock_fair.v' class='invisible'><code>pub fn <a href='#method.unlock_fair' class='fnname'>unlock_fair</a>(self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/rwlock.rs.html#473-475' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Unlocks the <code>RwLock</code> using a fair unlock protocol.</p>
 
 <p>By default, <code>RwLock</code> is unfair and allow the current thread to re-lock

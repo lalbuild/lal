@@ -58,20 +58,20 @@ uncompressed data, writing the compressed data to the wrapped writer.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl&lt;W:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Write.html" title="trait std::io::Write">Write</a>&gt; <a class="struct" href="../../flate2/write/struct.DeflateEncoder.html" title="struct flate2::write::DeflateEncoder">EncoderWriter</a>&lt;W&gt;</code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#66-164' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(w: W, level: <a class="enum" href="../../flate2/enum.Compression.html" title="enum flate2::Compression">Compression</a>) -&gt; <a class="struct" href="../../flate2/write/struct.DeflateEncoder.html" title="struct flate2::write::DeflateEncoder">EncoderWriter</a>&lt;W&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#72-76' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(w: W, level: <a class="enum" href="../../flate2/enum.Compression.html" title="enum flate2::Compression">Compression</a>) -&gt; <a class="struct" href="../../flate2/write/struct.DeflateEncoder.html" title="struct flate2::write::DeflateEncoder">EncoderWriter</a>&lt;W&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#72-76' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Creates a new encoder which will write compressed data to the stream
 given at the given compression level.</p>
 
 <p>When this encoder is dropped or unwrapped the final pieces of data will
 be flushed.</p>
-</div><h4 id='method.get_ref' class="method"><span id='get_ref.v' class='invisible'><code>fn <a href='#method.get_ref' class='fnname'>get_ref</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>W</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#79-81' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.get_ref' class="method"><span id='get_ref.v' class='invisible'><code>pub fn <a href='#method.get_ref' class='fnname'>get_ref</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>W</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#79-81' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Acquires a reference to the underlying writer.</p>
-</div><h4 id='method.get_mut' class="method"><span id='get_mut.v' class='invisible'><code>fn <a href='#method.get_mut' class='fnname'>get_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>W</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#87-89' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.get_mut' class="method"><span id='get_mut.v' class='invisible'><code>pub fn <a href='#method.get_mut' class='fnname'>get_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>W</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#87-89' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Acquires a mutable reference to the underlying writer.</p>
 
 <p>Note that mutating the output/input state of the stream may corrupt this
 object, so care must be taken when using this method.</p>
-</div><h4 id='method.reset' class="method"><span id='reset.v' class='invisible'><code>fn <a href='#method.reset' class='fnname'>reset</a>(&amp;mut self, w: W) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;W&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#102-106' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.reset' class="method"><span id='reset.v' class='invisible'><code>pub fn <a href='#method.reset' class='fnname'>reset</a>(&amp;mut self, w: W) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;W&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#102-106' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Resets the state of this encoder entirely, swapping out the output
 stream for another.</p>
 
@@ -83,7 +83,7 @@ cannot be finished an error is returned.</p>
 state of this encoder and replace the output stream with the one
 provided, returning the previous output stream. Future data written to
 this encoder will be the compressed into the stream <code>w</code> provided.</p>
-</div><h4 id='method.try_finish' class="method"><span id='try_finish.v' class='invisible'><code>fn <a href='#method.try_finish' class='fnname'>try_finish</a>(&amp;mut self) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#118-120' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.try_finish' class="method"><span id='try_finish.v' class='invisible'><code>pub fn <a href='#method.try_finish' class='fnname'>try_finish</a>(&amp;mut self) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#118-120' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Attempt to finish this output stream, writing out final chunks of data.</p>
 
 <p>Note that this function can only be used once data has finished being
@@ -93,7 +93,7 @@ calls to <code>write</code> may result in a panic.</p>
 <h1 id='panics' class='section-header'><a href='#panics'>Panics</a></h1>
 <p>Attempts to write data to this stream may result in a panic after this
 function is called.</p>
-</div><h4 id='method.finish' class="method"><span id='finish.v' class='invisible'><code>fn <a href='#method.finish' class='fnname'>finish</a>(self) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;W&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#132-135' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.finish' class="method"><span id='finish.v' class='invisible'><code>pub fn <a href='#method.finish' class='fnname'>finish</a>(self) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;W&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#132-135' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Consumes this encoder, flushing the output stream.</p>
 
 <p>This will flush the underlying data stream, close off the compressed
@@ -104,7 +104,7 @@ the underlying stream is an asynchronous I/O stream. To finish a stream
 the <code>try_finish</code> (or <code>shutdown</code>) method should be used instead. To
 re-acquire ownership of a stream it is safe to call this method after
 <code>try_finish</code> or <code>shutdown</code> has returned <code>Ok</code>.</p>
-</div><h4 id='method.flush_finish' class="method"><span id='flush_finish.v' class='invisible'><code>fn <a href='#method.flush_finish' class='fnname'>flush_finish</a>(self) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;W&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#144-147' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.flush_finish' class="method"><span id='flush_finish.v' class='invisible'><code>pub fn <a href='#method.flush_finish' class='fnname'>flush_finish</a>(self) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/std/io/error/type.Result.html" title="type std::io::error::Result">Result</a>&lt;W&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#144-147' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Consumes this encoder, flushing the output stream.</p>
 
 <p>This will flush the underlying data stream and then return the contained
@@ -112,12 +112,12 @@ writer if the flush succeeded.
 The compressed stream will not closed but only flushed. This
 means that obtained byte array can by extended by another deflated
 stream. To close the stream add the two bytes 0x3 and 0x0.</p>
-</div><h4 id='method.total_in' class="method"><span id='total_in.v' class='invisible'><code>fn <a href='#method.total_in' class='fnname'>total_in</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#153-155' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.total_in' class="method"><span id='total_in.v' class='invisible'><code>pub fn <a href='#method.total_in' class='fnname'>total_in</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#153-155' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the number of bytes that have been written to this compresor.</p>
 
 <p>Note that not all bytes written to this object may be accounted for,
 there may still be some active buffering.</p>
-</div><h4 id='method.total_out' class="method"><span id='total_out.v' class='invisible'><code>fn <a href='#method.total_out' class='fnname'>total_out</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#161-163' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.total_out' class="method"><span id='total_out.v' class='invisible'><code>pub fn <a href='#method.total_out' class='fnname'>total_out</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/deflate.rs.html#161-163' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the number of bytes that the compressor has produced.</p>
 
 <p>Note that not all bytes may have been written yet, some may still be

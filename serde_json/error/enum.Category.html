@@ -57,14 +57,14 @@
 }</pre><div class='docblock'><p>Categorizes the cause of a <code>serde_json::Error</code>.</p>
 </div><h2 id='variants' class='variants small-section-header'>
                    Variants<a href='#variants' class='anchor'></a></h2>
-<span id='variant.Io' class='variant'><span id='Io.v' class='invisible'><code>Io</code></span></span><div class='docblock'><p>The error was caused by a failure to read or write bytes on an IO
+<span id="variant.Io" class="variant small-section-header"><a href="#variant.Io" class="anchor field"></a><span id='Io.v' class='invisible'><code>Io</code></span></span><div class='docblock'><p>The error was caused by a failure to read or write bytes on an IO
 stream.</p>
-</div><span id='variant.Syntax' class='variant'><span id='Syntax.v' class='invisible'><code>Syntax</code></span></span><div class='docblock'><p>The error was caused by input that was not syntactically valid JSON.</p>
-</div><span id='variant.Data' class='variant'><span id='Data.v' class='invisible'><code>Data</code></span></span><div class='docblock'><p>The error was caused by input data that was semantically incorrect.</p>
+</div><span id="variant.Syntax" class="variant small-section-header"><a href="#variant.Syntax" class="anchor field"></a><span id='Syntax.v' class='invisible'><code>Syntax</code></span></span><div class='docblock'><p>The error was caused by input that was not syntactically valid JSON.</p>
+</div><span id="variant.Data" class="variant small-section-header"><a href="#variant.Data" class="anchor field"></a><span id='Data.v' class='invisible'><code>Data</code></span></span><div class='docblock'><p>The error was caused by input data that was semantically incorrect.</p>
 
 <p>For example, JSON containing a number is semantically incorrect when the
 type being deserialized into holds a String.</p>
-</div><span id='variant.Eof' class='variant'><span id='Eof.v' class='invisible'><code>Eof</code></span></span><div class='docblock'><p>The error was caused by prematurely reaching the end of the input data.</p>
+</div><span id="variant.Eof" class="variant small-section-header"><a href="#variant.Eof" class="anchor field"></a><span id='Eof.v' class='invisible'><code>Eof</code></span></span><div class='docblock'><p>The error was caused by prematurely reaching the end of the input data.</p>
 
 <p>Callers that process streaming input may be interested in retrying the
 deserialization once more data is available.</p>

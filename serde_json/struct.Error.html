@@ -56,12 +56,12 @@ deserializing JSON data.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../serde_json/error/struct.Error.html" title="struct serde_json::error::Error">Error</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#23-104' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.line' class="method"><span id='line.v' class='invisible'><code>fn <a href='#method.line' class='fnname'>line</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#28-30' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.line' class="method"><span id='line.v' class='invisible'><code>pub fn <a href='#method.line' class='fnname'>line</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#28-30' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>One-based line number at which the error was detected.</p>
 
 <p>Characters in the first line of the input (before the first newline
 character) are in line 1.</p>
-</div><h4 id='method.column' class="method"><span id='column.v' class='invisible'><code>fn <a href='#method.column' class='fnname'>column</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#39-41' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.column' class="method"><span id='column.v' class='invisible'><code>pub fn <a href='#method.column' class='fnname'>column</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#39-41' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>One-based column number at which the error was detected.</p>
 
 <p>The first character in the input and any characters immediately
@@ -69,7 +69,7 @@ following a newline character are in column 1.</p>
 
 <p>Note that errors may occur in column 0, for example if a read from an IO
 stream fails immediately following a previously read newline character.</p>
-</div><h4 id='method.classify' class="method"><span id='classify.v' class='invisible'><code>fn <a href='#method.classify' class='fnname'>classify</a>(&amp;self) -&gt; <a class="enum" href="../serde_json/error/enum.Category.html" title="enum serde_json::error::Category">Category</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#49-73' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.classify' class="method"><span id='classify.v' class='invisible'><code>pub fn <a href='#method.classify' class='fnname'>classify</a>(&amp;self) -&gt; <a class="enum" href="../serde_json/error/enum.Category.html" title="enum serde_json::error::Category">Category</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#49-73' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Categorizes the cause of this error.</p>
 
 <ul>
@@ -78,19 +78,19 @@ stream fails immediately following a previously read newline character.</p>
 <li><code>Category::Data</code> - input data that is semantically incorrect</li>
 <li><code>Category::Eof</code> - unexpected end of the input data</li>
 </ul>
-</div><h4 id='method.is_io' class="method"><span id='is_io.v' class='invisible'><code>fn <a href='#method.is_io' class='fnname'>is_io</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#77-79' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.is_io' class="method"><span id='is_io.v' class='invisible'><code>pub fn <a href='#method.is_io' class='fnname'>is_io</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#77-79' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns true if this error was caused by a failure to read or write
 bytes on an IO stream.</p>
-</div><h4 id='method.is_syntax' class="method"><span id='is_syntax.v' class='invisible'><code>fn <a href='#method.is_syntax' class='fnname'>is_syntax</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#83-85' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.is_syntax' class="method"><span id='is_syntax.v' class='invisible'><code>pub fn <a href='#method.is_syntax' class='fnname'>is_syntax</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#83-85' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns true if this error was caused by input that was not
 syntactically valid JSON.</p>
-</div><h4 id='method.is_data' class="method"><span id='is_data.v' class='invisible'><code>fn <a href='#method.is_data' class='fnname'>is_data</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#92-94' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.is_data' class="method"><span id='is_data.v' class='invisible'><code>pub fn <a href='#method.is_data' class='fnname'>is_data</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#92-94' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns true if this error was caused by input data that was
 semantically incorrect.</p>
 
 <p>For example, JSON containing a number is semantically incorrect when the
 type being deserialized into holds a String.</p>
-</div><h4 id='method.is_eof' class="method"><span id='is_eof.v' class='invisible'><code>fn <a href='#method.is_eof' class='fnname'>is_eof</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#101-103' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.is_eof' class="method"><span id='is_eof.v' class='invisible'><code>pub fn <a href='#method.is_eof' class='fnname'>is_eof</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/serde_json/error.rs.html#101-103' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns true if this error was caused by prematurely reaching the end of
 the input data.</p>
 

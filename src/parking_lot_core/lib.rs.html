@@ -161,10 +161,10 @@
 <span class="doccomment">//! For example, one could create an `ArcMutex` type that combines the atomic</span>
 <span class="doccomment">//! reference count and the two mutex bits in the same atomic word.</span>
 
-<span class="attribute">#<span class="op">!</span>[<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">feature</span>(<span class="ident">const_fn</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;linux&quot;</span>), <span class="ident">feature</span>(<span class="ident">integer_atomics</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">feature</span>(<span class="ident">asm</span>))]</span>
+<span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">feature</span>(<span class="ident">const_fn</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">all</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;linux&quot;</span>), <span class="ident">feature</span>(<span class="ident">integer_atomics</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">feature</span>(<span class="ident">asm</span>))]</span>
 
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">smallvec</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rand</span>;

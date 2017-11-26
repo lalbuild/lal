@@ -56,15 +56,15 @@
 }</pre><div class='docblock'><p>Result of a park operation.</p>
 </div><h2 id='variants' class='variants small-section-header'>
                    Variants<a href='#variants' class='anchor'></a></h2>
-<span id='variant.Unparked' class='variant'><span id='Unparked.v' class='invisible'><code>Unparked(<a class="struct" href="../parking_lot_core/struct.UnparkToken.html" title="struct parking_lot_core::UnparkToken">UnparkToken</a>)</code></span></span><div class='docblock'><p>We were unparked by another thread with the given token.</p>
-</div><span id='variant.Invalid' class='variant'><span id='Invalid.v' class='invisible'><code>Invalid</code></span></span><div class='docblock'><p>The validation callback returned false.</p>
-</div><span id='variant.TimedOut' class='variant'><span id='TimedOut.v' class='invisible'><code>TimedOut</code></span></span><div class='docblock'><p>The timeout expired.</p>
+<span id="variant.Unparked" class="variant small-section-header"><a href="#variant.Unparked" class="anchor field"></a><span id='Unparked.v' class='invisible'><code>Unparked(<a class="struct" href="../parking_lot_core/struct.UnparkToken.html" title="struct parking_lot_core::UnparkToken">UnparkToken</a>)</code></span></span><div class='docblock'><p>We were unparked by another thread with the given token.</p>
+</div><span id="variant.Invalid" class="variant small-section-header"><a href="#variant.Invalid" class="anchor field"></a><span id='Invalid.v' class='invisible'><code>Invalid</code></span></span><div class='docblock'><p>The validation callback returned false.</p>
+</div><span id="variant.TimedOut" class="variant small-section-header"><a href="#variant.TimedOut" class="anchor field"></a><span id='TimedOut.v' class='invisible'><code>TimedOut</code></span></span><div class='docblock'><p>The timeout expired.</p>
 </div>
                     <h2 id='methods' class='small-section-header'>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="enum" href="../parking_lot_core/enum.ParkResult.html" title="enum parking_lot_core::ParkResult">ParkResult</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/parking_lot.rs.html#388-397' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.is_unparked' class="method"><span id='is_unparked.v' class='invisible'><code>fn <a href='#method.is_unparked' class='fnname'>is_unparked</a>(self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/parking_lot.rs.html#390-396' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.is_unparked' class="method"><span id='is_unparked.v' class='invisible'><code>pub fn <a href='#method.is_unparked' class='fnname'>is_unparked</a>(self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot_core/parking_lot.rs.html#390-396' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns true if we were unparked by another thread.</p>
 </div></div>
             <h2 id='implementations' class='small-section-header'>

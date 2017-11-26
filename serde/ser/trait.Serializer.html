@@ -284,7 +284,7 @@ is available, a reasonable implementation would be to forward to
 <code>serialize_seq</code>. If forwarded, the implementation looks usually just
 like this:</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seq</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">serialize_seq</span>(<span class="prelude-val">Some</span>(<span class="ident">value</span>.<span class="ident">len</span>()))<span class="question-mark">?</span>;
 <span class="kw">for</span> <span class="ident">b</span> <span class="kw">in</span> <span class="ident">value</span> {
     <span class="ident">seq</span>.<span class="ident">serialize_element</span>(<span class="ident">b</span>)<span class="question-mark">?</span>;
@@ -304,7 +304,7 @@ variant.</p>
 
 <p>A reasonable implementation would be to forward to <code>serialize_unit</code>.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
     <span class="ident">E</span>::<span class="ident">A</span> <span class="op">=&gt;</span> <span class="ident">serializer</span>.<span class="ident">serialize_unit_variant</span>(<span class="string">&quot;E&quot;</span>, <span class="number">0</span>, <span class="string">&quot;A&quot;</span>),
     <span class="ident">E</span>::<span class="ident">B</span> <span class="op">=&gt;</span> <span class="ident">serializer</span>.<span class="ident">serialize_unit_variant</span>(<span class="string">&quot;E&quot;</span>, <span class="number">1</span>, <span class="string">&quot;B&quot;</span>),
@@ -315,7 +315,7 @@ variant.</p>
 wrappers around the data they contain. A reasonable implementation would
 be to forward to <code>value.serialize(self)</code>.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="ident">serializer</span>.<span class="ident">serialize_newtype_struct</span>(<span class="string">&quot;Millimeters&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>)</pre>
 </div><h3 id='tymethod.serialize_newtype_variant' class='method'><span id='serialize_newtype_variant.v' class='invisible'><code>fn <a href='#tymethod.serialize_newtype_variant' class='fnname'>serialize_newtype_variant</a>&lt;T:&nbsp;?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + <a class="trait" href="../../serde/trait.Serialize.html" title="trait serde::Serialize">Serialize</a>&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;name: &amp;'static <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;variant_index: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;variant: &amp;'static <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>, <br>&nbsp;&nbsp;&nbsp;&nbsp;value: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>T<br>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;Self::<a class="type" href="../../serde/trait.Serializer.html#associatedtype.Ok" title="type serde::Serializer::Ok">Ok</a>, Self::<a class="type" href="../../serde/trait.Serializer.html#associatedtype.Error" title="type serde::Serializer::Error">Error</a>&gt;</code></span></h3><div class='docblock'><p>Serialize a newtype variant like <code>E::N</code> in <code>enum E { N(u8) }</code>.</p>
 
@@ -323,7 +323,7 @@ be to forward to <code>value.serialize(self)</code>.</p>
 this variant within the enum, and the <code>variant</code> is the name of the
 variant. The <code>value</code> is the data contained within this newtype variant.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
     <span class="ident">E</span>::<span class="ident">N</span>(<span class="kw-2">ref</span> <span class="ident">n</span>) <span class="op">=&gt;</span> <span class="ident">serializer</span>.<span class="ident">serialize_newtype_variant</span>(<span class="string">&quot;E&quot;</span>, <span class="number">0</span>, <span class="string">&quot;N&quot;</span>, <span class="ident">n</span>),
 }</pre>
@@ -335,7 +335,7 @@ followed by zero or more calls to <code>serialize_element</code>, then a call to
 not be computable before the sequence is iterated. Some serializers only
 support sequences whose length is known up front.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seq</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_seq</span>(<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">len</span>()))<span class="question-mark">?</span>;
 <span class="kw">for</span> <span class="ident">element</span> <span class="kw">in</span> <span class="self">self</span> {
     <span class="ident">seq</span>.<span class="ident">serialize_element</span>(<span class="ident">element</span>)<span class="question-mark">?</span>;
@@ -346,7 +346,7 @@ known at deserialization time without looking at the serialized data.
 This call must be followed by zero or more calls to <code>serialize_element</code>,
 then a call to <code>end</code>.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seq</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_seq_fixed_size</span>(<span class="self">self</span>.<span class="ident">len</span>())<span class="question-mark">?</span>;
 <span class="kw">for</span> <span class="ident">element</span> <span class="kw">in</span> <span class="self">self</span> {
     <span class="ident">seq</span>.<span class="ident">serialize_element</span>(<span class="ident">element</span>)<span class="question-mark">?</span>;
@@ -355,7 +355,7 @@ then a call to <code>end</code>.</p>
 </div><h3 id='tymethod.serialize_tuple' class='method'><span id='serialize_tuple.v' class='invisible'><code>fn <a href='#tymethod.serialize_tuple' class='fnname'>serialize_tuple</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;self, <br>&nbsp;&nbsp;&nbsp;&nbsp;len: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a><br>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;Self::<a class="type" href="../../serde/trait.Serializer.html#associatedtype.SerializeTuple" title="type serde::Serializer::SerializeTuple">SerializeTuple</a>, Self::<a class="type" href="../../serde/trait.Serializer.html#associatedtype.Error" title="type serde::Serializer::Error">Error</a>&gt;</code></span></h3><div class='docblock'><p>Begin to serialize a tuple. This call must be followed by zero or more
 calls to <code>serialize_element</code>, then a call to <code>end</code>.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tup</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_tuple</span>(<span class="number">3</span>)<span class="question-mark">?</span>;
 <span class="ident">tup</span>.<span class="ident">serialize_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
 <span class="ident">tup</span>.<span class="ident">serialize_element</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">1</span>)<span class="question-mark">?</span>;
@@ -368,7 +368,7 @@ call to <code>end</code>.</p>
 <p>The <code>name</code> is the name of the tuple struct and the <code>len</code> is the number
 of data fields that will be serialized.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ts</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_tuple_struct</span>(<span class="string">&quot;Rgb&quot;</span>, <span class="number">3</span>)<span class="question-mark">?</span>;
 <span class="ident">ts</span>.<span class="ident">serialize_field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>)<span class="question-mark">?</span>;
 <span class="ident">ts</span>.<span class="ident">serialize_field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">1</span>)<span class="question-mark">?</span>;
@@ -381,7 +381,7 @@ of data fields that will be serialized.</p>
 this variant within the enum, the <code>variant</code> is the name of the variant,
 and the <code>len</code> is the number of data fields that will be serialized.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
     <span class="ident">E</span>::<span class="ident">T</span>(<span class="kw-2">ref</span> <span class="ident">a</span>, <span class="kw-2">ref</span> <span class="ident">b</span>) <span class="op">=&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tv</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_tuple_variant</span>(<span class="string">&quot;E&quot;</span>, <span class="number">0</span>, <span class="string">&quot;T&quot;</span>, <span class="number">2</span>)<span class="question-mark">?</span>;
@@ -397,7 +397,7 @@ calls to <code>serialize_key</code> and <code>serialize_value</code>, then a cal
 be computable before the map is iterated. Some serializers only support
 maps whose length is known up front.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">map</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_map</span>(<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">len</span>()))<span class="question-mark">?</span>;
 <span class="kw">for</span> (<span class="ident">k</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="self">self</span> {
     <span class="ident">map</span>.<span class="ident">serialize_entry</span>(<span class="ident">k</span>, <span class="ident">v</span>)<span class="question-mark">?</span>;
@@ -410,7 +410,7 @@ then a call to <code>end</code>.</p>
 <p>The <code>name</code> is the name of the struct and the <code>len</code> is the number of
 data fields that will be serialized.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">struc</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_struct</span>(<span class="string">&quot;Rgb&quot;</span>, <span class="number">3</span>)<span class="question-mark">?</span>;
 <span class="ident">struc</span>.<span class="ident">serialize_field</span>(<span class="string">&quot;r&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">r</span>)<span class="question-mark">?</span>;
 <span class="ident">struc</span>.<span class="ident">serialize_field</span>(<span class="string">&quot;g&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">g</span>)<span class="question-mark">?</span>;
@@ -423,7 +423,7 @@ data fields that will be serialized.</p>
 this variant within the enum, the <code>variant</code> is the name of the variant,
 and the <code>len</code> is the number of data fields that will be serialized.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
     <span class="ident">E</span>::<span class="ident">S</span> { <span class="kw-2">ref</span> <span class="ident">r</span>, <span class="kw-2">ref</span> <span class="ident">g</span>, <span class="kw-2">ref</span> <span class="ident">b</span> } <span class="op">=&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sv</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_struct_variant</span>(<span class="string">&quot;E&quot;</span>, <span class="number">0</span>, <span class="string">&quot;S&quot;</span>, <span class="number">3</span>)<span class="question-mark">?</span>;

@@ -54,12 +54,14 @@
     pub tag: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>,
 }</pre><div class='docblock'><p>Representation of a docker container image</p>
 </div><h2 id='fields' class='fields small-section-header'>
-                       Fields<a href='#fields' class='anchor'></a></h2><span id='structfield.name' class="structfield">
-                           <span id='name.v' class='invisible'>
+                       Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.name" class="structfield small-section-header">
+                           <a href="#structfield.name" class="anchor field"></a>
+                           <span id="name.v" class='invisible'>
                            <code>name: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
                            </span></span><div class='docblock'><p>The fully qualified image name</p>
-</div><span id='structfield.tag' class="structfield">
-                           <span id='tag.v' class='invisible'>
+</div><span id="structfield.tag" class="structfield small-section-header">
+                           <a href="#structfield.tag" class="anchor field"></a>
+                           <span id="tag.v" class='invisible'>
                            <code>tag: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
                            </span></span><div class='docblock'><p>The tag to use</p>
 </div>
@@ -67,10 +69,10 @@
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../lal/struct.Container.html" title="struct lal::Container">Container</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/lockfile.rs.html#24-32' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.latest' class="method"><span id='latest.v' class='invisible'><code>fn <a href='#method.latest' class='fnname'>latest</a>(name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/lockfile.rs.html#26-31' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.latest' class="method"><span id='latest.v' class='invisible'><code>pub fn <a href='#method.latest' class='fnname'>latest</a>(name: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/lockfile.rs.html#26-31' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Container struct with latest tag</p>
 </div></div><h3 id='impl-1' class='impl'><span class='in-band'><code>impl <a class="struct" href="../lal/struct.Container.html" title="struct lal::Container">Container</a></code><a href='#impl-1' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/lockfile.rs.html#49-63' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(container: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../lal/struct.Container.html" title="struct lal::Container">Container</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/lockfile.rs.html#54-62' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(container: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; <a class="struct" href="../lal/struct.Container.html" title="struct lal::Container">Container</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/lockfile.rs.html#54-62' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Initialize a container struct</p>
 
 <p>This will split the container on <code>:</code> to actually fetch the tag, and if no tag

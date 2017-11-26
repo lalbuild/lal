@@ -62,17 +62,21 @@
 <span id="17">17</span>
 <span id="18">18</span>
 <span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
 </pre><pre class="rust ">
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">errors</span>::{<span class="ident">CliError</span>, <span class="ident">LalResult</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">manifest</span>::{<span class="ident">Manifest</span>, <span class="ident">ComponentConfiguration</span>, <span class="ident">ManifestLocation</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">lockfile</span>::{<span class="ident">Lockfile</span>, <span class="ident">Container</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">config</span>::{<span class="ident">Config</span>, <span class="ident">ConfigDefaults</span>, <span class="ident">Mount</span>, <span class="ident">config_dir</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">sticky</span>::<span class="ident">StickyOptions</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::<span class="ident">ensure</span>::<span class="ident">ensure_dir_exists_fresh</span>;
 
 <span class="kw">mod</span> <span class="ident">config</span>;
 <span class="kw">mod</span> <span class="ident">errors</span>;
 <span class="kw">mod</span> <span class="ident">lockfile</span>;
 <span class="kw">mod</span> <span class="ident">sticky</span>;
+<span class="kw">mod</span> <span class="ident">ensure</span>;
 
 <span class="doccomment">/// Manifest module can be used directly</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">manifest</span>;

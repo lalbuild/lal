@@ -57,21 +57,21 @@
 }</pre><div class='docblock'><p>Current state of a <code>Once</code>.</p>
 </div><h2 id='variants' class='variants small-section-header'>
                    Variants<a href='#variants' class='anchor'></a></h2>
-<span id='variant.New' class='variant'><span id='New.v' class='invisible'><code>New</code></span></span><div class='docblock'><p>A closure has not been executed yet</p>
-</div><span id='variant.Poisoned' class='variant'><span id='Poisoned.v' class='invisible'><code>Poisoned</code></span></span><div class='docblock'><p>A closure was executed but panicked.</p>
-</div><span id='variant.InProgress' class='variant'><span id='InProgress.v' class='invisible'><code>InProgress</code></span></span><div class='docblock'><p>A thread is currently executing a closure.</p>
-</div><span id='variant.Done' class='variant'><span id='Done.v' class='invisible'><code>Done</code></span></span><div class='docblock'><p>A closure has completed sucessfully.</p>
+<span id="variant.New" class="variant small-section-header"><a href="#variant.New" class="anchor field"></a><span id='New.v' class='invisible'><code>New</code></span></span><div class='docblock'><p>A closure has not been executed yet</p>
+</div><span id="variant.Poisoned" class="variant small-section-header"><a href="#variant.Poisoned" class="anchor field"></a><span id='Poisoned.v' class='invisible'><code>Poisoned</code></span></span><div class='docblock'><p>A closure was executed but panicked.</p>
+</div><span id="variant.InProgress" class="variant small-section-header"><a href="#variant.InProgress" class="anchor field"></a><span id='InProgress.v' class='invisible'><code>InProgress</code></span></span><div class='docblock'><p>A thread is currently executing a closure.</p>
+</div><span id="variant.Done" class="variant small-section-header"><a href="#variant.Done" class="anchor field"></a><span id='Done.v' class='invisible'><code>Done</code></span></span><div class='docblock'><p>A closure has completed sucessfully.</p>
 </div>
                     <h2 id='methods' class='small-section-header'>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="enum" href="../parking_lot/enum.OnceState.html" title="enum parking_lot::OnceState">OnceState</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/once.rs.html#41-67' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.poisoned' class="method"><span id='poisoned.v' class='invisible'><code>fn <a href='#method.poisoned' class='fnname'>poisoned</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/once.rs.html#47-52' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.poisoned' class="method"><span id='poisoned.v' class='invisible'><code>pub fn <a href='#method.poisoned' class='fnname'>poisoned</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/once.rs.html#47-52' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns whether the associated <code>Once</code> has been poisoned.</p>
 
 <p>Once an initalization routine for a <code>Once</code> has panicked it will forever
 indicate to future forced initialization routines that it is poisoned.</p>
-</div><h4 id='method.done' class="method"><span id='done.v' class='invisible'><code>fn <a href='#method.done' class='fnname'>done</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/once.rs.html#61-66' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.done' class="method"><span id='done.v' class='invisible'><code>pub fn <a href='#method.done' class='fnname'>done</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/once.rs.html#61-66' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns whether the associated <code>Once</code> has successfullly executed a
 closure.</p>
 

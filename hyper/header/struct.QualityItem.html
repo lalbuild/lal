@@ -55,12 +55,14 @@
 }</pre><div class='docblock'><p>Represents an item with a quality value as defined in
 <a href="https://tools.ietf.org/html/rfc7231#section-5.3.1">RFC7231</a>.</p>
 </div><h2 id='fields' class='fields small-section-header'>
-                       Fields<a href='#fields' class='anchor'></a></h2><span id='structfield.item' class="structfield">
-                           <span id='item.v' class='invisible'>
+                       Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.item" class="structfield small-section-header">
+                           <a href="#structfield.item" class="anchor field"></a>
+                           <span id="item.v" class='invisible'>
                            <code>item: T</code>
                            </span></span><div class='docblock'><p>The actual contents of the field.</p>
-</div><span id='structfield.quality' class="structfield">
-                           <span id='quality.v' class='invisible'>
+</div><span id="structfield.quality" class="structfield small-section-header">
+                           <a href="#structfield.quality" class="anchor field"></a>
+                           <span id="quality.v" class='invisible'>
                            <code>quality: <a class="struct" href="../../hyper/header/struct.Quality.html" title="struct hyper::header::Quality">Quality</a></code>
                            </span></span><div class='docblock'><p>The quality (client or server preference) for the value.</p>
 </div>
@@ -68,7 +70,7 @@
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl&lt;T&gt; <a class="struct" href="../../hyper/header/struct.QualityItem.html" title="struct hyper::header::QualityItem">QualityItem</a>&lt;T&gt;</code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/header/shared/quality_item.rs.html#49-59' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(item: T, quality: <a class="struct" href="../../hyper/header/struct.Quality.html" title="struct hyper::header::Quality">Quality</a>) -&gt; <a class="struct" href="../../hyper/header/struct.QualityItem.html" title="struct hyper::header::QualityItem">QualityItem</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/header/shared/quality_item.rs.html#53-58' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(item: T, quality: <a class="struct" href="../../hyper/header/struct.Quality.html" title="struct hyper::header::Quality">Quality</a>) -&gt; <a class="struct" href="../../hyper/header/struct.QualityItem.html" title="struct hyper::header::QualityItem">QualityItem</a>&lt;T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/header/shared/quality_item.rs.html#53-58' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Creates a new <code>QualityItem</code> from an item and a quality.
 The item can be of any type.
 The quality should be a value in the range [0, 1].</p>

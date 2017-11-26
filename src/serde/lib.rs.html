@@ -260,13 +260,13 @@
 <span class="doccomment">//!   Redis when using [redis-rs](https://crates.io/crates/redis).</span>
 <span class="doccomment">//!   *(deserialization only)*</span>
 
-<span class="attribute">#<span class="op">!</span>[<span class="ident">doc</span>(<span class="ident">html_root_url</span><span class="op">=</span><span class="string">&quot;https://docs.serde.rs&quot;</span>)]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable&quot;</span>, <span class="ident">feature</span>(<span class="ident">nonzero</span>, <span class="ident">specialization</span>, <span class="ident">into_boxed_c_str</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;alloc&quot;</span>, <span class="ident">feature</span>(<span class="ident">alloc</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;collections&quot;</span>, <span class="ident">feature</span>(<span class="ident">collections</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">allow</span>(<span class="ident">linkedlist</span>, <span class="ident">type_complexity</span>, <span class="ident">doc_markdown</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">doc</span>(<span class="ident">html_root_url</span><span class="op">=</span><span class="string">&quot;https://docs.serde.rs&quot;</span>)]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;unstable&quot;</span>, <span class="ident">feature</span>(<span class="ident">nonzero</span>, <span class="ident">specialization</span>, <span class="ident">into_boxed_c_str</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;alloc&quot;</span>, <span class="ident">feature</span>(<span class="ident">alloc</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;collections&quot;</span>, <span class="ident">feature</span>(<span class="ident">collections</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">allow</span>(<span class="ident">linkedlist</span>, <span class="ident">type_complexity</span>, <span class="ident">doc_markdown</span>))]</span>
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;collections&quot;</span>)]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">collections</span>;

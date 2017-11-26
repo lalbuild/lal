@@ -29,7 +29,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'>Trait HexDisplay</p><div class="block items"><ul><li><a href="#required-methods">Required Methods</a></li><li><a href="#implementors">Implementors</a></li></ul></div><p class='location'><a href='index.html'>nom</a></p><script>window.sidebarCurrent = {name: 'HexDisplay', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'>Trait HexDisplay</p><div class="block items"><ul><li><a href="#required-methods">Required Methods</a></li><li><a href="#foreign-impls">Implementations on Foreign Types</a></li><li><a href="#implementors">Implementors</a></li></ul></div><p class='location'><a href='index.html'>nom</a></p><script>window.sidebarCurrent = {name: 'HexDisplay', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -65,12 +65,19 @@ string.</p>
 </div><h3 id='tymethod.to_hex_from' class='method'><span id='to_hex_from.v' class='invisible'><code>fn <a href='#tymethod.to_hex_from' class='fnname'>to_hex_from</a>(&amp;self, chunk_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, from: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code></span></h3><div class='docblock'><p>Converts the value of <code>self</code> to a hex dump beginning at <code>from</code> address, returning the owned
 string.</p>
 </div></div>
+                <h2 id='foreign-impls' class='section-header'>
+                  Implementations on Foreign Types<a href='#foreign-impls' class='anchor'></a>
+                </h2>
+            <h3 id='impl-HexDisplay' class='impl'><span class='in-band'><code>impl <a class="trait" href="../nom/trait.HexDisplay.html" title="trait nom::HexDisplay">HexDisplay</a> for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a></code><a href='#impl-HexDisplay' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/nom/util.rs.html#142-194' title='goto source code'>[src]</a></span></h3>
+<span class='docblock autohide'><div class='impl-items'><h4 id='method.offset' class="method"><span id='offset.v-1' class='invisible'><code>fn <a href='#method.offset' class='fnname'>offset</a>(&amp;self, second: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;[</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/nom/util.rs.html#143-148' title='goto source code'>[src]</a></span></h4>
+<h4 id='method.to_hex' class="method"><span id='to_hex.v-1' class='invisible'><code>fn <a href='#method.to_hex' class='fnname'>to_hex</a>(&amp;self, chunk_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/nom/util.rs.html#151-153' title='goto source code'>[src]</a></span></h4>
+<h4 id='method.to_hex_from' class="method"><span id='to_hex_from.v-1' class='invisible'><code>fn <a href='#method.to_hex_from' class='fnname'>to_hex_from</a>(&amp;self, chunk_size: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>, from: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/nom/util.rs.html#156-193' title='goto source code'>[src]</a></span></h4>
+</div></span>
         <h2 id='implementors' class='small-section-header'>
           Implementors<a href='#implementors' class='anchor'></a>
         </h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl HexDisplay for <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">[</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a></code></li>
-</ul><script type="text/javascript" async
+    </ul><script type="text/javascript" async
                          src="../implementors/nom/trait.HexDisplay.js">
                  </script></section>
     <section id='search' class="content hidden"></section>

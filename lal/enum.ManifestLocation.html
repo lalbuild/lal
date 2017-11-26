@@ -48,23 +48,23 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/lal/core/manifest.rs.html#59-64' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/lal/core/manifest.rs.html#61-66' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum ManifestLocation {
     RepoRoot,
     LalSubfolder,
 }</pre><div class='docblock'><p>An enum to clarify intent</p>
 </div><h2 id='variants' class='variants small-section-header'>
                    Variants<a href='#variants' class='anchor'></a></h2>
-<span id='variant.RepoRoot' class='variant'><span id='RepoRoot.v' class='invisible'><code>RepoRoot</code></span></span><div class='docblock'><p>Plain style (old default)</p>
-</div><span id='variant.LalSubfolder' class='variant'><span id='LalSubfolder.v' class='invisible'><code>LalSubfolder</code></span></span><div class='docblock'><p>In the .lal subfolder</p>
+<span id="variant.RepoRoot" class="variant small-section-header"><a href="#variant.RepoRoot" class="anchor field"></a><span id='RepoRoot.v' class='invisible'><code>RepoRoot</code></span></span><div class='docblock'><p>Plain style (old default)</p>
+</div><span id="variant.LalSubfolder" class="variant small-section-header"><a href="#variant.LalSubfolder" class="anchor field"></a><span id='LalSubfolder.v' class='invisible'><code>LalSubfolder</code></span></span><div class='docblock'><p>In the .lal subfolder</p>
 </div>
                     <h2 id='methods' class='small-section-header'>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
-                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="enum" href="../lal/enum.ManifestLocation.html" title="enum lal::ManifestLocation">ManifestLocation</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#68-96' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.as_path' class="method"><span id='as_path.v' class='invisible'><code>fn <a href='#method.as_path' class='fnname'>as_path</a>(&amp;self, pwd: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html" title="struct std::path::PathBuf">PathBuf</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html" title="struct std::path::PathBuf">PathBuf</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#70-75' title='goto source code'>[src]</a></span></h4>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="enum" href="../lal/enum.ManifestLocation.html" title="enum lal::ManifestLocation">ManifestLocation</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#70-98' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.as_path' class="method"><span id='as_path.v' class='invisible'><code>pub fn <a href='#method.as_path' class='fnname'>as_path</a>(&amp;self, pwd: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html" title="struct std::path::PathBuf">PathBuf</a>) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html" title="struct std::path::PathBuf">PathBuf</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#72-77' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Generate path for Manifest assuming pwd is the root</p>
-</div><h4 id='method.identify' class="method"><span id='identify.v' class='invisible'><code>fn <a href='#method.identify' class='fnname'>identify</a>(pwd: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html" title="struct std::path::PathBuf">PathBuf</a>) -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="enum" href="../lal/enum.ManifestLocation.html" title="enum lal::ManifestLocation">ManifestLocation</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#80-95' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.identify' class="method"><span id='identify.v' class='invisible'><code>pub fn <a href='#method.identify' class='fnname'>identify</a>(pwd: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html" title="struct std::path::PathBuf">PathBuf</a>) -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="enum" href="../lal/enum.ManifestLocation.html" title="enum lal::ManifestLocation">ManifestLocation</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#82-97' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Find the manifest file</p>
 
 <p>Looks first in <code>./.lal/manifest.json</code> and falls back to <code>./manifest.json</code></p>
@@ -72,8 +72,8 @@
             <h2 id='implementations' class='small-section-header'>
               Trait Implementations<a href='#implementations' class='anchor'></a>
             </h2>
-        <h3 id='impl-Default' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html" title="trait core::default::Default">Default</a> for <a class="enum" href="../lal/enum.ManifestLocation.html" title="enum lal::ManifestLocation">ManifestLocation</a></code><a href='#impl-Default' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#65-67' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.default' class="method"><span id='default.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class="enum" href="../lal/enum.ManifestLocation.html" title="enum lal::ManifestLocation">ManifestLocation</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#66' title='goto source code'>[src]</a></span></h4>
+        <h3 id='impl-Default' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html" title="trait core::default::Default">Default</a> for <a class="enum" href="../lal/enum.ManifestLocation.html" title="enum lal::ManifestLocation">ManifestLocation</a></code><a href='#impl-Default' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#67-69' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.default' class="method"><span id='default.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class="enum" href="../lal/enum.ManifestLocation.html" title="enum lal::ManifestLocation">ManifestLocation</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/manifest.rs.html#68' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the &quot;default value&quot; for a type. <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Read more</a></p>
 </div></div></section>
     <section id='search' class="content hidden"></section>

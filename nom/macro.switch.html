@@ -79,7 +79,7 @@ and returns the result of the second parser</p>
 <p>Due to limitations in Rust macros, it is not possible to have simple functions on the right hand
 side of pattern, like this:</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="macro">named</span><span class="macro">!</span>(<span class="ident">sw</span>,
    <span class="macro">switch</span><span class="macro">!</span>(<span class="macro">take</span><span class="macro">!</span>(<span class="number">4</span>),
      <span class="string">b&quot;abcd&quot;</span> <span class="op">=&gt;</span> <span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot;XYZ&quot;</span>) <span class="op">|</span>
@@ -89,7 +89,7 @@ side of pattern, like this:</p>
 
 <p>If you want to pass your own functions instead, you can use the <code>call!</code> combinator as follows:</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="macro">named</span><span class="macro">!</span>(<span class="ident">xyz</span>, <span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot;XYZ&quot;</span>));
  <span class="macro">named</span><span class="macro">!</span>(<span class="ident">num</span>, <span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot;123&quot;</span>));
  <span class="macro">named</span><span class="macro">!</span>(<span class="ident">sw</span>,

@@ -281,11 +281,11 @@
 <span class="doccomment">//!   assert_eq!(expr(b&quot;2*2/(5-1)+3&quot;), IResult::Done(&amp;b&quot;&quot;[..], 4));</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//! ```</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;core&quot;</span>, <span class="ident">feature</span>(<span class="ident">no_std</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;core&quot;</span>, <span class="ident">feature</span>(<span class="ident">collections</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;core&quot;</span>, <span class="ident">no_std</span>)]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">feature</span>(<span class="ident">test</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">feature</span>(<span class="ident">const_fn</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;core&quot;</span>, <span class="ident">feature</span>(<span class="ident">no_std</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;core&quot;</span>, <span class="ident">feature</span>(<span class="ident">collections</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;core&quot;</span>, <span class="ident">no_std</span>)]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">feature</span>(<span class="ident">test</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;nightly&quot;</span>, <span class="ident">feature</span>(<span class="ident">const_fn</span>))]</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;core&quot;</span>)]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">collections</span>;

@@ -57,7 +57,7 @@
 }</pre><div class='docblock'><p>Returned from <code>Serializer::serialize_seq</code> and
 <code>Serializer::serialize_seq_fixed_size</code>.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">seq</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_seq</span>(<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">len</span>()))<span class="question-mark">?</span>;
 <span class="kw">for</span> <span class="ident">element</span> <span class="kw">in</span> <span class="self">self</span> {
     <span class="ident">seq</span>.<span class="ident">serialize_element</span>(<span class="ident">element</span>)<span class="question-mark">?</span>;
@@ -82,7 +82,7 @@
           Implementors<a href='#implementors' class='anchor'></a>
         </h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;Ok, E&gt; SerializeSeq for <a class="struct" href="../../serde/ser/struct.Impossible.html" title="struct serde::ser::Impossible">Impossible</a>&lt;Ok, E&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;E: <a class="trait" href="../../serde/ser/trait.Error.html" title="trait serde::ser::Error">Error</a>,&nbsp;</span><span class="where fmt-newline">  type <a href='#associatedtype.Ok' class="type">Ok</a> = Ok;</span><span class="where fmt-newline">  type <a href='#associatedtype.Error' class="type">Error</a> = E;</span></code></li>
+    <li><div class='out-of-band'><a class='srclink' href='../../src/serde/ser/impossible.rs.html#43-56' title='goto source code'>[src]</a></div><code>impl&lt;Ok, E&gt; SerializeSeq for <a class="struct" href="../../serde/ser/struct.Impossible.html" title="struct serde::ser::Impossible">Impossible</a>&lt;Ok, E&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;E: <a class="trait" href="../../serde/ser/trait.Error.html" title="trait serde::ser::Error">Error</a>,&nbsp;</span><span class="where fmt-newline">  type <a href='#associatedtype.Ok' class="type">Ok</a> = Ok;</span><span class="where fmt-newline">  type <a href='#associatedtype.Error' class="type">Error</a> = E;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/serde/ser/trait.SerializeSeq.js">
                  </script></section>

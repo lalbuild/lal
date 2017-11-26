@@ -71,12 +71,12 @@ the underlying error data in a structured form.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../walkdir/struct.Error.html" title="struct walkdir::Error">Error</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#899-960' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.path' class="method"><span id='path.v' class='invisible'><code>fn <a href='#method.path' class='fnname'>path</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#904-910' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.path' class="method"><span id='path.v' class='invisible'><code>pub fn <a href='#method.path' class='fnname'>path</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#904-910' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the path associated with this error if one exists.</p>
 
 <p>For example, if an error occurred while opening a directory handle,
 the error will include the path passed to <code>std::fs::read_dir</code>.</p>
-</div><h4 id='method.loop_ancestor' class="method"><span id='loop_ancestor.v' class='invisible'><code>fn <a href='#method.loop_ancestor' class='fnname'>loop_ancestor</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#921-926' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.loop_ancestor' class="method"><span id='loop_ancestor.v' class='invisible'><code>pub fn <a href='#method.loop_ancestor' class='fnname'>loop_ancestor</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#921-926' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the path at which a cycle was detected.</p>
 
 <p>If no cycle was detected, <code>None</code> is returned.</p>
@@ -86,7 +86,7 @@ its ancestors.</p>
 
 <p>To get the path to the child directory entry in the cycle, use the
 <code>path</code> method.</p>
-</div><h4 id='method.depth' class="method"><span id='depth.v' class='invisible'><code>fn <a href='#method.depth' class='fnname'>depth</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#933-935' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.depth' class="method"><span id='depth.v' class='invisible'><code>pub fn <a href='#method.depth' class='fnname'>depth</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#933-935' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the depth at which this error occurred relative to the root.</p>
 
 <p>The smallest depth is <code>0</code> and always corresponds to the path given

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/clux/.cargo/registry/src/github.com-1ecc6299db9ec823/aho-corasick-0.5.3/src/autiter.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/clux/.cargo/registry/src/github.com-1ecc6299db9ec823/aho-corasick-0.6.3/src/autiter.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>autiter.rs.html -- source</title>
@@ -546,6 +546,33 @@
 <span id="501">501</span>
 <span id="502">502</span>
 <span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
 </pre><pre class="rust ">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="self">self</span>, <span class="ident">BufRead</span>};
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">marker</span>::<span class="ident">PhantomData</span>;
@@ -788,6 +815,33 @@
             <span class="ident">texti</span> <span class="op">=</span> <span class="ident">skip</span>(<span class="ident">aut</span>, <span class="ident">text</span>, <span class="ident">texti</span> <span class="op">+</span> <span class="number">1</span>);
         } <span class="kw">else</span> {
             <span class="ident">texti</span> <span class="op">+=</span> <span class="number">1</span>;
+            <span class="kw">if</span> <span class="ident">texti</span> <span class="op">+</span> <span class="number">4</span> <span class="op">&lt;</span> <span class="ident">text</span>.<span class="ident">len</span>() {
+                <span class="ident">si</span> <span class="op">=</span> <span class="ident">aut</span>.<span class="ident">next_state</span>(<span class="ident">si</span>, <span class="ident">text</span>[<span class="ident">texti</span>]);
+                <span class="kw">if</span> <span class="ident">aut</span>.<span class="ident">has_match</span>(<span class="ident">si</span>, <span class="number">0</span>) {
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">texti</span>, <span class="ident">si</span>));
+                }
+                <span class="ident">texti</span> <span class="op">+=</span> <span class="number">1</span>;
+                <span class="ident">si</span> <span class="op">=</span> <span class="ident">aut</span>.<span class="ident">next_state</span>(<span class="ident">si</span>, <span class="ident">text</span>[<span class="ident">texti</span>]);
+                <span class="kw">if</span> <span class="ident">aut</span>.<span class="ident">has_match</span>(<span class="ident">si</span>, <span class="number">0</span>) {
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">texti</span>, <span class="ident">si</span>));
+                }
+                <span class="ident">texti</span> <span class="op">+=</span> <span class="number">1</span>;
+                <span class="ident">si</span> <span class="op">=</span> <span class="ident">aut</span>.<span class="ident">next_state</span>(<span class="ident">si</span>, <span class="ident">text</span>[<span class="ident">texti</span>]);
+                <span class="kw">if</span> <span class="ident">aut</span>.<span class="ident">has_match</span>(<span class="ident">si</span>, <span class="number">0</span>) {
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">texti</span>, <span class="ident">si</span>));
+                }
+                <span class="ident">texti</span> <span class="op">+=</span> <span class="number">1</span>;
+                <span class="ident">si</span> <span class="op">=</span> <span class="ident">aut</span>.<span class="ident">next_state</span>(<span class="ident">si</span>, <span class="ident">text</span>[<span class="ident">texti</span>]);
+                <span class="kw">if</span> <span class="ident">aut</span>.<span class="ident">has_match</span>(<span class="ident">si</span>, <span class="number">0</span>) {
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">texti</span>, <span class="ident">si</span>));
+                }
+                <span class="ident">texti</span> <span class="op">+=</span> <span class="number">1</span>;
+                <span class="ident">si</span> <span class="op">=</span> <span class="ident">aut</span>.<span class="ident">next_state</span>(<span class="ident">si</span>, <span class="ident">text</span>[<span class="ident">texti</span>]);
+                <span class="kw">if</span> <span class="ident">aut</span>.<span class="ident">has_match</span>(<span class="ident">si</span>, <span class="number">0</span>) {
+                    <span class="kw">return</span> <span class="prelude-val">Some</span>((<span class="ident">texti</span>, <span class="ident">si</span>));
+                }
+                <span class="ident">texti</span> <span class="op">+=</span> <span class="number">1</span>;
+            }
         }
     }
     <span class="prelude-val">None</span>

@@ -990,9 +990,9 @@
 <span id="945">945</span>
 <span id="946">946</span>
 </pre><pre class="rust ">
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>),  <span class="ident">no_std</span>)]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">test</span>, <span class="ident">deny</span>(<span class="ident">warnings</span>))]</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>),  <span class="ident">no_std</span>)]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">test</span>, <span class="ident">deny</span>(<span class="ident">warnings</span>))]</span>
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
 <span class="doccomment">//! # httparse</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! A push library for parsing HTTP/1.x requests and responses.</span>

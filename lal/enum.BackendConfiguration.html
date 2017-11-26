@@ -48,16 +48,18 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../src/lal/storage/traits.rs.html#11-15' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../src/lal/storage/traits.rs.html#11-19' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum BackendConfiguration {
     Artifactory(<a class="struct" href="../lal/struct.ArtifactoryConfig.html" title="struct lal::ArtifactoryConfig">ArtifactoryConfig</a>),
+    Local(<a class="struct" href="../lal/struct.LocalConfig.html" title="struct lal::LocalConfig">LocalConfig</a>),
 }</pre><div class='docblock'><p>An enum struct for the currently configured <code>Backend</code></p>
 
 <p>Any other implementations should be imported and listed here.
 Currently only artifactory is supported.</p>
 </div><h2 id='variants' class='variants small-section-header'>
                    Variants<a href='#variants' class='anchor'></a></h2>
-<span id='variant.Artifactory' class='variant'><span id='Artifactory.v' class='invisible'><code>Artifactory(<a class="struct" href="../lal/struct.ArtifactoryConfig.html" title="struct lal::ArtifactoryConfig">ArtifactoryConfig</a>)</code></span></span><div class='docblock'><p>Config for the <code>ArtifactoryBackend</code></p>
+<span id="variant.Artifactory" class="variant small-section-header"><a href="#variant.Artifactory" class="anchor field"></a><span id='Artifactory.v' class='invisible'><code>Artifactory(<a class="struct" href="../lal/struct.ArtifactoryConfig.html" title="struct lal::ArtifactoryConfig">ArtifactoryConfig</a>)</code></span></span><div class='docblock'><p>Config for the <code>ArtifactoryBackend</code></p>
+</div><span id="variant.Local" class="variant small-section-header"><a href="#variant.Local" class="anchor field"></a><span id='Local.v' class='invisible'><code>Local(<a class="struct" href="../lal/struct.LocalConfig.html" title="struct lal::LocalConfig">LocalConfig</a>)</code></span></span><div class='docblock'><p>Config for the <code>LocalBackend</code></p>
 </div>
             <h2 id='implementations' class='small-section-header'>
               Trait Implementations<a href='#implementations' class='anchor'></a>
@@ -67,9 +69,9 @@ Currently only artifactory is supported.</p>
 <div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
 </div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>Self)</code></span><span class='out-of-band'><div class='ghost'></div><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div><a class='srclink' href='https://doc.rust-lang.org/nightly/src/core/clone.rs.html#112-114' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
-</div></div><h3 id='impl-Default' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html" title="trait core::default::Default">Default</a> for <a class="enum" href="../lal/enum.BackendConfiguration.html" title="enum lal::BackendConfiguration">BackendConfiguration</a></code><a href='#impl-Default' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/storage/traits.rs.html#18-20' title='goto source code'>[src]</a></span></h3>
+</div></div><h3 id='impl-Default' class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html" title="trait core::default::Default">Default</a> for <a class="enum" href="../lal/enum.BackendConfiguration.html" title="enum lal::BackendConfiguration">BackendConfiguration</a></code><a href='#impl-Default' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/storage/traits.rs.html#22-24' title='goto source code'>[src]</a></span></h3>
 <div class='docblock'><p>Artifactory is the default backend</p>
-</div><div class='impl-items'><h4 id='method.default' class="method"><span id='default.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/storage/traits.rs.html#19' title='goto source code'>[src]</a></span></h4>
+</div><div class='impl-items'><h4 id='method.default' class="method"><span id='default.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; Self</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/storage/traits.rs.html#23' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the &quot;default value&quot; for a type. <a href="https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default">Read more</a></p>
 </div></div></section>
     <section id='search' class="content hidden"></section>

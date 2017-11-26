@@ -570,11 +570,11 @@
 <span class="doccomment">//! [to_writer]: https://docs.serde.rs/serde_json/ser/fn.to_writer.html</span>
 <span class="doccomment">//! [macro]: https://docs.serde.rs/serde_json/macro.json.html</span>
 
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">deny</span>(<span class="ident">clippy</span>, <span class="ident">clippy_pedantic</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">deny</span>(<span class="ident">clippy</span>, <span class="ident">clippy_pedantic</span>))]</span>
 <span class="comment">// Because of &quot;JavaScript&quot;... fixed in Manishearth/rust-clippy#1071</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">allow</span>(<span class="ident">doc_markdown</span>))]</span>
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">allow</span>(<span class="ident">doc_markdown</span>))]</span>
 <span class="comment">// Whitelisted clippy_pedantic lints</span>
-<span class="attribute">#<span class="op">!</span>[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">allow</span>(
+<span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;cargo-clippy&quot;</span>, <span class="ident">allow</span>(
 <span class="comment">// Deserializer::from_str, from_iter, into_iter</span>
     <span class="ident">should_implement_trait</span>,
 <span class="comment">// integer and float ser/de requires these sorts of casts</span>
@@ -593,7 +593,7 @@
     <span class="ident">missing_docs_in_private_items</span>,
 ))]</span>
 
-<span class="attribute">#<span class="op">!</span>[<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span>
 
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">num_traits</span>;
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">core</span>;

@@ -159,7 +159,7 @@ Alternative styles are currently only used for progress bars.</p>
 
 <p>Example configuration:</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="ident">bar</span>.<span class="ident">set_style</span>(<span class="ident">ProgressStyle</span>::<span class="ident">default_bar</span>()
     .<span class="ident">template</span>(<span class="string">&quot;[{elapsed_precise}] {bar:40.cyan/blue} {pos:&gt;7}/{len:7} {msg}&quot;</span>)
     .<span class="ident">progress_chars</span>(<span class="string">&quot;##-&quot;</span>));</pre>
@@ -209,7 +209,7 @@ that can be displayed with the <code>style</code> function.</p>
 <p>There are some formatting wrappers for showing elapsed time and
 file sizes for human users:</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">time</span>::<span class="ident">Instant</span>;
 <span class="kw">use</span> <span class="ident">indicatif</span>::{<span class="ident">HumanDuration</span>, <span class="ident">HumanBytes</span>};
 

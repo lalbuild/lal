@@ -56,7 +56,7 @@
 <div class='item-spacer'></div>    fn <a href='#tymethod.end' class='fnname'>end</a>(self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;Self::<a class="type" href="../../serde/ser/trait.SerializeStructVariant.html#associatedtype.Ok" title="type serde::ser::SerializeStructVariant::Ok">Ok</a>, Self::<a class="type" href="../../serde/ser/trait.SerializeStructVariant.html#associatedtype.Error" title="type serde::ser::SerializeStructVariant::Error">Error</a>&gt;;
 }</pre><div class='docblock'><p>Returned from <code>Serializer::serialize_struct_variant</code>.</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
     <span class="ident">E</span>::<span class="ident">S</span> { <span class="kw-2">ref</span> <span class="ident">r</span>, <span class="kw-2">ref</span> <span class="ident">g</span>, <span class="kw-2">ref</span> <span class="ident">b</span> } <span class="op">=&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sv</span> <span class="op">=</span> <span class="ident">serializer</span>.<span class="ident">serialize_struct_variant</span>(<span class="string">&quot;E&quot;</span>, <span class="number">0</span>, <span class="string">&quot;S&quot;</span>, <span class="number">3</span>)<span class="question-mark">?</span>;
@@ -85,7 +85,7 @@
           Implementors<a href='#implementors' class='anchor'></a>
         </h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;Ok, E&gt; SerializeStructVariant for <a class="struct" href="../../serde/ser/struct.Impossible.html" title="struct serde::ser::Impossible">Impossible</a>&lt;Ok, E&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;E: <a class="trait" href="../../serde/ser/trait.Error.html" title="trait serde::ser::Error">Error</a>,&nbsp;</span><span class="where fmt-newline">  type <a href='#associatedtype.Ok' class="type">Ok</a> = Ok;</span><span class="where fmt-newline">  type <a href='#associatedtype.Error' class="type">Error</a> = E;</span></code></li>
+    <li><div class='out-of-band'><a class='srclink' href='../../src/serde/ser/impossible.rs.html#140-156' title='goto source code'>[src]</a></div><code>impl&lt;Ok, E&gt; SerializeStructVariant for <a class="struct" href="../../serde/ser/struct.Impossible.html" title="struct serde::ser::Impossible">Impossible</a>&lt;Ok, E&gt; <span class="where fmt-newline">where<br>&nbsp;&nbsp;&nbsp;&nbsp;E: <a class="trait" href="../../serde/ser/trait.Error.html" title="trait serde::ser::Error">Error</a>,&nbsp;</span><span class="where fmt-newline">  type <a href='#associatedtype.Ok' class="type">Ok</a> = Ok;</span><span class="where fmt-newline">  type <a href='#associatedtype.Error' class="type">Error</a> = E;</span></code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/serde/ser/trait.SerializeStructVariant.js">
                  </script></section>

@@ -59,7 +59,7 @@ interface.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl&lt;R:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/std/io/trait.Read.html" title="trait std::io::Read">Read</a>&gt; <a class="struct" href="../../flate2/read/struct.GzEncoder.html" title="struct flate2::read::GzEncoder">EncoderReader</a>&lt;R&gt;</code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#374-403' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(r: R, level: <a class="enum" href="../../flate2/enum.Compression.html" title="enum flate2::Compression">Compression</a>) -&gt; <a class="struct" href="../../flate2/read/struct.GzEncoder.html" title="struct flate2::read::GzEncoder">EncoderReader</a>&lt;R&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#382-384' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(r: R, level: <a class="enum" href="../../flate2/enum.Compression.html" title="enum flate2::Compression">Compression</a>) -&gt; <a class="struct" href="../../flate2/read/struct.GzEncoder.html" title="struct flate2::read::GzEncoder">EncoderReader</a>&lt;R&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#382-384' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Creates a new encoder which will use the given compression level.</p>
 
 <p>The encoder is not configured specially for the emitted header. For
@@ -67,14 +67,14 @@ header configuration, see the <code>Builder</code> type.</p>
 
 <p>The data read from the stream <code>r</code> will be compressed and available
 through the returned reader.</p>
-</div><h4 id='method.get_ref' class="method"><span id='get_ref.v' class='invisible'><code>fn <a href='#method.get_ref' class='fnname'>get_ref</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>R</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#387-389' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.get_ref' class="method"><span id='get_ref.v' class='invisible'><code>pub fn <a href='#method.get_ref' class='fnname'>get_ref</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>R</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#387-389' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Acquires a reference to the underlying reader.</p>
-</div><h4 id='method.get_mut' class="method"><span id='get_mut.v' class='invisible'><code>fn <a href='#method.get_mut' class='fnname'>get_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>R</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#395-397' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.get_mut' class="method"><span id='get_mut.v' class='invisible'><code>pub fn <a href='#method.get_mut' class='fnname'>get_mut</a>(&amp;mut self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut </a>R</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#395-397' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Acquires a mutable reference to the underlying reader.</p>
 
 <p>Note that mutation of the reader may result in surprising results if
 this encoder is continued to be used.</p>
-</div><h4 id='method.into_inner' class="method"><span id='into_inner.v' class='invisible'><code>fn <a href='#method.into_inner' class='fnname'>into_inner</a>(self) -&gt; R</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#400-402' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.into_inner' class="method"><span id='into_inner.v' class='invisible'><code>pub fn <a href='#method.into_inner' class='fnname'>into_inner</a>(self) -&gt; R</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/flate2/gz.rs.html#400-402' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the underlying stream, consuming this encoder</p>
 </div></div>
             <h2 id='implementations' class='small-section-header'>

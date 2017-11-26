@@ -75,13 +75,13 @@ used in the actual request as part of the preflight request.</p>
                     <h2 id='deref-methods' class='small-section-header'>
                       Methods from <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/deref/trait.Deref.html" title="trait core::ops::deref::Deref">Deref</a>&lt;Target = <a class="enum" href="../../hyper/method/enum.Method.html" title="enum hyper::method::Method">Method</a>&gt;<a href='#deref-methods' class='anchor'></a>
                     </h2>
-                <div class='impl-items'><h4 id='method.safe' class="method"><span id='safe.v' class='invisible'><code>fn <a href='#method.safe' class='fnname'>safe</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#66-71' title='goto source code'>[src]</a></span></h4>
+                <div class='impl-items'><h4 id='method.safe' class="method"><span id='safe.v' class='invisible'><code>pub fn <a href='#method.safe' class='fnname'>safe</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#66-71' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Whether a method is considered &quot;safe&quot;, meaning the request is
 essentially read-only.</p>
 
 <p>See <a href="https://tools.ietf.org/html/rfc7231#section-4.2.1">the spec</a>
 for more words.</p>
-</div><h4 id='method.idempotent' class="method"><span id='idempotent.v' class='invisible'><code>fn <a href='#method.idempotent' class='fnname'>idempotent</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#78-87' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.idempotent' class="method"><span id='idempotent.v' class='invisible'><code>pub fn <a href='#method.idempotent' class='fnname'>idempotent</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/method.rs.html#78-87' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Whether a method is considered &quot;idempotent&quot;, meaning the request has
 the same result is executed multiple times.</p>
 

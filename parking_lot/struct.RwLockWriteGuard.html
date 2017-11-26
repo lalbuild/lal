@@ -57,14 +57,14 @@ dropped.</p>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl&lt;'a, T:&nbsp;?<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a> + 'a&gt; <a class="struct" href="../parking_lot/struct.RwLockWriteGuard.html" title="struct parking_lot::RwLockWriteGuard">RwLockWriteGuard</a>&lt;'a, T&gt;</code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/rwlock.rs.html#496-529' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.downgrade' class="method"><span id='downgrade.v' class='invisible'><code>fn <a href='#method.downgrade' class='fnname'>downgrade</a>(self) -&gt; <a class="struct" href="../parking_lot/struct.RwLockReadGuard.html" title="struct parking_lot::RwLockReadGuard">RwLockReadGuard</a>&lt;'a, T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/rwlock.rs.html#503-511' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.downgrade' class="method"><span id='downgrade.v' class='invisible'><code>pub fn <a href='#method.downgrade' class='fnname'>downgrade</a>(self) -&gt; <a class="struct" href="../parking_lot/struct.RwLockReadGuard.html" title="struct parking_lot::RwLockReadGuard">RwLockReadGuard</a>&lt;'a, T&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/rwlock.rs.html#503-511' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Atomically downgrades a write lock into a read lock without allowing any
 writers to take exclusive access of the lock in the meantime.</p>
 
 <p>Note that if there are any writers currently waiting to take the lock
 then other readers may not be able to acquire the lock even if it was
 downgraded.</p>
-</div><h4 id='method.unlock_fair' class="method"><span id='unlock_fair.v' class='invisible'><code>fn <a href='#method.unlock_fair' class='fnname'>unlock_fair</a>(self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/rwlock.rs.html#526-528' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.unlock_fair' class="method"><span id='unlock_fair.v' class='invisible'><code>pub fn <a href='#method.unlock_fair' class='fnname'>unlock_fair</a>(self)</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/parking_lot/rwlock.rs.html#526-528' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Unlocks the <code>RwLock</code> using a fair unlock protocol.</p>
 
 <p>By default, <code>RwLock</code> is unfair and allow the current thread to re-lock

@@ -72,7 +72,7 @@ operations operate on the symbolic link.</li>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../walkdir/struct.DirEntry.html" title="struct walkdir::DirEntry">DirEntry</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#657-793' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.path' class="method"><span id='path.v' class='invisible'><code>fn <a href='#method.path' class='fnname'>path</a>(&amp;self) -&gt; &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#669-671' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.path' class="method"><span id='path.v' class='invisible'><code>pub fn <a href='#method.path' class='fnname'>path</a>(&amp;self) -&gt; &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.Path.html" title="struct std::path::Path">Path</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#669-671' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>The full path that this entry represents.</p>
 
 <p>The full path is created by joining the parents of this entry up to the
@@ -84,14 +84,14 @@ directory entry, even when symbolic links are followed. To get the
 target path, use <code>path_is_symbolic_link</code> to (cheaply) check if
 this entry corresponds to a symbolic link, and <code>std::fs::read_link</code> to
 resolve the target.</p>
-</div><h4 id='method.path_is_symbolic_link' class="method"><span id='path_is_symbolic_link.v' class='invisible'><code>fn <a href='#method.path_is_symbolic_link' class='fnname'>path_is_symbolic_link</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#679-681' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.path_is_symbolic_link' class="method"><span id='path_is_symbolic_link.v' class='invisible'><code>pub fn <a href='#method.path_is_symbolic_link' class='fnname'>path_is_symbolic_link</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#679-681' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns <code>true</code> if and only if this entry was created from a symbolic
 link. This is unaffected by the <code>follow_links</code> setting.</p>
 
 <p>When <code>true</code>, the value returned by the <code>path</code> method is a
 symbolic link name. To get the full target path, you must call
 <code>std::fs::read_link(entry.path())</code>.</p>
-</div><h4 id='method.metadata' class="method"><span id='metadata.v' class='invisible'><code>fn <a href='#method.metadata' class='fnname'>metadata</a>(&amp;self) -&gt; <a class="type" href="../walkdir/type.Result.html" title="type walkdir::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/fs/struct.Metadata.html" title="struct std::fs::Metadata">Metadata</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#694-700' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.metadata' class="method"><span id='metadata.v' class='invisible'><code>pub fn <a href='#method.metadata' class='fnname'>metadata</a>(&amp;self) -&gt; <a class="type" href="../walkdir/type.Result.html" title="type walkdir::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/fs/struct.Metadata.html" title="struct std::fs::Metadata">Metadata</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#694-700' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Return the metadata for the file that this entry points to.</p>
 
 <p>This will follow symbolic links if and only if the <code>WalkDir</code> value
@@ -102,25 +102,25 @@ has <code>follow_links</code> enabled.</p>
 
 <p>If this entry is a symbolic link and <code>follow_links</code> is enabled, then
 <code>std::fs::metadata</code> is called instead.</p>
-</div><h4 id='method.file_type' class="method"><span id='file_type.v' class='invisible'><code>fn <a href='#method.file_type' class='fnname'>file_type</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/std/fs/struct.FileType.html" title="struct std::fs::FileType">FileType</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#708-710' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.file_type' class="method"><span id='file_type.v' class='invisible'><code>pub fn <a href='#method.file_type' class='fnname'>file_type</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/nightly/std/fs/struct.FileType.html" title="struct std::fs::FileType">FileType</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#708-710' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Return the file type for the file that this entry points to.</p>
 
 <p>If this is a symbolic link and <code>follow_links</code> is <code>true</code>, then this
 returns the type of the target.</p>
 
 <p>This never makes any system calls.</p>
-</div><h4 id='method.file_name' class="method"><span id='file_name.v' class='invisible'><code>fn <a href='#method.file_name' class='fnname'>file_name</a>(&amp;self) -&gt; &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/os_str/struct.OsStr.html" title="struct std::ffi::os_str::OsStr">OsStr</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#716-718' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.file_name' class="method"><span id='file_name.v' class='invisible'><code>pub fn <a href='#method.file_name' class='fnname'>file_name</a>(&amp;self) -&gt; &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/os_str/struct.OsStr.html" title="struct std::ffi::os_str::OsStr">OsStr</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#716-718' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Return the file name of this entry.</p>
 
 <p>If this entry has no file name (e.g., <code>/</code>), then the full path is
 returned.</p>
-</div><h4 id='method.depth' class="method"><span id='depth.v' class='invisible'><code>fn <a href='#method.depth' class='fnname'>depth</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#725-727' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.depth' class="method"><span id='depth.v' class='invisible'><code>pub fn <a href='#method.depth' class='fnname'>depth</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#725-727' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the depth at which this entry was created relative to the root.</p>
 
 <p>The smallest depth is <code>0</code> and always corresponds to the path given
 to the <code>new</code> function on <code>WalkDir</code>. Its direct descendents have depth
 <code>1</code>, and their descendents have depth <code>2</code>, and so on.</p>
-</div><h4 id='method.ino' class="method"><span id='ino.v' class='invisible'><code>fn <a href='#method.ino' class='fnname'>ino</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#732-734' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.ino' class="method"><span id='ino.v' class='invisible'><code>pub fn <a href='#method.ino' class='fnname'>ino</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/walkdir/lib.rs.html#732-734' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Returns the underlying <code>d_ino</code> field in the contained <code>dirent</code>
 structure.</p>
 </div></div>

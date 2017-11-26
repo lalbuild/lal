@@ -54,8 +54,9 @@
     // some fields omitted
 }</pre><div class='docblock'><p>A listening server, which can later be closed.</p>
 </div><h2 id='fields' class='fields small-section-header'>
-                       Fields<a href='#fields' class='anchor'></a></h2><span id='structfield.socket' class="structfield">
-                           <span id='socket.v' class='invisible'>
+                       Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.socket" class="structfield small-section-header">
+                           <a href="#structfield.socket" class="anchor field"></a>
+                           <span id="socket.v" class='invisible'>
                            <code>socket: <a class="enum" href="https://doc.rust-lang.org/nightly/std/net/addr/enum.SocketAddr.html" title="enum std::net::addr::SocketAddr">SocketAddr</a></code>
                            </span></span><div class='docblock'><p>The socket addresses that the server is bound to.</p>
 </div>
@@ -63,7 +64,7 @@
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
                 <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../../hyper/server/struct.Listening.html" title="struct hyper::server::Listening">Listening</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/server/mod.rs.html#399-409' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.close' class="method"><span id='close.v' class='invisible'><code>fn <a href='#method.close' class='fnname'>close</a>(&amp;mut self) -&gt; <a class="type" href="../../hyper/error/type.Result.html" title="type hyper::error::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/server/mod.rs.html#404-408' title='goto source code'>[src]</a></span></h4>
+<div class='impl-items'><h4 id='method.close' class="method"><span id='close.v' class='invisible'><code>pub fn <a href='#method.close' class='fnname'>close</a>(&amp;mut self) -&gt; <a class="type" href="../../hyper/error/type.Result.html" title="type hyper::error::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../../src/hyper/server/mod.rs.html#404-408' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Warning: This function doesn&#39;t work. The server remains listening after you called
 it. See <a href="https://github.com/hyperium/hyper/issues/338">https://github.com/hyperium/hyper/issues/338</a> for more details.</p>
 

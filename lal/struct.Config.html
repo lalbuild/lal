@@ -60,57 +60,61 @@
     pub minimum_lal: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;,
 }</pre><div class='docblock'><p>Representation of <code>~/.lal/config</code></p>
 </div><h2 id='fields' class='fields small-section-header'>
-                       Fields<a href='#fields' class='anchor'></a></h2><span id='structfield.backend' class="structfield">
-                           <span id='backend.v' class='invisible'>
+                       Fields<a href='#fields' class='anchor'></a></h2><span id="structfield.backend" class="structfield small-section-header">
+                           <a href="#structfield.backend" class="anchor field"></a>
+                           <span id="backend.v" class='invisible'>
                            <code>backend: <a class="enum" href="../lal/enum.BackendConfiguration.html" title="enum lal::BackendConfiguration">BackendConfiguration</a></code>
                            </span></span><div class='docblock'><p>Configuration settings for the <code>Backend</code></p>
-</div><span id='structfield.cache' class="structfield">
-                           <span id='cache.v' class='invisible'>
+</div><span id="structfield.cache" class="structfield small-section-header">
+                           <a href="#structfield.cache" class="anchor field"></a>
+                           <span id="cache.v" class='invisible'>
                            <code>cache: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
                            </span></span><div class='docblock'><p>Cache directory for global and stashed builds</p>
-</div><span id='structfield.environments' class="structfield">
-                           <span id='environments.v' class='invisible'>
+</div><span id="structfield.environments" class="structfield small-section-header">
+                           <a href="#structfield.environments" class="anchor field"></a>
+                           <span id="environments.v" class='invisible'>
                            <code>environments: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/btree/map/struct.BTreeMap.html" title="struct alloc::btree::map::BTreeMap">BTreeMap</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>, <a class="struct" href="../lal/struct.Container.html" title="struct lal::Container">Container</a>&gt;</code>
                            </span></span><div class='docblock'><p>Environments shorthands that are allowed and their full meaning</p>
-</div><span id='structfield.lastUpgrade' class="structfield">
-                           <span id='lastUpgrade.v' class='invisible'>
+</div><span id="structfield.lastUpgrade" class="structfield small-section-header">
+                           <a href="#structfield.lastUpgrade" class="anchor field"></a>
+                           <span id="lastUpgrade.v" class='invisible'>
                            <code>lastUpgrade: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code>
                            </span></span><div class='docblock'><p>Time of last upgrade</p>
-</div><span id='structfield.autoupgrade' class="structfield">
-                           <span id='autoupgrade.v' class='invisible'>
+</div><span id="structfield.autoupgrade" class="structfield small-section-header">
+                           <a href="#structfield.autoupgrade" class="anchor field"></a>
+                           <span id="autoupgrade.v" class='invisible'>
                            <code>autoupgrade: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code>
                            </span></span><div class='docblock'><p>Whether to perform automatic upgrade</p>
-</div><span id='structfield.mounts' class="structfield">
-                           <span id='mounts.v' class='invisible'>
+</div><span id="structfield.mounts" class="structfield small-section-header">
+                           <a href="#structfield.mounts" class="anchor field"></a>
+                           <span id="mounts.v" class='invisible'>
                            <code>mounts: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../lal/struct.Mount.html" title="struct lal::Mount">Mount</a>&gt;</code>
                            </span></span><div class='docblock'><p>Extra volume mounts to be set for the container</p>
-</div><span id='structfield.interactive' class="structfield">
-                           <span id='interactive.v' class='invisible'>
+</div><span id="structfield.interactive" class="structfield small-section-header">
+                           <a href="#structfield.interactive" class="anchor field"></a>
+                           <span id="interactive.v" class='invisible'>
                            <code>interactive: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code>
                            </span></span><div class='docblock'><p>Force inteactive shells</p>
-</div><span id='structfield.minimum_lal' class="structfield">
-                           <span id='minimum_lal.v' class='invisible'>
+</div><span id="structfield.minimum_lal" class="structfield small-section-header">
+                           <a href="#structfield.minimum_lal" class="anchor field"></a>
+                           <span id="minimum_lal.v" class='invisible'>
                            <code>minimum_lal: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;</code>
                            </span></span><div class='docblock'><p>Minimum version restriction of lal enforced by this config</p>
 </div>
                     <h2 id='methods' class='small-section-header'>
                       Methods<a href='#methods' class='anchor'></a>
                     </h2>
-                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../lal/struct.Config.html" title="struct lal::Config">Config</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#121-211' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(defaults: <a class="struct" href="../lal/struct.ConfigDefaults.html" title="struct lal::ConfigDefaults">ConfigDefaults</a>) -&gt; <a class="struct" href="../lal/struct.Config.html" title="struct lal::Config">Config</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#126-157' title='goto source code'>[src]</a></span></h4>
+                <h3 id='impl' class='impl'><span class='in-band'><code>impl <a class="struct" href="../lal/struct.Config.html" title="struct lal::Config">Config</a></code><a href='#impl' class='anchor'></a></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#121-208' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>pub fn <a href='#method.new' class='fnname'>new</a>(defaults: <a class="struct" href="../lal/struct.ConfigDefaults.html" title="struct lal::ConfigDefaults">ConfigDefaults</a>) -&gt; <a class="struct" href="../lal/struct.Config.html" title="struct lal::Config">Config</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#126-157' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Initialize a Config with ConfigDefaults</p>
 
 <p>This will locate you homedir, and set last update check 2 days in the past.
 Thus, with a blank default config, you will always trigger an upgrade check.</p>
-</div><h4 id='method.read' class="method"><span id='read.v' class='invisible'><code>fn <a href='#method.read' class='fnname'>read</a>() -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="struct" href="../lal/struct.Config.html" title="struct lal::Config">Config</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#160-173' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.read' class="method"><span id='read.v' class='invisible'><code>pub fn <a href='#method.read' class='fnname'>read</a>() -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="struct" href="../lal/struct.Config.html" title="struct lal::Config">Config</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#160-170' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Read and deserialize a Config from ~/.lal/config</p>
-</div><h4 id='method.upgrade_check_time' class="method"><span id='upgrade_check_time.v' class='invisible'><code>fn <a href='#method.upgrade_check_time' class='fnname'>upgrade_check_time</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#177-182' title='goto source code'>[src]</a></span></h4>
-<div class='docblock'><p>Checks if it is time to perform an upgrade check</p>
-</div><h4 id='method.performed_upgrade' class="method"><span id='performed_upgrade.v' class='invisible'><code>fn <a href='#method.performed_upgrade' class='fnname'>performed_upgrade</a>(&amp;mut self) -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#185-188' title='goto source code'>[src]</a></span></h4>
-<div class='docblock'><p>Update the lastUpgrade time to avoid triggering it for another day</p>
-</div><h4 id='method.write' class="method"><span id='write.v' class='invisible'><code>fn <a href='#method.write' class='fnname'>write</a>(&amp;self, silent: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#191-202' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.write' class="method"><span id='write.v' class='invisible'><code>pub fn <a href='#method.write' class='fnname'>write</a>(&amp;self, silent: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#188-199' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Overwrite <code>~/.lal/config</code> with serialized data from this struct</p>
-</div><h4 id='method.get_container' class="method"><span id='get_container.v' class='invisible'><code>fn <a href='#method.get_container' class='fnname'>get_container</a>(&amp;self, env: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>) -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="struct" href="../lal/struct.Container.html" title="struct lal::Container">Container</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#205-210' title='goto source code'>[src]</a></span></h4>
+</div><h4 id='method.get_container' class="method"><span id='get_container.v' class='invisible'><code>pub fn <a href='#method.get_container' class='fnname'>get_container</a>(&amp;self, env: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>) -&gt; <a class="type" href="../lal/type.LalResult.html" title="type lal::LalResult">LalResult</a>&lt;<a class="struct" href="../lal/struct.Container.html" title="struct lal::Container">Container</a>&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/lal/core/config.rs.html#202-207' title='goto source code'>[src]</a></span></h4>
 <div class='docblock'><p>Resolve an arbitrary container shorthand</p>
 </div></div>
             <h2 id='implementations' class='small-section-header'>
