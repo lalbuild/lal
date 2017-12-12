@@ -28,6 +28,7 @@ chrono = "0.2"
 clap = "2.27.1"
 filetime = "0.1"
 flate2 = "0.2"
+#hubcaps = { git = "https://github.com/lalbuild/hubcaps" }
 hyper = "0.10.9"
 hyper-native-tls = "0.2.2"
 log = "0.3.5"
