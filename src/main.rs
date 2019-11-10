@@ -571,6 +571,9 @@ fn main() {
         &BackendConfiguration::Local(ref local_cfg) => {
             Box::new(LocalBackend::new(&local_cfg, &config.cache))
         }
+        &BackendConfiguration::Github(ref gh_cfg) => {
+            Box::new(GithubBackend::new(&gh_cfg, &config.cache))
+        }
     };
 
     // Ensure SSL is initialized before using the backend
