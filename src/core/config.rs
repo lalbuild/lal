@@ -15,7 +15,7 @@ fn find_home_dir() -> PathBuf {
     if let Ok(lh) = env::var("LAL_CONFIG_HOME") {
         Path::new(&lh).to_owned()
     } else {
-        env::home_dir().unwrap()
+        dirs::home_dir().unwrap()
     }
 }
 
