@@ -194,7 +194,7 @@ pub fn docker_run(
     let container = modified_container_option.as_ref().unwrap_or(container);
 
     trace!("Finding home and cwd");
-    let home = env::home_dir().unwrap(); // crash if no $HOME
+    let home = dirs::home_dir().unwrap(); // crash if no $HOME
     let pwd = env::current_dir().unwrap();
 
     // construct arguments vector

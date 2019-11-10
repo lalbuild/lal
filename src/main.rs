@@ -32,7 +32,7 @@ fn result_exit<T>(name: &str, x: LalResult<T>) {
 fn handle_manifest_agnostic_cmds(
     args: &ArgMatches,
     cfg: &Config,
-    backend: &Backend,
+    backend: &dyn Backend,
     explicit_env: Option<&str>,
 ) {
     let res = if let Some(a) = args.subcommand_matches("export") {
@@ -56,7 +56,7 @@ fn handle_manifest_agnostic_cmds(
 }
 
 // functions that need a manifest, but do not depend on environment values
-fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &Backend) {
+fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend) {
     let res = if let Some(a) = args.subcommand_matches("status") {
         lal::status(mf,
                     a.is_present("full"),
@@ -83,7 +83,7 @@ fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &
     result_exit(args.subcommand_name().unwrap(), res);
 }
 
-fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &Backend, env: &str) {
+fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend, env: &str) {
     let res = if let Some(a) = args.subcommand_matches("update") {
         let xs = a.values_of("components").unwrap().map(String::from).collect::<Vec<_>>();
         lal::update(mf,
@@ -564,7 +564,7 @@ fn main() {
         .unwrap();
 
     // Create a storage backend (something that implements storage/traits.rs)
-    let backend: Box<Backend> = match &config.backend {
+    let backend: Box<dyn Backend> = match &config.backend {
         &BackendConfiguration::Artifactory(ref art_cfg) => {
             Box::new(ArtifactoryBackend::new(&art_cfg, &config.cache))
         }

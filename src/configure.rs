@@ -128,7 +128,6 @@ fn ssl_cert_sanity() -> LalResult<()> {
     // BUT this happens AFTER lal configure
     // evars are currently empty (unless set manually) - so we can provide debug here
     let is_overridden = env::var_os("SSL_CERT_FILE").is_some();
-    use openssl_probe;
     let proberes = openssl_probe::probe();
     if let Some(cert) = proberes.cert_dir {
         debug!("Using SSL_CERT_DIR as {}", cert.display());

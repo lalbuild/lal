@@ -4,7 +4,7 @@ use storage::Backend;
 use super::{LalResult, CliError};
 
 /// Prints a list of versions associated with a component
-pub fn query(backend: &Backend, _env: Option<&str>, component: &str, last: bool) -> LalResult<()> {
+pub fn query(backend: &dyn Backend, _env: Option<&str>, component: &str, last: bool) -> LalResult<()> {
     if component.to_lowercase() != component {
         return Err(CliError::InvalidComponentName(component.into()));
     }
