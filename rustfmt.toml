@@ -1,14 +1,28 @@
-chain_indent = "block"
-fn_call_style = "visual"
-closure_block_indent_threshold = 0
-fn_single_line = true
-array_layout = "block"
+# There are more fmt options available when using rustfmt nightly
+#
+# $ rustup toolchain install nightly
+# $ rustup component add rustfmt --toolchain nightly
+# $ cargo +nightly fmt
+#
+# https://github.com/rust-lang/rustfmt/blob/master/Configurations.md
 
-max_width = 100
-single_line_if_else_max_width = 90
-chain_one_line_max = 90
+# Line lengths
+normalize_comments = true
+comment_width = 110
+max_width = 110
 
-newline_style = "unix"
+# When to reorder fields
+merge_imports = true
+reorder_impl_items = true
 
-write_mode = "overwrite"
+# When to remove newlines
+fn_single_line = false
+inline_attribute_width = 60
+overflow_delimited_expr = true
+
+# When to keep newlines
+blank_lines_upper_bound = 2
+newline_style = "Unix"
+
+# Terse syntax
 use_try_shorthand = true

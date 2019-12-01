@@ -1,15 +1,12 @@
-#[macro_use]
-extern crate clap;
-#[macro_use]
-extern crate log;
+#[macro_use] extern crate clap;
+#[macro_use] extern crate log;
 extern crate loggerv;
 extern crate openssl_probe;
 
 extern crate lal;
+use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 use lal::*;
-use clap::{Arg, App, AppSettings, SubCommand, ArgMatches};
-use std::process;
-use std::ops::Deref;
+use std::{ops::Deref, process};
 
 fn is_integer(v: String) -> Result<(), String> {
     if v.parse::<u32>().is_ok() {
@@ -36,15 +33,19 @@ fn handle_manifest_agnostic_cmds(
     explicit_env: Option<&str>,
 ) {
     let res = if let Some(a) = args.subcommand_matches("export") {
-        lal::export(backend,
-                    a.value_of("component").unwrap(),
-                    a.value_of("output"),
-                    explicit_env)
+        lal::export(
+            backend,
+            a.value_of("component").unwrap(),
+            a.value_of("output"),
+            explicit_env,
+        )
     } else if let Some(a) = args.subcommand_matches("query") {
-        lal::query(backend,
-                   explicit_env,
-                   a.value_of("component").unwrap(),
-                   a.is_present("latest"))
+        lal::query(
+            backend,
+            explicit_env,
+            a.value_of("component").unwrap(),
+            a.is_present("latest"),
+        )
     } else if let Some(a) = args.subcommand_matches("publish") {
         lal::publish(a.value_of("component").unwrap(), backend)
     } else if args.subcommand_matches("list-environments").is_some() {
@@ -58,10 +59,12 @@ fn handle_manifest_agnostic_cmds(
 // functions that need a manifest, but do not depend on environment values
 fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend) {
     let res = if let Some(a) = args.subcommand_matches("status") {
-        lal::status(mf,
-                    a.is_present("full"),
-                    a.is_present("origin"),
-                    a.is_present("time"))
+        lal::status(
+            mf,
+            a.is_present("full"),
+            a.is_present("origin"),
+            a.is_present("time"),
+        )
     } else if args.subcommand_matches("list-components").is_some() {
         lal::list::buildables(mf)
     } else if args.subcommand_matches("list-supported-environments").is_some() {
@@ -71,7 +74,11 @@ fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &
     } else if let Some(a) = args.subcommand_matches("list-dependencies") {
         lal::list::dependencies(mf, a.is_present("core"))
     } else if let Some(a) = args.subcommand_matches("remove") {
-        let xs = a.values_of("components").unwrap().map(String::from).collect::<Vec<_>>();
+        let xs = a
+            .values_of("components")
+            .unwrap()
+            .map(String::from)
+            .collect::<Vec<_>>();
         lal::remove(mf, xs, a.is_present("save"), a.is_present("savedev"))
     } else if let Some(a) = args.subcommand_matches("stash") {
         lal::stash(backend, mf, a.value_of("name").unwrap())
@@ -85,13 +92,19 @@ fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &
 
 fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend, env: &str) {
     let res = if let Some(a) = args.subcommand_matches("update") {
-        let xs = a.values_of("components").unwrap().map(String::from).collect::<Vec<_>>();
-        lal::update(mf,
-                    backend,
-                    xs,
-                    a.is_present("save"),
-                    a.is_present("savedev"),
-                    env)
+        let xs = a
+            .values_of("components")
+            .unwrap()
+            .map(String::from)
+            .collect::<Vec<_>>();
+        lal::update(
+            mf,
+            backend,
+            xs,
+            a.is_present("save"),
+            a.is_present("savedev"),
+            env,
+        )
     } else if let Some(a) = args.subcommand_matches("update-all") {
         lal::update_all(mf, backend, a.is_present("save"), a.is_present("dev"), env)
     } else if let Some(a) = args.subcommand_matches("fetch") {
@@ -102,15 +115,10 @@ fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend, 
     result_exit(args.subcommand_name().unwrap(), res)
 }
 
-fn handle_env_command(
-    args: &ArgMatches,
-    cfg: &Config,
-    env: &str,
-    stickies: &StickyOptions,
-) -> Container {
-
+fn handle_env_command(args: &ArgMatches, cfg: &Config, env: &str, stickies: &StickyOptions) -> Container {
     // lookup associated container from
-    let container = cfg.get_container(env.into())
+    let container = cfg
+        .get_container(env.into())
         .map_err(|e| {
             error!("Environment error: {}", e);
             println!("Ensure that manifest.environment has a corresponding entry in ~/.lal/config");
@@ -129,8 +137,10 @@ fn handle_env_command(
             // would be purely the users fault for editing it manually
             result_exit("env clear", lal::env::clear())
         } else if let Some(sa) = a.subcommand_matches("set") {
-            result_exit("env override",
-                        lal::env::set(stickies, cfg, sa.value_of("environment").unwrap()))
+            result_exit(
+                "env override",
+                lal::env::set(stickies, cfg, sa.value_of("environment").unwrap()),
+            )
         } else {
             // just print current environment
             println!("{}", env);
@@ -154,9 +164,7 @@ fn handle_upgrade(args: &ArgMatches, cfg: &Config) {
 
     // Autoupgrade if enabled - runs once daily if enabled
     // also excluding all listers because they are used in autocomplete
-    if cfg.autoupgrade && subname != "upgrade" && !subname.contains("list-") &&
-        cfg.upgrade_check_time()
-    {
+    if cfg.autoupgrade && subname != "upgrade" && !subname.contains("list-") && cfg.upgrade_check_time() {
         debug!("Performing daily upgrade check");
         let _ = lal::upgrade(false).map_err(|e| {
             error!("Daily upgrade check failed: {}", e);
@@ -171,14 +179,7 @@ fn handle_upgrade(args: &ArgMatches, cfg: &Config) {
 }
 
 
-
-fn handle_docker_cmds(
-    args: &ArgMatches,
-    mf: &Manifest,
-    cfg: &Config,
-    env: &str,
-    container: &Container,
-) {
+fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str, container: &Container) {
     let res = if let Some(a) = args.subcommand_matches("verify") {
         // not really a docker related command, but it needs
         // the resolved env to verify consistent dependency usage
@@ -226,12 +227,14 @@ fn handle_docker_cmds(
             host_networking: a.is_present("net-host"),
             env_vars: values_t!(a.values_of("env-var"), String).unwrap_or(vec![]),
         };
-        lal::script(cfg,
-                    container,
-                    a.value_of("script").unwrap(),
-                    xs,
-                    &modes,
-                    a.is_present("privileged"))
+        lal::script(
+            cfg,
+            container,
+            a.value_of("script").unwrap(),
+            xs,
+            &modes,
+            a.is_present("privileged"),
+        )
     } else {
         return (); // no valid docker related command found
     };
@@ -239,6 +242,7 @@ fn handle_docker_cmds(
 }
 
 fn main() {
+    #[rustfmt::skip]
     let mut app = App::new("lal")
         .version(crate_version!())
         .setting(AppSettings::VersionlessSubcommands)
@@ -531,8 +535,8 @@ fn main() {
             .about("list dependencies from the manifest"));
 
     if cfg!(feature = "upgrade") {
-        app = app.subcommand(SubCommand::with_name("upgrade")
-                                 .about("Attempts to upgrade lal from artifactory"));
+        app = app
+            .subcommand(SubCommand::with_name("upgrade").about("Attempts to upgrade lal from artifactory"));
     }
 
     let args = app.get_matches();
@@ -547,8 +551,10 @@ fn main() {
 
     // Allow lal configure without assumptions
     if let Some(a) = args.subcommand_matches("configure") {
-        result_exit("configure",
-                    lal::configure(true, true, a.value_of("file").unwrap()));
+        result_exit(
+            "configure",
+            lal::configure(true, true, a.value_of("file").unwrap()),
+        );
     }
 
     // Force config to exists before allowing remaining actions
@@ -557,8 +563,10 @@ fn main() {
             error!("Configuration error: {}", e);
             println!("");
             println!("If you just got upgraded use `lal configure <site-config>`");
-            println!("Site configs are found in {{install_prefix}}/share/lal/configs/ \
-                      and should auto-complete");
+            println!(
+                "Site configs are found in {{install_prefix}}/share/lal/configs/ \
+                 and should auto-complete"
+            );
             process::exit(1);
         })
         .unwrap();
@@ -568,23 +576,22 @@ fn main() {
         &BackendConfiguration::Artifactory(ref art_cfg) => {
             Box::new(ArtifactoryBackend::new(&art_cfg, &config.cache))
         }
-        &BackendConfiguration::Local(ref local_cfg) => {
-            Box::new(LocalBackend::new(&local_cfg, &config.cache))
-        }
+        &BackendConfiguration::Local(ref local_cfg) => Box::new(LocalBackend::new(&local_cfg, &config.cache)),
     };
 
     // Ensure SSL is initialized before using the backend
     openssl_probe::init_ssl_cert_env_vars();
 
     // Do upgrade checks or handle explicit `lal upgrade` here
-    #[cfg(feature = "upgrade")] handle_upgrade(&args, &config);
+    #[cfg(feature = "upgrade")]
+    handle_upgrade(&args, &config);
 
     // Allow lal init / clean without manifest existing in PWD
     if let Some(a) = args.subcommand_matches("init") {
-        result_exit("init",
-                    lal::init(&config,
-                              a.is_present("force"),
-                              a.value_of("environment").unwrap()));
+        result_exit(
+            "init",
+            lal::init(&config, a.is_present("force"), a.value_of("environment").unwrap()),
+        );
     } else if let Some(a) = args.subcommand_matches("clean") {
         let days = a.value_of("days").unwrap().parse().unwrap();
         result_exit("clean", lal::clean(&config.cache, days));
@@ -637,7 +644,12 @@ fn main() {
     let container = handle_env_command(&args, &config, &env, &stickies);
 
     // Warn users who are using an unsupported environment
-    if !manifest.supportedEnvironments.clone().into_iter().any(|e| e == env) {
+    if !manifest
+        .supportedEnvironments
+        .clone()
+        .into_iter()
+        .any(|e| e == env)
+    {
         let sub = args.subcommand_name().unwrap();
         warn!("Running {} command in unsupported {} environment", sub, env);
     } else {

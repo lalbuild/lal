@@ -1,14 +1,11 @@
 #![allow(missing_docs)]
 
-use std::io::prelude::*;
-use std::fs::File;
-use std::path::Path;
-use std::collections::BTreeMap;
 use serde_json;
+use std::{collections::BTreeMap, fs::File, io::prelude::*, path::Path};
 
 use walkdir::WalkDir;
 
-use super::{Manifest, Lockfile, CliError, LalResult};
+use super::{CliError, LalResult, Lockfile, Manifest};
 
 #[derive(Deserialize)]
 struct PartialLock {
@@ -59,7 +56,7 @@ pub struct InputDependency {
     pub missing: bool,
     pub extraneous: bool,
     pub development: bool,
-    pub version: String, // on disk
+    pub version: String,             // on disk
     pub requirement: Option<String>, // from manifest
 }
 
@@ -85,30 +82,28 @@ pub fn analyze_full(manifest: &Manifest) -> LalResult<InputMap> {
             Some(v) => v.clone(),
             None => v.to_string(),
         };
-        depmap.insert(d.clone(),
-                      InputDependency {
-                          name: d.clone(),
-                          version: version,
-                          requirement: Some(format!("{}", v)),
-                          missing: deps.get(&d).is_none(),
-                          development: manifest.devDependencies.contains_key(&d),
-                          extraneous: false,
-                      });
+        depmap.insert(d.clone(), InputDependency {
+            name: d.clone(),
+            version: version,
+            requirement: Some(format!("{}", v)),
+            missing: deps.get(&d).is_none(),
+            development: manifest.devDependencies.contains_key(&d),
+            extraneous: false,
+        });
     }
     // check for potentially non-manifested deps
     // i.e. something in INPUT, but not in manifest
     for name in deps.keys() {
         let actual_ver = deps[name].clone();
         if !saved_deps.contains_key(name) {
-            depmap.insert(name.clone(),
-                          InputDependency {
-                              name: name.clone(),
-                              version: actual_ver,
-                              requirement: None,
-                              missing: false,
-                              development: false,
-                              extraneous: true,
-                          });
+            depmap.insert(name.clone(), InputDependency {
+                name: name.clone(),
+                version: actual_ver,
+                requirement: None,
+                missing: false,
+                development: false,
+                extraneous: true,
+            });
         }
     }
 
@@ -142,31 +137,31 @@ pub fn verify_dependencies_present(m: &Manifest) -> LalResult<()> {
             error = Some(CliError::MissingDependencies);
         }
     }
-    if let Some(e) = error { Err(e) } else { Ok(()) }
+    if let Some(e) = error {
+        Err(e)
+    } else {
+        Ok(())
+    }
 }
 
 /// Optional part of input verifier - checks that all versions use correct versions
 pub fn verify_global_versions(lf: &Lockfile, m: &Manifest) -> LalResult<()> {
     let all_deps = m.all_dependencies();
     for (name, dep) in &lf.dependencies {
-        let v = dep.version
-            .parse::<u32>()
-            .map_err(|e| {
-                debug!("Failed to parse first version of {} as int ({:?})", name, e);
-                CliError::NonGlobalDependencies(name.clone())
-            })?;
+        let v = dep.version.parse::<u32>().map_err(|e| {
+            debug!("Failed to parse first version of {} as int ({:?})", name, e);
+            CliError::NonGlobalDependencies(name.clone())
+        })?;
         // also ensure it matches the version in the manifest
-        let vreq = *all_deps
-            .get(name)
-            .ok_or_else(|| {
-                // This is a first level dependency - it should be in the manifest
-                CliError::ExtraneousDependencies(name.clone())
-            })?;
+        let vreq = *all_deps.get(name).ok_or_else(|| {
+            // This is a first level dependency - it should be in the manifest
+            CliError::ExtraneousDependencies(name.clone())
+        })?;
         if v != vreq {
-            warn!("Dependency {} has version {}, but manifest requires {}",
-                  name,
-                  v,
-                  vreq);
+            warn!(
+                "Dependency {} has version {}, but manifest requires {}",
+                name, v, vreq
+            );
             return Err(CliError::InvalidVersion(name.clone()));
         }
         // Prevent Cycles (enough to stop it at one manifest level)
@@ -183,11 +178,15 @@ pub fn verify_consistent_dependency_versions(lf: &Lockfile, m: &Manifest) -> Lal
         debug!("Found version(s) for {} as {:?}", name, vers);
         assert!(!vers.is_empty(), "found versions");
         if vers.len() != 1 && m.dependencies.contains_key(&name) {
-            warn!("Multiple version requirements on {} found in lockfile",
-                  name.clone());
-            warn!("If you are trying to propagate {0} into the tree, \
-                    you need to follow `lal propagate {0}`",
-                  name);
+            warn!(
+                "Multiple version requirements on {} found in lockfile",
+                name.clone()
+            );
+            warn!(
+                "If you are trying to propagate {0} into the tree, \
+                 you need to follow `lal propagate {0}`",
+                name
+            );
             return Err(CliError::MultipleVersions(name.clone()));
         }
     }

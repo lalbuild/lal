@@ -1,6 +1,4 @@
-use std::path::Path;
-use std::fs;
-use std::io;
+use std::{fs, io, path::Path};
 
 
 /// Ensure a directory exists and is empty

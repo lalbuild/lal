@@ -1,4 +1,4 @@
-use super::{Lockfile, Manifest, LalResult};
+use super::{LalResult, Lockfile, Manifest};
 use input;
 
 /// Verifies that `./INPUT` satisfies all strictness conditions.

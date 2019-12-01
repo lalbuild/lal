@@ -1,8 +1,7 @@
-use std::fs;
-use std::path::Path;
+use std::{fs, path::Path};
 
-use storage::CachedBackend;
 use super::{CliError, LalResult, Lockfile, Manifest};
+use storage::CachedBackend;
 
 fn clean_input() {
     let input = Path::new("./INPUT");
@@ -24,8 +23,10 @@ pub fn fetch<T: CachedBackend + ?Sized>(
     // first ensure manifest is sane:
     manifest.verify()?;
 
-    debug!("Installing dependencies{}",
-           if !core { " and devDependencies" } else { "" });
+    debug!(
+        "Installing dependencies{}",
+        if !core { " and devDependencies" } else { "" }
+    );
 
     // create the joined hashmap of dependencies and possibly devdependencies
     let mut deps = manifest.dependencies.clone();
@@ -37,15 +38,13 @@ pub fn fetch<T: CachedBackend + ?Sized>(
     let mut extraneous = vec![]; // stuff we should remove
 
     // figure out what we have already
-    let lf = Lockfile::default()
-        .populate_from_input()
-        .map_err(|e| {
-            // Guide users a bit if they did something dumb - see #77
-            warn!("Populating INPUT data failed - your INPUT may be corrupt");
-            warn!("This can happen if you CTRL-C during `lal fetch`");
-            warn!("Try to `rm -rf INPUT` and `lal fetch` again.");
-            e
-        })?;
+    let lf = Lockfile::default().populate_from_input().map_err(|e| {
+        // Guide users a bit if they did something dumb - see #77
+        warn!("Populating INPUT data failed - your INPUT may be corrupt");
+        warn!("This can happen if you CTRL-C during `lal fetch`");
+        warn!("Try to `rm -rf INPUT` and `lal fetch` again.");
+        e
+    })?;
     // filter out what we already have (being careful to examine env)
     for (name, d) in lf.dependencies {
         // if d.name at d.version in d.environment matches something in deps
@@ -71,12 +70,11 @@ pub fn fetch<T: CachedBackend + ?Sized>(
         let cmponent_dir = Path::new("./INPUT").join(&k);
         if cmponent_dir.is_dir() {
             // Don't think this can fail, but we are dealing with NFS
-            fs::remove_dir_all(&cmponent_dir)
-                .map_err(|e| {
-                    warn!("Failed to remove INPUT/{} - {}", k, e);
-                    warn!("Please clean out your INPUT folder yourself to avoid corruption");
-                    e
-                })?;
+            fs::remove_dir_all(&cmponent_dir).map_err(|e| {
+                warn!("Failed to remove INPUT/{} - {}", k, e);
+                warn!("Please clean out your INPUT folder yourself to avoid corruption");
+                e
+            })?;
         }
 
         let _ = backend.unpack_published_component(&k, Some(v), env).map_err(|e| {

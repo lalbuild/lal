@@ -1,8 +1,9 @@
-use std::fs;
-use std::env;
-use std::io::prelude::{Read, Write};
-use std::path::Path;
 use serde_json;
+use std::{
+    env, fs,
+    io::prelude::{Read, Write},
+    path::Path,
+};
 
 use super::LalResult;
 use manifest::create_lal_subdir;
@@ -18,7 +19,10 @@ pub struct StickyOptions {
 
 impl StickyOptions {
     /// Initialize a StickyOptions with defaults
-    pub fn new() -> StickyOptions { Default::default() }
+    pub fn new() -> StickyOptions {
+        Default::default()
+    }
+
     /// Read and deserialize a StickyOptions from `.lal/opts`
     pub fn read() -> LalResult<StickyOptions> {
         let opts_path = Path::new(".lal/opts");
@@ -43,6 +47,7 @@ impl StickyOptions {
         debug!("Wrote {}: \n{}", opts_path.display(), encoded);
         Ok(())
     }
+
     /// Delete local `.lal/opts`
     pub fn delete_local() -> LalResult<()> {
         let opts_path = Path::new(".lal/opts");

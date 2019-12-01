@@ -1,12 +1,16 @@
-use ansi_term::{Colour, ANSIString};
+use super::{CliError, LalResult, Lockfile, Manifest};
+use ansi_term::{ANSIString, Colour};
 use core::input;
-use super::{Lockfile, CliError, LalResult, Manifest};
 
 fn version_string(lf: Option<&Lockfile>, show_ver: bool, show_time: bool) -> ANSIString<'static> {
     if let Some(lock) = lf {
-        let ver_color = if lock.version.parse::<u32>().is_ok() { 12 } else { 11 };
-        let verstr = Colour::Fixed(ver_color)
-            .paint(format!("({}-{})", lock.version, lock.environment.clone()));
+        let ver_color = if lock.version.parse::<u32>().is_ok() {
+            12
+        } else {
+            11
+        };
+        let verstr =
+            Colour::Fixed(ver_color).paint(format!("({}-{})", lock.version, lock.environment.clone()));
         let timestr = if let Some(ref time) = lock.built {
             Colour::Fixed(14).paint(format!("({})", time))
         } else {
@@ -46,12 +50,14 @@ fn status_recurse(
             res + (if ws_only { "  " } else { "│ " })
         });
 
-        println!("│ {}{}─{} {} {}",
-                 ws,
-                 turn_char,
-                 fork_char,
-                 k,
-                 version_string(Some(sublock), show_ver, show_time));
+        println!(
+            "│ {}{}─{} {} {}",
+            ws,
+            turn_char,
+            fork_char,
+            k,
+            version_string(Some(sublock), show_ver, show_time)
+        );
 
         let mut next_indent = parent_indent.clone();
         next_indent.push(is_last);
@@ -94,8 +100,7 @@ pub fn status(manifest: &Manifest, full: bool, show_ver: bool, show_time: bool) 
         };
         // list children in --full mode
         // NB: missing deps will not be populatable
-        let has_children = full && !dep.missing &&
-            !&lf.dependencies[&dep.name].dependencies.is_empty();
+        let has_children = full && !dep.missing && !&lf.dependencies[&dep.name].dependencies.is_empty();
         let fork_char = if has_children { "┬" } else { "─" };
         let is_last = i == len - 1;
         let turn_char = if is_last { "└" } else { "├" };
@@ -106,9 +111,11 @@ pub fn status(manifest: &Manifest, full: bool, show_ver: bool, show_time: bool) 
         println!("{}─{} {} {}", turn_char, fork_char, level1, ver_str);
 
         if has_children {
-            trace!("Attempting to get {} out of lockfile deps {:?}",
-                   dep.name,
-                   lf.dependencies);
+            trace!(
+                "Attempting to get {} out of lockfile deps {:?}",
+                dep.name,
+                lf.dependencies
+            );
             // dep unwrap relies on populate_from_input try! reading all lockfiles earlier
             let sub_lock = &lf.dependencies[&dep.name];
             status_recurse(&dep.name, sub_lock, 1, vec![], show_ver, show_time);

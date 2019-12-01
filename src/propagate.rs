@@ -1,6 +1,6 @@
+use super::{LalResult, Lockfile, Manifest};
 use serde_json;
 use std::collections::BTreeSet;
-use super::{LalResult, Manifest, Lockfile};
 
 
 /// A single update of of a propagation
@@ -56,12 +56,9 @@ pub fn compute(lf: &Lockfile, component: &str) -> LalResult<UpdateSequence> {
             if intersection.is_empty() {
                 // what to update is `handled` intersected with deps for this repo
                 stage.updates.push(SingleUpdate {
-                                       repo: dep,
-                                       dependencies: deps_for_name
-                                           .intersection(&handled)
-                                           .cloned()
-                                           .collect(),
-                                   });
+                    repo: dep,
+                    dependencies: deps_for_name.intersection(&handled).cloned().collect(),
+                });
             }
         }
 
@@ -87,7 +84,9 @@ pub fn print(manifest: &Manifest, component: &str, json_output: bool) -> LalResu
     debug!("Calculating update path for {}", component);
 
     // TODO: allow taking a custom lockfile to be used outside a repo.
-    let lf = Lockfile::default().set_name(&manifest.name).populate_from_input()?;
+    let lf = Lockfile::default()
+        .set_name(&manifest.name)
+        .populate_from_input()?;
 
     let result = compute(&lf, component)?;
 
@@ -100,9 +99,7 @@ pub fn print(manifest: &Manifest, component: &str, json_output: bool) -> LalResu
         for stage in result.stages {
             println!("Stage {}:", i);
             for update in stage.updates {
-                println!("- update [{}] in {}",
-                         update.dependencies.join(", "),
-                         update.repo);
+                println!("- update [{}] in {}", update.dependencies.join(", "), update.repo);
             }
             i += 1;
         }

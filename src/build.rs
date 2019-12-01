@@ -1,10 +1,11 @@
-use std::path::Path;
-use std::fs;
+use std::{fs, path::Path};
 
+use super::{
+    ensure_dir_exists_fresh, output, CliError, Config, Container, DockerRunFlags, LalResult, Lockfile,
+    Manifest, ShellModes,
+};
 use shell;
 use verify::verify;
-use super::{ensure_dir_exists_fresh, output, Lockfile, Manifest, Container, Config, LalResult,
-            CliError, DockerRunFlags, ShellModes};
 
 
 fn find_valid_build_script() -> LalResult<String> {
@@ -63,7 +64,6 @@ pub struct BuildOptions {
 ///
 /// The function performs basic sanity checks, before shelling out to `docker run`
 /// to perform the actual execution of the containerized `./BUILD` script.
-///
 pub fn build(
     cfg: &Config,
     manifest: &Manifest,
@@ -75,11 +75,10 @@ pub fn build(
 
     // have a better warning on first file-io operation
     // if nfs mounts and stuff cause issues this usually catches it
-    ensure_dir_exists_fresh("./OUTPUT")
-        .map_err(|e| {
-            error!("Failed to clean out OUTPUT dir: {}", e);
-            e
-        })?;
+    ensure_dir_exists_fresh("./OUTPUT").map_err(|e| {
+        error!("Failed to clean out OUTPUT dir: {}", e);
+        e
+    })?;
 
     debug!("Version flag is {:?}", opts.version);
 
@@ -114,14 +113,16 @@ pub fn build(
         let ename = format!("{} not found in configurations list", configuration_name);
         return Err(CliError::InvalidBuildConfiguration(ename));
     }
-    let lockfile = Lockfile::new(&component,
-                                 &opts.container,
-                                 &envname,
-                                 opts.version.clone(),
-                                 Some(&configuration_name))
-        .set_default_env(manifest.environment.clone())
-        .attach_revision_id(opts.sha.clone())
-        .populate_from_input()?;
+    let lockfile = Lockfile::new(
+        &component,
+        &opts.container,
+        &envname,
+        opts.version.clone(),
+        Some(&configuration_name),
+    )
+    .set_default_env(manifest.environment.clone())
+    .attach_revision_id(opts.sha.clone())
+    .populate_from_input()?;
 
     let lockpth = Path::new("./OUTPUT/lockfile.json");
     lockfile.write(lockpth)?; // always put a lockfile in OUTPUT at the start of a build

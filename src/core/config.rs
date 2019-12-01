@@ -1,13 +1,14 @@
-use serde_json;
 use chrono::UTC;
-use std::path::{Path, PathBuf};
-use std::fs;
-use std::vec::Vec;
-use std::io::prelude::*;
-use std::collections::BTreeMap;
-use std::env;
+use serde_json;
+use std::{
+    collections::BTreeMap,
+    env, fs,
+    io::prelude::*,
+    path::{Path, PathBuf},
+    vec::Vec,
+};
 
-use super::{Container, LalResult, CliError};
+use super::{CliError, Container, LalResult};
 use storage::BackendConfiguration;
 
 fn find_home_dir() -> PathBuf {
@@ -172,11 +173,12 @@ impl Config {
     /// Checks if it is time to perform an upgrade check
     #[cfg(feature = "upgrade")]
     pub fn upgrade_check_time(&self) -> bool {
-        use chrono::{Duration, DateTime};
+        use chrono::{DateTime, Duration};
         let last = self.lastUpgrade.parse::<DateTime<UTC>>().unwrap();
         let cutoff = UTC::now() - Duration::days(1);
         last < cutoff
     }
+
     /// Update the lastUpgrade time to avoid triggering it for another day
     #[cfg(feature = "upgrade")]
     pub fn performed_upgrade(&mut self) -> LalResult<()> {

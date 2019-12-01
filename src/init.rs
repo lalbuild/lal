@@ -1,6 +1,6 @@
 use std::env;
 
-use super::{Config, CliError, LalResult};
+use super::{CliError, Config, LalResult};
 use core::manifest::*;
 
 

@@ -1,9 +1,11 @@
-use std::io::prelude::*;
-use std::fs::{self, File};
-use std::collections::BTreeMap;
-use std::vec::Vec;
 use serde_json;
-use std::path::{Path, PathBuf};
+use std::{
+    collections::BTreeMap,
+    fs::{self, File},
+    io::prelude::*,
+    path::{Path, PathBuf},
+    vec::Vec,
+};
 
 use super::{CliError, LalResult};
 
@@ -65,7 +67,9 @@ pub enum ManifestLocation {
     LalSubfolder,
 }
 impl Default for ManifestLocation {
-    fn default() -> ManifestLocation { ManifestLocation::LalSubfolder }
+    fn default() -> ManifestLocation {
+        ManifestLocation::LalSubfolder
+    }
 }
 impl ManifestLocation {
     /// Generate path for Manifest assuming pwd is the root
@@ -115,6 +119,7 @@ impl Manifest {
             ..Default::default()
         }
     }
+
     /// Merge dependencies and devDependencies into one convenience map
     pub fn all_dependencies(&self) -> BTreeMap<String, u32> {
         let mut deps = self.dependencies.clone();
@@ -123,8 +128,11 @@ impl Manifest {
         }
         deps
     }
+
     /// Read a manifest file in PWD
-    pub fn read() -> LalResult<Manifest> { Ok(Manifest::read_from(&Path::new(".").to_path_buf())?) }
+    pub fn read() -> LalResult<Manifest> {
+        Ok(Manifest::read_from(&Path::new(".").to_path_buf())?)
+    }
 
     /// Read a manifest file in an arbitrary path
     pub fn read_from(pwd: &PathBuf) -> LalResult<Manifest> {
@@ -158,8 +166,10 @@ impl Manifest {
             // Verify ComponentSettings (manifest.components[x])
             debug!("Verifying component {}", name);
             if !conf.configurations.contains(&conf.defaultConfig) {
-                let ename = format!("default configuration '{}' not found in configurations list",
-                                    conf.defaultConfig);
+                let ename = format!(
+                    "default configuration '{}' not found in configurations list",
+                    conf.defaultConfig
+                );
                 return Err(CliError::InvalidBuildConfiguration(ename));
             }
         }

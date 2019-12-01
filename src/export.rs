@@ -1,8 +1,7 @@
-use std::fs;
-use std::path::Path;
+use std::{fs, path::Path};
 
+use super::{CliError, LalResult};
 use storage::CachedBackend;
-use super::{LalResult, CliError};
 
 /// Export a specific component from the storage backend
 pub fn export<T: CachedBackend + ?Sized>(
@@ -14,9 +13,9 @@ pub fn export<T: CachedBackend + ?Sized>(
     let env = match _env {
         None => {
             error!("export is no longer allowed without an explicit environment");
-            return Err(CliError::EnvironmentUnspecified)
-        },
-        Some(e) => e
+            return Err(CliError::EnvironmentUnspecified);
+        }
+        Some(e) => e,
     };
 
     if comp.to_lowercase() != comp {

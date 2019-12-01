@@ -1,5 +1,5 @@
+use super::{CliError, LalResult, Manifest};
 use storage::CachedBackend;
-use super::{LalResult, Manifest, CliError};
 
 /// Update specific dependencies outside the manifest
 ///
@@ -77,7 +77,11 @@ pub fn update<T: CachedBackend + ?Sized>(
     if save || savedev {
         let mut mf = manifest.clone();
         // find reference to correct list
-        let mut hmap = if save { mf.dependencies.clone() } else { mf.devDependencies.clone() };
+        let mut hmap = if save {
+            mf.dependencies.clone()
+        } else {
+            mf.devDependencies.clone()
+        };
         for c in &updated {
             debug!("Successfully updated {} at version {}", &c.name, c.version);
             if hmap.contains_key(&c.name) {

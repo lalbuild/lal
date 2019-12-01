@@ -1,7 +1,6 @@
-use std::process::Command;
-use std::vec::Vec;
+use std::{process::Command, vec::Vec};
 
-use super::{StickyOptions, LalResult, CliError, Container, Config};
+use super::{CliError, Config, Container, LalResult, StickyOptions};
 
 /// Pull the current environment from docker
 pub fn update(container: &Container, env: &str) -> LalResult<()> {
