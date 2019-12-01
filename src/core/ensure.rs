@@ -9,5 +9,6 @@ pub fn ensure_dir_exists_fresh(dir: &str) -> io::Result<()> {
         fs::remove_dir_all(&dir)?;
     }
     fs::create_dir_all(&dir)?;
+    debug!("Ensuring fresh dir: {}", dir.display());
     Ok(())
 }

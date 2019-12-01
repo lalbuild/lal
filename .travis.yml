@@ -16,6 +16,7 @@ script:
 - if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then cargo build; fi
 - if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then docker run --rm -v $PWD:/volume -w /volume -t clux/muslrust cargo build --release; fi
 - if [ "$TRAVIS_EVENT_TYPE" = "pull-request" ]; then cargo clippy; fi
+- if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then cargo test --no-default-features; fi
 - if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then cargo test; fi
 - if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then cargo doc --no-deps; fi
 notifications:

@@ -7,4 +7,4 @@ hello: hello.o INPUT/heylib/libhey.a INPUT/heylib/hey.h
 	$(CC) --static -o OUTPUT/hello hello.o -LINPUT/heylib -lhey
 
 clean:
-	rm hello.o
+	-rm hello.o

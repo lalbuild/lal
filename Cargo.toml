@@ -1,6 +1,6 @@
 [package]
 name = "lal"
-version = "3.8.1"
+version = "3.9.0"
 authors = ["Eirik Albrigtsen <sszynrae@gmail.com>"]
 description = "A strict, language-agnostic build system and dependency manager"
 documentation = "http://lalbuild.github.io/lal"
@@ -40,17 +40,21 @@ tar = "0.4.10"
 walkdir = "1.0.7"
 dirs = "2.0.2"
 tempdir = "0.3.7"
-serial_test = "0.3.1"
 
 [dependencies.indicatif]
 optional = true
 version = "0.3.3"
 
 [features]
-default = ["progress"]
+default = ["docker", "progress"]
+docker = []
 progress = ["indicatif"]
 upgrade = []
 
 [lib]
 name = "lal"
 path = "src/lib.rs"
+
+[dev-dependencies]
+serial_test = "0.3.1"
+parameterized-macro = "0.1.1"

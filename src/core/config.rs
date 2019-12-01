@@ -8,7 +8,7 @@ use std::{
     vec::Vec,
 };
 
-use super::{CliError, Container, LalResult};
+use super::{CliError, Container, Environment, LalResult};
 use storage::BackendConfiguration;
 
 fn find_home_dir() -> PathBuf {
@@ -46,7 +46,7 @@ pub struct Config {
     /// Cache directory for global and stashed builds
     pub cache: String,
     /// Environments shorthands that are allowed and their full meaning
-    pub environments: BTreeMap<String, Container>,
+    pub environments: BTreeMap<String, Environment>,
     /// Time of last upgrade
     pub lastUpgrade: String,
     /// Whether to perform automatic upgrade
@@ -67,7 +67,7 @@ pub struct ConfigDefaults {
     /// Configuration settings for the `Backend`
     pub backend: BackendConfiguration,
     /// Environments shorthands that are allowed and their full meaning
-    pub environments: BTreeMap<String, Container>,
+    pub environments: BTreeMap<String, Environment>,
     /// Extra volume mounts to be set for the container
     pub mounts: Vec<Mount>,
     /// Optional minimum version restriction of lal
@@ -200,11 +200,19 @@ impl Config {
         Ok(())
     }
 
-    /// Resolve an arbitrary container shorthand
-    pub fn get_container(&self, env: String) -> LalResult<Container> {
-        if let Some(container) = self.environments.get(&env) {
-            return Ok(container.clone());
+    /// Resolve an arbitrary environment shorthand
+    pub fn get_environment(&self, env: String) -> LalResult<Environment> {
+        if let Some(environment) = self.environments.get(&env) {
+            return Ok(environment.clone());
         }
         Err(CliError::MissingEnvironment(env))
+    }
+
+    /// Resolve an arbitrary container shorthand
+    pub fn get_container(&self, env: String) -> LalResult<Container> {
+        match self.get_environment(env.clone())? {
+            Environment::Container(container) => Ok(container.clone()),
+            Environment::None => Err(CliError::MissingEnvironment(env.clone())),
+        }
     }
 }

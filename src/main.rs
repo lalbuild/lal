@@ -115,10 +115,10 @@ fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend, 
     result_exit(args.subcommand_name().unwrap(), res)
 }
 
-fn handle_env_command(args: &ArgMatches, cfg: &Config, env: &str, stickies: &StickyOptions) -> Container {
+fn handle_env_command(args: &ArgMatches, cfg: &Config, env: &str, stickies: &StickyOptions) -> Environment {
     // lookup associated container from
-    let container = cfg
-        .get_container(env.into())
+    let environment = cfg
+        .get_environment(env.into())
         .map_err(|e| {
             error!("Environment error: {}", e);
             println!("Ensure that manifest.environment has a corresponding entry in ~/.lal/config");
@@ -129,7 +129,7 @@ fn handle_env_command(args: &ArgMatches, cfg: &Config, env: &str, stickies: &Sti
     // resolve env updates and sticky options before main subcommands
     if let Some(a) = args.subcommand_matches("env") {
         if a.subcommand_matches("update").is_some() {
-            result_exit("env update", lal::env::update(&container, env))
+            result_exit("env update", lal::env::update(&environment, env))
         } else if a.subcommand_matches("reset").is_some() {
             // NB: if .lal/opts.env points at an environment not in config
             // reset will fail.. possible to fix, but complects this file too much
@@ -147,9 +147,9 @@ fn handle_env_command(args: &ArgMatches, cfg: &Config, env: &str, stickies: &Sti
             process::exit(0);
         }
     }
-    // if we didn't handle an env subcommand here return the container
+    // if we didn't handle an env subcommand here return the environment
     // needs to be resolved later on for docker cmds anyway
-    container
+    environment
 }
 
 #[cfg(feature = "upgrade")]
@@ -179,7 +179,7 @@ fn handle_upgrade(args: &ArgMatches, cfg: &Config) {
 }
 
 
-fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str, container: &Container) {
+fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str, environment: &Environment) {
     let res = if let Some(a) = args.subcommand_matches("verify") {
         // not really a docker related command, but it needs
         // the resolved env to verify consistent dependency usage
@@ -191,7 +191,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             release: a.is_present("release"),
             version: a.value_of("with-version").map(String::from),
             sha: a.value_of("with-sha").map(String::from),
-            container: container.clone(),
+            environment: environment.clone(),
             force: a.is_present("force"),
             simple_verify: a.is_present("simple-verify"),
         };
@@ -214,7 +214,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             host_networking: a.is_present("net-host"),
             env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
         };
-        lal::shell(cfg, container, &modes, xs, a.is_present("privileged"))
+        lal::shell(cfg, environment, &modes, xs, a.is_present("privileged"))
     } else if let Some(a) = args.subcommand_matches("run") {
         let xs = if a.is_present("parameters") {
             a.values_of("parameters").unwrap().collect::<Vec<_>>()
@@ -229,7 +229,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
         };
         lal::script(
             cfg,
-            container,
+            environment,
             a.value_of("script").unwrap(),
             xs,
             &modes,
@@ -611,7 +611,7 @@ fn main() {
     let explicit_env = args.value_of("environment");
     if let Some(env) = explicit_env {
         config
-            .get_container(env.into())
+            .get_environment(env.into())
             .map_err(|e| {
                 error!("Environment error: {}", e);
                 process::exit(1)
@@ -641,7 +641,7 @@ fn main() {
     } else {
         manifest.environment.clone()
     };
-    let container = handle_env_command(&args, &config, &env, &stickies);
+    let environment = handle_env_command(&args, &config, &env, &stickies);
 
     // Warn users who are using an unsupported environment
     if !manifest
@@ -659,7 +659,7 @@ fn main() {
 
     // Main subcommands
     handle_network_cmds(&args, &manifest, backend.deref(), &env);
-    handle_docker_cmds(&args, &manifest, &config, &env, &container);
+    handle_docker_cmds(&args, &manifest, &config, &env, &environment);
 
     unreachable!("Subcommand valid, but not implemented");
 }

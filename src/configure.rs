@@ -22,6 +22,7 @@ fn executable_on_path(exe: &str) -> LalResult<()> {
     Ok(())
 }
 
+#[cfg(feature = "docker")]
 fn docker_sanity() -> LalResult<()> {
     let dinfo_output = Command::new("docker").arg("info").output()?;
     let doutstr = String::from_utf8_lossy(&dinfo_output.stdout);
@@ -89,6 +90,7 @@ fn kernel_sanity() -> LalResult<()> {
     Ok(()) // don't block on this atm to not break OSX
 }
 
+#[cfg(feature = "docker")]
 fn docker_version_check() -> LalResult<()> {
     // docker-ce changes to different version scheme, but still semver >= 1.13
     let req = Version {
@@ -206,11 +208,17 @@ fn create_lal_dir() -> LalResult<PathBuf> {
 pub fn configure(save: bool, interactive: bool, defaults: &str) -> LalResult<Config> {
     let _ = create_lal_dir()?;
 
-    for exe in ["docker", "tar", "touch", "id", "find", "mkdir", "chmod", "uname"].iter() {
+    for exe in ["tar", "touch", "id", "find", "mkdir", "chmod", "uname"].iter() {
         executable_on_path(exe)?;
     }
-    docker_sanity()?;
-    docker_version_check()?;
+
+    #[cfg(feature = "docker")]
+    {
+        executable_on_path("docker")?;
+        docker_sanity()?;
+        docker_version_check()?;
+    }
+
     kernel_sanity()?;
     ssl_cert_sanity()?;
     non_root_sanity()?;

@@ -1,6 +1,6 @@
 use std::{env, path::Path, process::Command, vec::Vec};
 
-use super::{CliError, Config, Container, LalResult};
+use super::{CliError, Config, Container, Environment, LalResult};
 
 /// Verifies that `id -u` and `id -g` are both 1000
 ///
@@ -159,12 +159,39 @@ fn fixup_docker_container(container: &Container, u: u32, g: u32) -> LalResult<Co
     Ok(modified_container)
 }
 
-/// Runs an arbitrary command in the configured docker environment
+
+/// Runs an arbitrary command in the configured environment
+/// delegating to docker if needed.
+///
+/// This is the most general function, used by both `lal build` and `lal shell`.
+pub fn run(
+    cfg: &Config,
+    environment: &Environment,
+    command: Vec<String>,
+    flags: &DockerRunFlags,
+    modes: &ShellModes,
+) -> LalResult<()> {
+    match environment {
+        Environment::Container(container) => docker_run(&cfg, &container, command, &flags, &modes),
+
+        Environment::None => {
+            let mut command = command.clone();
+            let exe = command.remove(0);
+            let s = Command::new(exe).args(command).status()?;
+            if !s.success() {
+                return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
+            }
+
+            Ok(())
+        }
+    }
+}
+
+
+/// Runs an arbitrary command in the configured docker container
 ///
 /// This will mount the current directory as `~/volume` as well as a few conveniences,
 /// and absorb the `Stdio` supplied by this `Command`.
-///
-/// This is the most general function, used by both `lal build` and `lal shell`.
 pub fn docker_run(
     cfg: &Config,
     container: &Container,
@@ -283,6 +310,19 @@ pub fn docker_run(
     Ok(())
 }
 
+/// Runs an arbitrary command natively, without containerization
+pub fn native_run(mut command: Vec<String>) -> LalResult<()> {
+    let cmd = command.remove(0);
+    let mut script_cmd = Command::new(cmd);
+    let s = script_cmd.args(command).status()?;
+
+    if !s.success() {
+        return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
+    }
+
+    Ok(())
+}
+
 /// Various ways to invoke `docker_run`
 #[derive(Default, Clone)]
 pub struct ShellModes {
@@ -303,26 +343,39 @@ pub struct ShellModes {
 /// You can thus do `lal shell ./BUILD target` or ``lal shell bash -c "cmd1; cmd2"`
 pub fn shell(
     cfg: &Config,
-    container: &Container,
+    environment: &Environment,
     modes: &ShellModes,
     cmd: Option<Vec<&str>>,
     privileged: bool,
 ) -> LalResult<()> {
-    if !modes.printonly {
-        info!("Entering {}", container);
-    }
-
     let flags = DockerRunFlags {
         interactive: cmd.is_none() || cfg.interactive,
         privileged,
     };
-    let mut bash = vec![];
+
+    let mut command = vec![];
     if let Some(cmdu) = cmd {
         for c in cmdu {
-            bash.push(c.to_string())
+            command.push(c.to_string())
         }
     }
-    docker_run(cfg, container, bash, &flags, modes)
+
+    match environment {
+        Environment::Container(container) => {
+            if !modes.printonly {
+                info!("Entering {}", container);
+            }
+
+            docker_run(cfg, container, command, &flags, modes)
+        }
+        Environment::None => {
+            if command.is_empty() {
+                command.push("bash".into());
+            }
+
+            native_run(command)
+        }
+    }
 }
 
 /// Runs a script in `.lal/scripts/` with supplied arguments in a docker shell
@@ -331,7 +384,7 @@ pub fn shell(
 /// E.g. `lal run my-large-test RUNONLY=foo`
 pub fn script(
     cfg: &Config,
-    container: &Container,
+    environment: &Environment,
     name: &str,
     args: Vec<&str>,
     modes: &ShellModes,
@@ -342,16 +395,22 @@ pub fn script(
         return Err(CliError::MissingScript(name.into()));
     }
 
-    let flags = DockerRunFlags {
-        interactive: cfg.interactive,
-        privileged,
-    };
-
     // Simply run the script by adding on the arguments
-    let cmd = vec![
+    let command = vec![
         "bash".into(),
         "-c".into(),
         format!("source {}; main {}", pth.display(), args.join(" ")),
     ];
-    Ok(docker_run(cfg, container, cmd, &flags, modes)?)
+
+    match environment {
+        Environment::Container(container) => {
+            let flags = DockerRunFlags {
+                interactive: cfg.interactive,
+                privileged,
+            };
+
+            Ok(docker_run(cfg, container, command, &flags, modes)?)
+        }
+        Environment::None => native_run(command),
+    }
 }

@@ -12,7 +12,7 @@ use core::manifest::*;
 /// The function will not overwrite an existing `manifest.json`,
 /// unless the `force` bool is set.
 pub fn init(cfg: &Config, force: bool, env: &str) -> LalResult<()> {
-    cfg.get_container(env.into())?;
+    cfg.get_environment(env.into())?;
 
     let pwd = env::current_dir()?;
     let last_comp = pwd.components().last().unwrap(); // std::path::Component

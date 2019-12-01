@@ -1,8 +1,8 @@
 {
   "name": "hello",
-  "environment": "alpine",
+  "environment": "default",
   "supportedEnvironments": [
-    "alpine"
+    "default"
   ],
   "components": {
     "hello": {
