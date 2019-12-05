@@ -1,11 +1,13 @@
 #![allow(missing_docs)]
 
-use std::fs;
-use std::str::FromStr;
-use std::vec::Vec;
-use std::path::{Path, PathBuf};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+    str::FromStr,
+    vec::Vec,
+};
 
-use core::{CliError, LalResult, config_dir, ensure_dir_exists_fresh};
+use core::{config_dir, ensure_dir_exists_fresh, CliError, LalResult};
 
 
 /// LocalBackend configuration options (currently none)
@@ -55,15 +57,12 @@ impl Backend for LocalBackend {
         if let Some(&last) = self.get_versions(name, loc)?.last() {
             return Ok(last);
         }
-        Err(CliError::BackendFailure("No versions found on local storage".into()))
+        Err(CliError::BackendFailure(
+            "No versions found on local storage".into(),
+        ))
     }
 
-    fn get_component_info(
-        &self,
-        name: &str,
-        version: Option<u32>,
-        loc: &str,
-    ) -> LalResult<Component> {
+    fn get_component_info(&self, name: &str, version: Option<u32>, loc: &str) -> LalResult<Component> {
         info!("get_component_info: {} {:?} {}", name, version, loc);
 
         let v = if let Some(ver) = version {
@@ -71,7 +70,10 @@ impl Backend for LocalBackend {
         } else {
             self.get_latest_version(name, loc)?
         };
-        let loc = format!("{}/environments/{}/{}/{}/{}.tar.gz", self.cache, loc, name, v, name);
+        let loc = format!(
+            "{}/environments/{}/{}/{}/{}.tar.gz",
+            self.cache, loc, name, v, name
+        );
         Ok(Component {
             name: name.into(),
             version: v,
@@ -88,8 +90,14 @@ impl Backend for LocalBackend {
 
         // prefix with environment
         let tar_dir = format!("{}/environments/{}/{}/{}/", self.cache, env, name, version);
-        let tar_path = format!("{}/environments/{}/{}/{}/{}.tar.gz", self.cache, env, name, version, name);
-        let lock_path = format!("{}/environments/{}/{}/{}/lockfile.json", self.cache, env, name, version);
+        let tar_path = format!(
+            "{}/environments/{}/{}/{}/{}.tar.gz",
+            self.cache, env, name, version, name
+        );
+        let lock_path = format!(
+            "{}/environments/{}/{}/{}/lockfile.json",
+            self.cache, env, name, version
+        );
 
         if let Some(full_tar_dir) = config_dir().join(tar_dir).to_str() {
             ensure_dir_exists_fresh(full_tar_dir)?;
@@ -101,7 +109,9 @@ impl Backend for LocalBackend {
         Ok(())
     }
 
-    fn get_cache_dir(&self) -> String { self.cache.clone() }
+    fn get_cache_dir(&self) -> String {
+        self.cache.clone()
+    }
 
     fn raw_fetch(&self, src: &str, dest: &PathBuf) -> LalResult<()> {
         debug!("raw fetch {} -> {}", src, dest.display());

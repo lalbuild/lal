@@ -1,8 +1,10 @@
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
+use core::{output, CliError, LalResult};
 use storage::{Backend, CachedBackend, Component};
-use core::{CliError, LalResult, output};
 
 fn is_cached<T: Backend + ?Sized>(backend: &T, name: &str, version: u32, env: &str) -> bool {
     get_cache_dir(backend, name, version, env).is_dir()
@@ -10,7 +12,11 @@ fn is_cached<T: Backend + ?Sized>(backend: &T, name: &str, version: u32, env: &s
 
 fn get_cache_dir<T: Backend + ?Sized>(backend: &T, name: &str, version: u32, env: &str) -> PathBuf {
     let cache = backend.get_cache_dir();
-    Path::new(&cache).join("environments").join(env).join(name).join(version.to_string())
+    Path::new(&cache)
+        .join("environments")
+        .join(env)
+        .join(name)
+        .join(version.to_string())
 }
 
 fn store_tarball<T: Backend + ?Sized>(
@@ -40,8 +46,8 @@ fn store_tarball<T: Backend + ?Sized>(
 
 // helper for the unpack_ functions
 fn extract_tarball_to_input(tarname: PathBuf, component: &str) -> LalResult<()> {
-    use tar::Archive;
     use flate2::read::GzDecoder;
+    use tar::Archive;
 
     let extract_path = Path::new("./INPUT").join(component);
     let _ = fs::remove_dir_all(&extract_path); // remove current dir if exists
@@ -83,11 +89,7 @@ where
     ///
     /// Because the versions have to be available in all environments, these numbers may
     /// not contain the highest numbers available on specific environments.
-    fn get_latest_supported_versions(
-        &self,
-        name: &str,
-        environments: Vec<String>,
-    ) -> LalResult<Vec<u32>> {
+    fn get_latest_supported_versions(&self, name: &str, environments: Vec<String>) -> LalResult<Vec<u32>> {
         use std::collections::BTreeSet;
         let mut result = BTreeSet::new();
         let mut first_pass = true;
@@ -123,12 +125,14 @@ where
             self.raw_fetch(&component.location, &local_tarball)?;
             store_tarball(self, name, component.version, env)?;
         }
-        assert!(is_cached(self, &component.name, component.version, env),
-                "cached component");
+        assert!(
+            is_cached(self, &component.name, component.version, env),
+            "cached component"
+        );
 
         trace!("Fetching {} from cache", name);
-        let tarname = get_cache_dir(self, &component.name, component.version, env)
-            .join(format!("{}.tar.gz", name));
+        let tarname =
+            get_cache_dir(self, &component.name, component.version, env).join(format!("{}.tar.gz", name));
         Ok((tarname, component))
     }
 
@@ -141,9 +145,11 @@ where
     ) -> LalResult<Component> {
         let (tarname, component) = self.retrieve_published_component(name, version, env)?;
 
-        debug!("Unpacking tarball {} for {}",
-               tarname.to_str().unwrap(),
-               component.name);
+        debug!(
+            "Unpacking tarball {} for {}",
+            tarname.to_str().unwrap(),
+            component.name
+        );
         extract_tarball_to_input(tarname, name)?;
 
         Ok(component)
@@ -172,7 +178,10 @@ where
 
     // helper for `stash`
     fn stash_output(&self, name: &str, code: &str) -> LalResult<()> {
-        let destdir = Path::new(&self.get_cache_dir()).join("stash").join(name).join(code);
+        let destdir = Path::new(&self.get_cache_dir())
+            .join("stash")
+            .join(name)
+            .join(code);
         debug!("Creating {:?}", destdir);
         fs::create_dir_all(&destdir)?;
 

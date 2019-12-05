@@ -1,9 +1,6 @@
-use std::process::Command;
-use std::env;
-use std::path::Path;
-use std::vec::Vec;
+use std::{env, path::Path, process::Command, vec::Vec};
 
-use super::{Config, Container, CliError, LalResult};
+use super::{CliError, Config, Container, LalResult};
 
 /// Verifies that `id -u` and `id -g` are both 1000
 ///
@@ -20,9 +17,11 @@ fn permission_sanity_check() -> LalResult<()> {
     let gid = gid_str.trim().parse::<u32>().unwrap(); // trust `id -g` is sane
 
     if uid != 1000 || gid != 1000 {
-        return Err(CliError::DockerPermissionSafety(format!("UID and GID are not 1000:1000"),
-                                                    uid,
-                                                    gid));
+        return Err(CliError::DockerPermissionSafety(
+            "UID and GID are not 1000:1000".to_string(),
+            uid,
+            gid,
+        ));
     }
 
     Ok(())
@@ -37,8 +36,11 @@ fn permission_sanity_check() -> LalResult<()> {
 /// docker images returns no output.
 fn get_docker_image_id(container: &Container) -> LalResult<String> {
     trace!("Using docker images to find ID of container {}", container);
-    let image_id_output =
-        Command::new("docker").arg("images").arg("-q").arg(container.to_string()).output()?;
+    let image_id_output = Command::new("docker")
+        .arg("images")
+        .arg("-q")
+        .arg(container.to_string())
+        .output()?;
     let image_id_str: String = String::from_utf8_lossy(&image_id_output.stdout).trim().into();
     match image_id_str.len() {
         0 => {
@@ -47,7 +49,7 @@ fn get_docker_image_id(container: &Container) -> LalResult<String> {
         }
         _ => {
             trace!("Found ID {}", image_id_str);
-            Ok(image_id_str.into())
+            Ok(image_id_str)
         }
     }
 }
@@ -60,7 +62,10 @@ fn get_docker_image_id(container: &Container) -> LalResult<String> {
 /// command status() call fails for a different reason.
 fn pull_docker_image(container: &Container) -> LalResult<()> {
     trace!("Pulling container {}", container);
-    let s = Command::new("docker").arg("pull").arg(container.to_string()).status()?;
+    let s = Command::new("docker")
+        .arg("pull")
+        .arg(container.to_string())
+        .status()?;
     if !s.success() {
         trace!("Pull failed");
         return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
@@ -84,9 +89,10 @@ fn build_docker_image(container: &Container, instructions: Vec<String>) -> LalRe
     let instruction_strings = instruction_strings.replace("'", "'\\''");
     let s = Command::new("bash")
         .arg("-c")
-        .arg(format!("echo -e '{}' | docker build --tag {} -",
-                     instruction_strings,
-                     container))
+        .arg(format!(
+            "echo -e '{}' | docker build --tag {} -",
+            instruction_strings, container
+        ))
         .status()?;
     if !s.success() {
         trace!("Build failed");
@@ -119,11 +125,10 @@ fn fixup_docker_container(container: &Container, u: u32, g: u32) -> LalResult<Co
     info!("Using appropriate container for user {}:{}", u, g);
     // Find image id of regular docker container
     // We might have to pull it
-    let image_id = get_docker_image_id(container)
-        .or_else(|_| {
-            pull_docker_image(container)?;
-            get_docker_image_id(container)
-        })?;
+    let image_id = get_docker_image_id(container).or_else(|_| {
+        pull_docker_image(container)?;
+        get_docker_image_id(container)
+    })?;
 
     // Produce name and tag of modified container
     let modified_container = Container {
@@ -140,13 +145,12 @@ fn fixup_docker_container(container: &Container, u: u32, g: u32) -> LalResult<Co
             info!("Found container {}, image id is {}", modified_container, id);
         }
         Err(_) => {
-            let instructions: Vec<String> =
-                vec![
-                    format!("FROM {}", container),
-                    "USER root".into(),
-                    format!("RUN groupmod -g {} lal && usermod -u {} lal", g, u),
-                    "USER lal".into(),
-                ];
+            let instructions: Vec<String> = vec![
+                format!("FROM {}", container),
+                "USER root".into(),
+                format!("RUN groupmod -g {} lal && usermod -u {} lal", g, u),
+                "USER lal".into(),
+            ];
             info!("Attempting to build container {}...", modified_container);
             build_docker_image(&modified_container, instructions)?;
         }
@@ -168,7 +172,6 @@ pub fn docker_run(
     flags: &DockerRunFlags,
     modes: &ShellModes,
 ) -> LalResult<()> {
-
     let mut modified_container_option: Option<Container> = None;
 
     trace!("Performing docker permission sanity check");
@@ -177,10 +180,11 @@ pub fn docker_run(
             CliError::DockerPermissionSafety(_, u, g) => {
                 if u == 0 {
                     // Do not run as root
-                    return Err(CliError::DockerPermissionSafety("Cannot run container as root user"
-                                                                    .into(),
-                                                                u,
-                                                                g));
+                    return Err(CliError::DockerPermissionSafety(
+                        "Cannot run container as root user".into(),
+                        u,
+                        g,
+                    ));
                 }
                 modified_container_option = Some(fixup_docker_container(container, u, g)?);
             }
@@ -202,10 +206,12 @@ pub fn docker_run(
     for mount in cfg.mounts.clone() {
         trace!(" - mounting {}", mount.src);
         args.push("-v".into());
-        let mnt = format!("{}:{}{}",
-                          mount.src,
-                          mount.dest,
-                          if mount.readonly { ":ro" } else { "" });
+        let mnt = format!(
+            "{}:{}{}",
+            mount.src,
+            mount.dest,
+            if mount.readonly { ":ro" } else { "" }
+        );
         args.push(mnt);
     }
     trace!(" - mounting {}", pwd.display());
@@ -265,7 +271,7 @@ pub fn docker_run(
                 print!(" {}", arg);
             }
         }
-        println!("");
+        println!();
     } else {
         trace!("Entering docker");
         let s = Command::new("docker").args(&args).status()?;
@@ -291,7 +297,6 @@ pub struct ShellModes {
 }
 
 
-
 /// Mounts and enters `.` in an interactive bash shell using the configured container.
 ///
 /// If a command vector is given, this is called non-interactively instead of /bin/bash
@@ -309,7 +314,7 @@ pub fn shell(
 
     let flags = DockerRunFlags {
         interactive: cmd.is_none() || cfg.interactive,
-        privileged: privileged,
+        privileged,
     };
     let mut bash = vec![];
     if let Some(cmdu) = cmd {
@@ -339,7 +344,7 @@ pub fn script(
 
     let flags = DockerRunFlags {
         interactive: cfg.interactive,
-        privileged: privileged,
+        privileged,
     };
 
     // Simply run the script by adding on the arguments

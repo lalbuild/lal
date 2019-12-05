@@ -1,13 +1,14 @@
-use serde_json;
 use chrono::UTC;
-use std::path::{Path, PathBuf};
-use std::fs;
-use std::vec::Vec;
-use std::io::prelude::*;
-use std::collections::BTreeMap;
-use std::env;
+use serde_json;
+use std::{
+    collections::BTreeMap,
+    env, fs,
+    io::prelude::*,
+    path::{Path, PathBuf},
+    vec::Vec,
+};
 
-use super::{Container, LalResult, CliError};
+use super::{CliError, Container, LalResult};
 use storage::BackendConfiguration;
 
 fn find_home_dir() -> PathBuf {
@@ -99,7 +100,7 @@ fn check_mount(name: &str) -> LalResult<String> {
     }
 
     // Otherwise, if it does not contain a slash
-    if !name.contains("/") {
+    if !name.contains('/') {
         use std::process::Command;
         let volume_output = Command::new("docker").args(vec!["volume", "ls", "-q"]).output()?;
         let volstr = String::from_utf8_lossy(&volume_output.stdout);
@@ -125,7 +126,7 @@ impl Config {
     /// Thus, with a blank default config, you will always trigger an upgrade check.
     pub fn new(defaults: ConfigDefaults) -> Config {
         let cachepath = config_dir().join("cache");
-        let cachedir = cachepath.as_path().to_str().unwrap();
+        let cache = cachepath.as_path().to_str().unwrap().into();
 
         // reset last update time
         let time = UTC::now();
@@ -145,8 +146,8 @@ impl Config {
         }
 
         Config {
-            cache: cachedir.into(),
-            mounts: mounts, // the filtered defaults
+            cache,
+            mounts, // the filtered defaults
             lastUpgrade: time.to_rfc3339(),
             autoupgrade: cfg!(feature = "upgrade"),
             environments: defaults.environments,
@@ -172,11 +173,12 @@ impl Config {
     /// Checks if it is time to perform an upgrade check
     #[cfg(feature = "upgrade")]
     pub fn upgrade_check_time(&self) -> bool {
-        use chrono::{Duration, DateTime};
+        use chrono::{DateTime, Duration};
         let last = self.lastUpgrade.parse::<DateTime<UTC>>().unwrap();
         let cutoff = UTC::now() - Duration::days(1);
         last < cutoff
     }
+
     /// Update the lastUpgrade time to avoid triggering it for another day
     #[cfg(feature = "upgrade")]
     pub fn performed_upgrade(&mut self) -> LalResult<()> {
@@ -190,7 +192,7 @@ impl Config {
         let encoded = serde_json::to_string_pretty(self)?;
 
         let mut f = fs::File::create(&cfg_path)?;
-        write!(f, "{}\n", encoded)?;
+        writeln!(f, "{}", encoded)?;
         if !silent {
             info!("Wrote config to {}", cfg_path.display());
         }

@@ -9,13 +9,13 @@
 //! People should not have to be told to `curl lal.tar.gz | tar xz -C prefix` again.
 
 use semver::Version;
-use std::env;
-use std::path::{Path, PathBuf};
-use std::fs;
-use std::process::Command;
+use std::{
+    env, fs,
+    path::{Path, PathBuf},
+    process::Command,
+};
 
-use super::{LalResult, CliError};
-use super::{http_download_to_path, get_latest_lal_version, LatestLal};
+use super::{get_latest_lal_version, http_download_to_path, CliError, LalResult, LatestLal};
 
 struct ExeInfo {
     /// Whether ldd things its a dynamic executable
@@ -39,24 +39,28 @@ fn identify_exe() -> LalResult<ExeInfo> {
     let pthstr: String = pth.to_str().unwrap().into();
     let prefix = if pthstr.contains("/bin/") {
         let v: Vec<&str> = pthstr.split("/bin/").collect();
-        if v.len() == 2 { Some(Path::new(v[0]).to_owned()) } else { None }
+        if v.len() == 2 {
+            Some(Path::new(v[0]).to_owned())
+        } else {
+            None
+        }
     } else {
         None
     };
     Ok(ExeInfo {
-           dynamic: is_dynamic,
-           debug: pthstr.contains("debug"), // cheap check for compiled versions
-           path: pthstr,
-           prefix: prefix,
-           version: Version::parse(env!("CARGO_PKG_VERSION")).unwrap(),
-       })
+        dynamic: is_dynamic,
+        debug: pthstr.contains("debug"), // cheap check for compiled versions
+        path: pthstr,
+        prefix: prefix,
+        version: Version::parse(env!("CARGO_PKG_VERSION")).unwrap(),
+    })
 }
 
 // basic tarball extractor
 // smaller than the INPUT extractor uses because it doesn't clear out anything
 fn extract_tarball(input: PathBuf, output: &PathBuf) -> LalResult<()> {
-    use tar::Archive;
     use flate2::read::GzDecoder;
+    use tar::Archive;
 
     let data = fs::File::open(input)?;
     let decompressed = GzDecoder::new(data)?; // decoder reads data
@@ -116,6 +120,7 @@ fn upgrade_exe(latest: &LatestLal, exe: &ExeInfo) -> LalResult<()> {
     http_download_to_path(&latest.url, &tar_dest)?;
     info!("Backing up {} to {}", exe.path, old_file.display());
     fs::rename(&exe.path, &old_file)?; // need to undo this if we fail
+
     // NB: DO NOT INSERT CALLS THAT CAN FAIL HERE BEFORE THE OVERWRITE
     // 3. force dump lal tarball into exe.prefix - rollback if it failed
     info!("Unpacking new version of lal into {}", prefix.display());
@@ -154,15 +159,12 @@ pub fn upgrade(silent: bool) -> LalResult<bool> {
         if exe.dynamic {
             info!("Your version is built from source - please run (in source checkout):");
             let build_flag = if exe.debug { "" } else { "--release" };
-            info!("rustup update stable && git pull && cargo build {}",
-                  build_flag);
+            info!("rustup update stable && git pull && cargo build {}", build_flag);
         } else if exe.prefix.is_some() {
             // install lal in the prefix it's normally in
             info!("Upgrading...");
             upgrade_exe(&latest, &exe)?;
-            info!("lal upgraded successfully to {} at {}",
-                  latest.version,
-                  exe.path);
+            info!("lal upgraded successfully to {} at {}", latest.version, exe.path);
             println!("");
         } else {
             // static, but no good guess of where to install - let user decide:

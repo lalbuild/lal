@@ -1,16 +1,19 @@
-use serde_json;
 use chrono::UTC;
 use rand;
+use serde_json;
 
-use std::path::{Path, PathBuf};
-use std::fs::File;
-use std::io::prelude::*;
+use std::{
+    fs::File,
+    io::prelude::*,
+    path::{Path, PathBuf},
+};
 
-use std::collections::{HashMap, BTreeMap};
-use std::collections::BTreeSet;
-use std::fmt;
+use std::{
+    collections::{BTreeMap, BTreeSet, HashMap},
+    fmt,
+};
 
-use super::{CliError, LalResult, input};
+use super::{input, CliError, LalResult};
 
 /// Representation of a docker container image
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -32,7 +35,9 @@ impl Container {
 }
 
 impl fmt::Display for Container {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { write!(f, "{}:{}", self.name, self.tag) }
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}:{}", self.name, self.tag)
+    }
 }
 
 /// Convenience default for functions that require Lockfile inspection
@@ -90,7 +95,9 @@ pub struct Lockfile {
 
 /// Generates a temporary empty lockfile for internal analysis
 impl Default for Lockfile {
-    fn default() -> Self { Lockfile::new("templock", &Container::default(), "none", None, None) }
+    fn default() -> Self {
+        Lockfile::new("templock", &Container::default(), "none", None, None)
+    }
 }
 
 impl Lockfile {
@@ -142,7 +149,6 @@ impl Lockfile {
         Ok(Lockfile::from_path(&lock_path, component)?)
     }
 
-
     /// Read all the lockfiles in INPUT to generate the full lockfile
     ///
     /// NB: This currently reads all the lockfiles partially in `analyze`,
@@ -180,7 +186,7 @@ impl Lockfile {
     pub fn write(&self, pth: &Path) -> LalResult<()> {
         let encoded = serde_json::to_string_pretty(self)?;
         let mut f = File::create(pth)?;
-        write!(f, "{}\n", encoded)?;
+        writeln!(f, "{}", encoded)?;
         debug!("Wrote lockfile {}: \n{}", pth.display(), encoded);
         Ok(())
     }
@@ -221,11 +227,13 @@ impl Lockfile {
             // Recurse into its dependencies
             trace!("Recursing into deps for {}, acc is {:?}", main_name, acc);
             for (name, value_set) in dep.find_all_values(key) {
-                trace!("Found {} for for {} under {} as {:?}",
-                       key,
-                       name,
-                       main_name,
-                       value_set);
+                trace!(
+                    "Found {} for for {} under {} as {:?}",
+                    key,
+                    name,
+                    main_name,
+                    value_set
+                );
                 // ensure each entry from above exists in current accumulator
                 if !acc.contains_key(&name) {
                     acc.insert(name.clone(), BTreeSet::new());
@@ -241,10 +249,14 @@ impl Lockfile {
     }
 
     /// List all used versions used of each dependency
-    pub fn find_all_dependency_versions(&self) -> ValueUsage { self.find_all_values("version") }
+    pub fn find_all_dependency_versions(&self) -> ValueUsage {
+        self.find_all_values("version")
+    }
 
     /// List all used environments used of each dependency
-    pub fn find_all_environments(&self) -> ValueUsage { self.find_all_values("environment") }
+    pub fn find_all_environments(&self) -> ValueUsage {
+        self.find_all_values("environment")
+    }
 
     /// List all dependency names used by each dependency (not transitively)
     pub fn find_all_dependency_names(&self) -> ValueUsage {
@@ -293,12 +305,15 @@ impl Lockfile {
             // merge results recursively
             for (name, value_set) in dep.get_reverse_deps() {
                 trace!("Found revdeps for {} as {:?}", name, value_set);
+
                 // if we don't already have new entries, add them:
                 if !acc.contains_key(&name) {
                     acc.insert(name.clone(), BTreeSet::new()); // blank first
                 }
+
                 // merge in values from recursion
                 let full_value_set = acc.get_mut(&name).unwrap(); // know this exists now
+
                 // union in values from recursion
                 for value in value_set {
                     full_value_set.insert(value);
@@ -315,9 +330,10 @@ impl Lockfile {
         let mut res = BTreeSet::new();
 
         if !revdeps.contains_key(&component) {
-            warn!("Could not find {} in the dependency tree for {}",
-                  component,
-                  self.name);
+            warn!(
+                "Could not find {} in the dependency tree for {}",
+                component, self.name
+            );
             return res;
         }
 

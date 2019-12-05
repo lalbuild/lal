@@ -1,8 +1,8 @@
 use std::path::Path;
 
 // Need both the struct and the trait
+use super::{CliError, LalResult, Lockfile};
 use storage::Backend;
-use super::{LalResult, CliError, Lockfile};
 
 /// Publish a release build to the storage backend
 ///
@@ -18,13 +18,11 @@ pub fn publish<T: Backend + ?Sized>(name: &str, backend: &T) -> LalResult<()> {
 
     let lock = Lockfile::release_build()?;
 
-    let version = lock.version
-        .parse::<u32>()
-        .map_err(|e| {
-            error!("Release build not done --with-version=$BUILD_VERSION");
-            debug!("Error: {}", e);
-            CliError::MissingReleaseBuild
-        })?;
+    let version = lock.version.parse::<u32>().map_err(|e| {
+        error!("Release build not done --with-version=$BUILD_VERSION");
+        debug!("Error: {}", e);
+        CliError::MissingReleaseBuild
+    })?;
 
     if lock.sha.is_none() {
         warn!("Release build not done --with-sha=$(git rev-parse HEAD)");

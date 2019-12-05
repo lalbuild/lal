@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
-use core::LalResult;
 use super::{ArtifactoryConfig, LocalConfig};
+use core::LalResult;
 
 /// An enum struct for the currently configured `Backend`
 ///
@@ -20,7 +20,9 @@ pub enum BackendConfiguration {
 
 /// Artifactory is the default backend
 impl Default for BackendConfiguration {
-    fn default() -> Self { BackendConfiguration::Artifactory(ArtifactoryConfig::default()) }
+    fn default() -> Self {
+        BackendConfiguration::Artifactory(ArtifactoryConfig::default())
+    }
 }
 
 
@@ -75,11 +77,7 @@ pub trait Backend {
 /// This wraps the common fetch commands in a caching layer on the cache dir.
 pub trait CachedBackend {
     /// Get the latest version of a component across all supported environments
-    fn get_latest_supported_versions(
-        &self,
-        name: &str,
-        environments: Vec<String>,
-    ) -> LalResult<Vec<u32>>;
+    fn get_latest_supported_versions(&self, name: &str, environments: Vec<String>) -> LalResult<Vec<u32>>;
 
     /// Retrieve the location to a cached published component (downloading if necessary)
     fn retrieve_published_component(
@@ -93,12 +91,8 @@ pub trait CachedBackend {
     fn retrieve_stashed_component(&self, name: &str, code: &str) -> LalResult<PathBuf>;
 
     /// Retrieve and unpack a cached component in INPUT
-    fn unpack_published_component(
-        &self,
-        name: &str,
-        version: Option<u32>,
-        env: &str,
-    ) -> LalResult<Component>;
+    fn unpack_published_component(&self, name: &str, version: Option<u32>, env: &str)
+        -> LalResult<Component>;
 
     /// Retrieve and unpack a stashed component to INPUT
     fn unpack_stashed_component(&self, name: &str, code: &str) -> LalResult<()>;

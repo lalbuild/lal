@@ -17,27 +17,23 @@
 //! This tool depends on the rust ecosystem and their crates. Dependencies referenced
 //! explicitly or implicitly is listed on the left of this page.
 
-#[macro_use]
-extern crate hyper;
+#[macro_use] extern crate hyper;
 extern crate hyper_native_tls;
 extern crate openssl_probe;
-#[macro_use]
-extern crate serde_derive;
-extern crate serde_json;
-extern crate regex;
-extern crate tar;
-extern crate flate2;
+#[macro_use] extern crate serde_derive;
 extern crate ansi_term;
+extern crate flate2;
+extern crate regex;
+extern crate serde_json;
 extern crate sha1;
-#[macro_use]
-extern crate log;
-extern crate walkdir;
+extern crate tar;
+#[macro_use] extern crate log;
 extern crate chrono;
 extern crate filetime;
+#[cfg(feature = "progress")] extern crate indicatif;
 extern crate rand;
 extern crate semver;
-#[cfg(feature = "progress")]
-extern crate indicatif;
+extern crate walkdir;
 
 // re-exports
 mod core;
@@ -57,36 +53,34 @@ pub mod propagate;
 // lift most other pub functions into our libraries main scope
 // this avoids having to type lal::build::build in tests and main.rs
 pub use build::{build, BuildOptions};
-pub use configure::configure;
-pub use init::init;
-pub use shell::{shell, docker_run, script, DockerRunFlags, ShellModes};
-pub use fetch::fetch;
-pub use update::{update, update_all};
-pub use remove::remove;
-pub use export::export;
-pub use status::status;
-pub use verify::verify;
-pub use stash::stash;
 pub use clean::clean;
-pub use query::query;
+pub use configure::configure;
+pub use export::export;
+pub use fetch::fetch;
+pub use init::init;
 pub use publish::publish;
+pub use query::query;
+pub use remove::remove;
+pub use shell::{docker_run, script, shell, DockerRunFlags, ShellModes};
+pub use stash::stash;
+pub use status::status;
+pub use update::{update, update_all};
+pub use verify::verify;
 
-mod configure;
-mod init;
-mod shell;
 mod build;
-mod query;
-mod update;
-mod fetch;
-mod remove;
-mod export;
 mod clean;
-mod verify;
+mod configure;
+mod export;
+mod fetch;
+mod init;
+mod publish;
+mod query;
+mod remove;
+mod shell;
 mod stash;
 mod status;
-mod publish;
+mod update;
+mod verify;
 
-#[cfg(feature = "upgrade")]
-pub use upgrade::upgrade;
-#[cfg(feature = "upgrade")]
-mod upgrade;
+#[cfg(feature = "upgrade")] pub use upgrade::upgrade;
+#[cfg(feature = "upgrade")] mod upgrade;

@@ -1,7 +1,7 @@
 use std::io::{self, Write};
 
+use super::{CliError, LalResult};
 use storage::Backend;
-use super::{LalResult, CliError};
 
 /// Prints a list of versions associated with a component
 pub fn query(backend: &dyn Backend, _env: Option<&str>, component: &str, last: bool) -> LalResult<()> {
@@ -11,9 +11,9 @@ pub fn query(backend: &dyn Backend, _env: Option<&str>, component: &str, last: b
     let env = match _env {
         None => {
             error!("query is no longer allowed without an explicit environment");
-            return Err(CliError::EnvironmentUnspecified)
-        },
-        Some(e) => e
+            return Err(CliError::EnvironmentUnspecified);
+        }
+        Some(e) => e,
     };
 
     if last {
