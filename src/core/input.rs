@@ -84,7 +84,7 @@ pub fn analyze_full(manifest: &Manifest) -> LalResult<InputMap> {
         };
         depmap.insert(d.clone(), InputDependency {
             name: d.clone(),
-            version: version,
+            version,
             requirement: Some(format!("{}", v)),
             missing: deps.get(&d).is_none(),
             development: manifest.devDependencies.contains_key(&d),

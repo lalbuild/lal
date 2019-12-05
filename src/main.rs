@@ -17,7 +17,7 @@ fn is_integer(v: String) -> Result<(), String> {
 
 fn result_exit<T>(name: &str, x: LalResult<T>) {
     let _ = x.map_err(|e| {
-        println!(""); // add a separator
+        println!(); // add a separator
         error!("{} error: {}", name, e);
         debug!("{}: {:?}", name, e); // in the off-chance that Debug is useful
         process::exit(1);
@@ -51,7 +51,7 @@ fn handle_manifest_agnostic_cmds(
     } else if args.subcommand_matches("list-environments").is_some() {
         lal::list::environments(cfg)
     } else {
-        return ();
+        return;
     };
     result_exit(args.subcommand_name().unwrap(), res);
 }
@@ -85,7 +85,7 @@ fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &
     } else if let Some(a) = args.subcommand_matches("propagate") {
         lal::propagate::print(mf, a.value_of("component").unwrap(), a.is_present("json"))
     } else {
-        return ();
+        return;
     };
     result_exit(args.subcommand_name().unwrap(), res);
 }
@@ -110,7 +110,7 @@ fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend, 
     } else if let Some(a) = args.subcommand_matches("fetch") {
         lal::fetch(mf, backend, a.is_present("core"), env)
     } else {
-        return (); // not a network cmnd
+        return; // not a network cmnd
     };
     result_exit(args.subcommand_name().unwrap(), res)
 }
@@ -199,7 +199,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             printonly: a.is_present("print"),
             x11_forwarding: a.is_present("x11"),
             host_networking: a.is_present("net-host"),
-            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or(vec![]),
+            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
         };
         lal::build(cfg, mf, &bopts, env.into(), modes)
     } else if let Some(a) = args.subcommand_matches("shell") {
@@ -212,7 +212,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             printonly: a.is_present("print"),
             x11_forwarding: a.is_present("x11"),
             host_networking: a.is_present("net-host"),
-            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or(vec![]),
+            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
         };
         lal::shell(cfg, container, &modes, xs, a.is_present("privileged"))
     } else if let Some(a) = args.subcommand_matches("run") {
@@ -225,7 +225,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             printonly: a.is_present("print"),
             x11_forwarding: a.is_present("x11"),
             host_networking: a.is_present("net-host"),
-            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or(vec![]),
+            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
         };
         lal::script(
             cfg,
@@ -236,7 +236,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             a.is_present("privileged"),
         )
     } else {
-        return (); // no valid docker related command found
+        return; // no valid docker related command found
     };
     result_exit(args.subcommand_name().unwrap(), res);
 }
@@ -561,7 +561,7 @@ fn main() {
     let config = Config::read()
         .map_err(|e| {
             error!("Configuration error: {}", e);
-            println!("");
+            println!();
             println!("If you just got upgraded use `lal configure <site-config>`");
             println!(
                 "Site configs are found in {{install_prefix}}/share/lal/configs/ \
@@ -572,11 +572,11 @@ fn main() {
         .unwrap();
 
     // Create a storage backend (something that implements storage/traits.rs)
-    let backend: Box<dyn Backend> = match &config.backend {
-        &BackendConfiguration::Artifactory(ref art_cfg) => {
+    let backend: Box<dyn Backend> = match config.backend {
+        BackendConfiguration::Artifactory(ref art_cfg) => {
             Box::new(ArtifactoryBackend::new(&art_cfg, &config.cache))
         }
-        &BackendConfiguration::Local(ref local_cfg) => Box::new(LocalBackend::new(&local_cfg, &config.cache)),
+        BackendConfiguration::Local(ref local_cfg) => Box::new(LocalBackend::new(&local_cfg, &config.cache)),
     };
 
     // Ensure SSL is initialized before using the backend

@@ -152,7 +152,7 @@ impl Manifest {
         let encoded = serde_json::to_string_pretty(self)?;
         trace!("Writing manifest in {}", self.location);
         let mut f = File::create(&self.location)?;
-        write!(f, "{}\n", encoded)?;
+        writeln!(f, "{}", encoded)?;
         debug!("Wrote manifest in {}: \n{}", self.location, encoded);
         Ok(())
     }
@@ -173,12 +173,12 @@ impl Manifest {
                 return Err(CliError::InvalidBuildConfiguration(ename));
             }
         }
-        for (name, _) in &self.dependencies {
+        for name in self.dependencies.keys() {
             if &name.to_lowercase() != name {
                 return Err(CliError::InvalidComponentName(name.clone()));
             }
         }
-        for (name, _) in &self.devDependencies {
+        for name in self.devDependencies.keys() {
             if &name.to_lowercase() != name {
                 return Err(CliError::InvalidComponentName(name.clone()));
             }

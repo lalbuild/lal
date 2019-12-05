@@ -57,7 +57,7 @@ pub fn update<T: CachedBackend + ?Sized>(
                 .get_latest_supported_versions(comp, manifest.supportedEnvironments.clone())?
                 .into_iter()
                 .max()
-                .ok_or(CliError::NoIntersectedVersion(comp.clone()))?;
+                .ok_or_else(|| CliError::NoIntersectedVersion(comp.clone()))?;
             info!("Fetch {} {}={}", env, comp, ver);
 
             match backend.unpack_published_component(comp, Some(ver), env) {

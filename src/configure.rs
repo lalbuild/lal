@@ -103,7 +103,7 @@ fn docker_version_check() -> LalResult<()> {
     let dver_output = Command::new("docker").arg("--version").output()?;
     let dverstr = String::from_utf8_lossy(&dver_output.stdout);
     trace!("docker version string {}", dverstr);
-    let dverary = dverstr.trim().split(" ").collect::<Vec<_>>();
+    let dverary = dverstr.trim().split(' ').collect::<Vec<_>>();
     if dverary.len() < 3 {
         warn!("Failed to parse docker version: ({})", dverstr);
         return Ok(()); // assume it's a really weird docker
@@ -206,7 +206,7 @@ fn create_lal_dir() -> LalResult<PathBuf> {
 pub fn configure(save: bool, interactive: bool, defaults: &str) -> LalResult<Config> {
     let _ = create_lal_dir()?;
 
-    for exe in ["docker", "tar", "touch", "id", "find", "mkdir", "chmod", "uname"].into_iter() {
+    for exe in ["docker", "tar", "touch", "id", "find", "mkdir", "chmod", "uname"].iter() {
         executable_on_path(exe)?;
     }
     docker_sanity()?;

@@ -186,7 +186,7 @@ impl Lockfile {
     pub fn write(&self, pth: &Path) -> LalResult<()> {
         let encoded = serde_json::to_string_pretty(self)?;
         let mut f = File::create(pth)?;
-        write!(f, "{}\n", encoded)?;
+        writeln!(f, "{}", encoded)?;
         debug!("Wrote lockfile {}: \n{}", pth.display(), encoded);
         Ok(())
     }

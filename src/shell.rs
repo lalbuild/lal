@@ -18,7 +18,7 @@ fn permission_sanity_check() -> LalResult<()> {
 
     if uid != 1000 || gid != 1000 {
         return Err(CliError::DockerPermissionSafety(
-            format!("UID and GID are not 1000:1000"),
+            "UID and GID are not 1000:1000".to_string(),
             uid,
             gid,
         ));
@@ -49,7 +49,7 @@ fn get_docker_image_id(container: &Container) -> LalResult<String> {
         }
         _ => {
             trace!("Found ID {}", image_id_str);
-            Ok(image_id_str.into())
+            Ok(image_id_str)
         }
     }
 }
@@ -271,7 +271,7 @@ pub fn docker_run(
                 print!(" {}", arg);
             }
         }
-        println!("");
+        println!();
     } else {
         trace!("Entering docker");
         let s = Command::new("docker").args(&args).status()?;
@@ -314,7 +314,7 @@ pub fn shell(
 
     let flags = DockerRunFlags {
         interactive: cmd.is_none() || cfg.interactive,
-        privileged: privileged,
+        privileged,
     };
     let mut bash = vec![];
     if let Some(cmdu) = cmd {
@@ -344,7 +344,7 @@ pub fn script(
 
     let flags = DockerRunFlags {
         interactive: cfg.interactive,
-        privileged: privileged,
+        privileged,
     };
 
     // Simply run the script by adding on the arguments

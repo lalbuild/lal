@@ -43,7 +43,7 @@ impl StickyOptions {
         let encoded = serde_json::to_string_pretty(self)?;
 
         let mut f = fs::File::create(&opts_path)?;
-        write!(f, "{}\n", encoded)?;
+        writeln!(f, "{}", encoded)?;
         debug!("Wrote {}: \n{}", opts_path.display(), encoded);
         Ok(())
     }
