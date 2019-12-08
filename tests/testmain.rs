@@ -2,15 +2,20 @@ extern crate lal;
 
 #[macro_use] extern crate log;
 extern crate loggerv;
+#[macro_use] extern crate serial_test;
+extern crate tempdir;
 extern crate walkdir;
 
 use std::{
-    env,
-    fs::{self, File},
+    env, fs,
+    fs::File,
     io::prelude::*,
-    path::Path,
+    path::{Path, PathBuf},
     process::Command,
+    sync::Once,
 };
+
+use tempdir::TempDir;
 use walkdir::WalkDir;
 
 use lal::*;
@@ -35,41 +40,73 @@ mod chk {
 //    });
 //
 
-fn init_ssl() {
-    use std::env;
-    env::set_var("SSL_CERT_FILE", "/etc/ssl/certs/ca-certificates.crt");
+struct TestState {
+    backend: LocalBackend,
+    testdir: PathBuf,
+
+    // Keep the tempdir with TestState.
+    // The directory will be cleaned with the TestState is `Drop`ed.
+    tempdir: TempDir,
 }
 
-fn main() {
-    init_ssl();
-    // print debug output and greater from lal during tests
-    init_with_verbosity(2).unwrap();
 
-    // Do all lal tests in a subdir as it messes with the manifest
-    let tmprelative = Path::new(".").join("testtmp");
-    if !tmprelative.is_dir() {
-        fs::create_dir(&tmprelative).unwrap();
-    }
-    let tmp = fs::canonicalize(tmprelative).unwrap();
+static START: Once = Once::new();
 
-    // Ensure we are can do everything in there before continuing
-    assert!(env::set_current_dir(tmp.clone()).is_ok());
+/// Initialise the testing environment and directories
+fn setup() -> TestState {
+    START.call_once(|| {
+        env::set_var("SSL_CERT_FILE", "/etc/ssl/certs/ca-certificates.crt");
+        env::set_var("LAL_CODE_DIR", env::current_dir().unwrap().as_os_str());
+
+        // print debug output and greater from lal during tests
+        init_with_verbosity(2).expect("Setting up test logging");
+    });
+
+    let mut demo_config = PathBuf::from(env::var("LAL_CODE_DIR").unwrap());
+    demo_config.push("./configs/demo.json");
+
+    let mut testdir = PathBuf::from(env::var("LAL_CODE_DIR").unwrap());
+    testdir.push("tests");
+
+    // Do all lal tests in a tempdir as it messes with the manifest
+    let tempdir = TempDir::new("laltest").unwrap();
+
     // dump config and artifacts under the current temp directory
-    env::set_var("LAL_CONFIG_HOME", env::current_dir().unwrap());
+    let configdir = tempdir.path();
+    env::set_var("LAL_CONFIG_HOME", configdir);
 
-    info!("# lal tests");
+    // Requires "LAL_CONFIG_HOME" set before calling
+    let backend = configure_local_backend(&demo_config);
 
-    // Set up a fresh LAL_CONFIG_HOME and reconfigure
-    kill_laldir();
-    info!("ok kill_laldir");
-    let backend = configure_yes();
-    info!("ok configure_yes");
+    // Run tests (starting) from their own directory
+    assert!(env::set_current_dir(tempdir.path().clone()).is_ok());
 
-    let testdir = fs::canonicalize(Path::new("..").join("tests")).unwrap();
+    TestState {
+        backend,
+        tempdir,
+        testdir,
+    }
+}
+
+#[test]
+#[serial]
+fn test_configure_backend() {
+    let state = setup();
+
+    assert_eq!(
+        fs::canonicalize(Path::new(&state.backend.get_cache_dir())).unwrap(),
+        fs::canonicalize(Path::new("./.lal/cache")).unwrap(),
+    );
+}
+
+#[test]
+#[serial]
+fn test_heylib_echo() {
+    let state = setup();
 
 
     // Test basic build functionality with heylib component
-    let heylibdir = testdir.join("heylib");
+    let heylibdir = state.testdir.join("heylib");
     assert!(env::set_current_dir(heylibdir).is_ok());
 
     kill_input();
@@ -77,53 +114,276 @@ fn main() {
 
     shell_echo();
     info!("ok shell_echo");
+}
+
+#[test]
+#[serial]
+fn test_shell_permissions() {
+    let state = setup();
+
+    // Test basic build functionality with heylib component
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
 
     shell_permissions();
     info!("ok shell_permissions");
+}
 
-    build_and_stash_update_self(&backend);
+#[test]
+#[serial]
+fn test_run_scripts() {
+    let state = setup();
+
+    // Test basic build functionality with heylib component
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    run_scripts();
+    info!("ok run_scripts");
+}
+
+#[test]
+#[serial]
+fn test_build_and_stash_update_self() {
+    let state = setup();
+
+    // Test basic build functionality with heylib component
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    build_and_stash_update_self(&state.backend);
+    info!("ok build_and_stash_update_self");
+
+    list_everything();
+    info!("ok list_everything");
+}
+
+#[test]
+#[serial]
+fn test_status_on_experimental() {
+    let state = setup();
+
+    // Test basic build functionality with heylib component
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    build_and_stash_update_self(&state.backend);
     info!("ok build_and_stash_update_self");
 
     status_on_experimentals();
     info!("ok status_on_experimentals");
+}
 
-    run_scripts();
-    info!("ok run_scripts");
+#[test]
+#[serial]
+fn test_fetch_release_build_and_publish() {
+    let state = setup();
 
-    fetch_release_build_and_publish(&backend);
+    // Test basic build functionality with heylib component
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    fetch_release_build_and_publish(&state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
-    no_publish_non_release_builds(&backend);
-    info!("ok no_publish_non_release_builds heylib");
+    list_everything();
+    info!("ok list_everything");
+}
 
-    let helloworlddir = testdir.join("helloworld");
+#[test]
+#[serial]
+fn test_no_publish_non_release_builds() {
+    let state = setup();
+
+    // Test basic build functionality with heylib component
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    no_publish_non_release_builds(&state.backend);
+    info!("ok no_publish_non_release_builds heylib");
+}
+
+#[test]
+#[serial]
+fn test_update_save() {
+    let state = setup();
+
+    // "helloworld" depends on "heylib"
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish heylib");
+
+    let helloworlddir = state.testdir.join("helloworld");
     assert!(env::set_current_dir(&helloworlddir).is_ok());
 
-    update_save(&backend);
+    kill_input();
+    info!("ok kill_input");
+
+    // Fetch published dependencies into ./INPUT
+    // update to versions listed in the manifest
     info!("ok update_save");
+    update_save(&state.backend);
+}
 
-    verify_checks(&backend);
+#[test]
+#[serial]
+fn test_verify_checks() {
+    let state = setup();
+
+    // "helloworld" depends on "heylib"
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish heylib");
+
+    let helloworlddir = state.testdir.join("helloworld");
+    assert!(env::set_current_dir(&helloworlddir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    verify_checks(&state.backend);
     info!("ok verify_checks");
+}
 
-    fetch_release_build_and_publish(&backend);
+
+#[test]
+#[serial]
+fn test_release_build_and_publish() {
+    let state = setup();
+
+    // "helloworld" depends on "heylib"
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish heylib");
+
+    let helloworlddir = state.testdir.join("helloworld");
+    assert!(env::set_current_dir(&helloworlddir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    fetch_release_build_and_publish(&state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
+
+    list_everything();
+    info!("ok list_everything");
+}
+
+#[test]
+#[serial]
+fn test_remove_dependencies() {
+    let state = setup();
+
+    // "helloworld" has 1 dependency
+    let helloworlddir = state.testdir.join("helloworld");
+    assert!(env::set_current_dir(&helloworlddir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
 
     remove_dependencies();
     info!("ok remove_dependencies");
+}
+
+#[test]
+#[serial]
+fn test_export_checks() {
+    let state = setup();
+
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish heylib");
+
+    let helloworlddir = state.testdir.join("helloworld");
+    assert!(env::set_current_dir(&helloworlddir).is_ok());
+
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish helloworld");
 
     // back to tmpdir to test export and clean
-    assert!(env::set_current_dir(&tmp).is_ok());
-    export_check(&backend);
+    assert!(env::set_current_dir(config_dir()).is_ok());
+    export_check(&state.backend);
     info!("ok export_check");
+}
 
-    query_check(&backend);
+#[test]
+#[serial]
+fn test_query_check() {
+    let state = setup();
+
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish heylib");
+
+    let helloworlddir = state.testdir.join("helloworld");
+    assert!(env::set_current_dir(&helloworlddir).is_ok());
+
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish helloworld");
+
+    // back to tmpdir to test export and clean
+    assert!(env::set_current_dir(config_dir()).is_ok());
+
+    query_check(&state.backend);
     info!("ok query_check");
+}
+
+#[test]
+#[serial]
+fn test_clean_check() {
+    let state = setup();
+
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(heylibdir).is_ok());
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish heylib");
+
+    let helloworlddir = state.testdir.join("helloworld");
+    assert!(env::set_current_dir(&helloworlddir).is_ok());
+
+    fetch_release_build_and_publish(&state.backend);
+    info!("ok fetch_release_build_and_publish helloworld");
+
+    // back to tmpdir to test export and clean
+    assert!(env::set_current_dir(config_dir()).is_ok());
 
     clean_check();
     info!("ok clean_check");
+}
 
-    // finally test out some functionality regarding creating of new components
-    // we just do this in the same temp directory as there's nothing there
+#[test]
+#[serial]
+fn test_init_force() {
+    let state = setup();
+
+    let component = state.tempdir.path().join("new_component");
+    fs::create_dir(&component).unwrap();
+    assert!(env::set_current_dir(component).is_ok(), "set current dir");
+
+    // test out some functionality regarding creating of new components
     init_force();
     info!("ok init_force");
 
@@ -132,32 +392,59 @@ fn main() {
 
     list_everything();
     info!("ok list_everything");
+}
+
+#[test]
+#[serial]
+fn test_change_envs() {
+    let state = setup();
+
+    let component = state.tempdir.path().join("new_component");
+    fs::create_dir(&component).unwrap();
+    assert!(env::set_current_dir(component).is_ok(), "set current dir");
+
+    init_force();
+    info!("ok init_force");
 
     change_envs();
     info!("ok change_envs");
+}
+
+
+#[test]
+#[serial]
+fn test_propagations() {
+    let state = setup();
+
+    let component = state.tempdir.path().join("new_component");
+    fs::create_dir(&component).unwrap();
+    assert!(env::set_current_dir(component).is_ok(), "new component dir");
+
+    init_force();
+    info!("ok init_force");
 
     kill_manifest();
     info!("ok kill_manifest");
 
     // verify propagations by building prop-leaf -> prop-mid-X -> prop-base
-    let propleaf = testdir.join("prop-leaf");
+    let propleaf = state.testdir.join("prop-leaf");
     assert!(env::set_current_dir(&propleaf).is_ok());
-    fetch_release_build_and_publish(&backend);
+    fetch_release_build_and_publish(&state.backend);
     info!("ok fetch_release_build_and_publish prop-leaf");
 
-    let propmid1 = testdir.join("prop-mid-1");
+    let propmid1 = state.testdir.join("prop-mid-1");
     assert!(env::set_current_dir(&propmid1).is_ok());
-    fetch_release_build_and_publish(&backend);
+    fetch_release_build_and_publish(&state.backend);
     info!("ok fetch_release_build_and_publish prop-mid-1");
 
-    let propmid2 = testdir.join("prop-mid-2");
+    let propmid2 = state.testdir.join("prop-mid-2");
     assert!(env::set_current_dir(&propmid2).is_ok());
-    fetch_release_build_and_publish(&backend);
+    fetch_release_build_and_publish(&state.backend);
     info!("ok fetch_release_build_and_publish prop-mid-2");
 
-    let propbase = testdir.join("prop-base");
+    let propbase = state.testdir.join("prop-base");
     assert!(env::set_current_dir(&propbase).is_ok());
-    fetch_release_build_and_publish(&backend);
+    fetch_release_build_and_publish(&state.backend);
     info!("ok fetch_release_build_and_publish prop-base");
 
     check_propagation("prop-leaf");
@@ -165,11 +452,11 @@ fn main() {
 }
 
 fn kill_laldir() {
-    let ldir = config_dir();
-    if ldir.is_dir() {
-        fs::remove_dir_all(&ldir).unwrap();
+    let laldir = config_dir();
+    if laldir.is_dir() {
+        fs::remove_dir_all(&laldir).unwrap();
     }
-    assert_eq!(ldir.is_dir(), false);
+    assert_eq!(laldir.is_dir(), false);
 }
 fn kill_input() {
     let input = Path::new(&env::current_dir().unwrap()).join("INPUT");
@@ -182,6 +469,8 @@ fn kill_input() {
 fn remove_dependencies() {
     let mf = Manifest::read().unwrap();
     let xs = mf.dependencies.keys().cloned().collect::<Vec<_>>();
+    assert_eq!(xs.len(), 1);
+
     let r = lal::remove(&mf, xs.clone(), false, false);
     assert!(r.is_ok(), "could lal rm all dependencies");
 
@@ -253,11 +542,13 @@ fn list_everything() {
     assert!(rb.is_ok(), "list buildables succeeded");
 }
 
-fn configure_yes() -> LocalBackend {
+fn configure_local_backend(demo_config: &PathBuf) -> LocalBackend {
+    kill_laldir();
+
     let config = Config::read();
     assert!(config.is_err(), "no config at this point");
 
-    let r = lal::configure(true, false, "../configs/demo.json");
+    let r = lal::configure(true, false, demo_config.as_os_str().to_str().unwrap());
     assert!(r.is_ok(), "configure succeeded");
 
     let cfg = Config::read();
@@ -273,7 +564,7 @@ fn configure_yes() -> LocalBackend {
 
 // Create manifest in a weird directory
 fn init_force() {
-    let cfg = Config::read().unwrap();
+    let cfg = Config::read().expect("read config");
 
     let m1 = Manifest::read();
     assert!(m1.is_err(), "no manifest at this point");
@@ -338,9 +629,11 @@ fn shell_permissions() {
 }
 
 fn build_and_stash_update_self<T: CachedBackend + Backend>(backend: &T) {
-    let mf = Manifest::read().unwrap();
-    let cfg = Config::read().unwrap();
-    let container = cfg.get_container("alpine".into()).unwrap();
+    let mf = Manifest::read().expect("Read manifest");
+    let cfg = Config::read().expect("Read config");
+    let container = cfg
+        .get_container("alpine".into())
+        .expect("get 'alpine' Container");
 
     // we'll try with various build options further down with various deps
     let mut bopts = BuildOptions {
@@ -622,6 +915,7 @@ fn check_propagation(leaf: &str) {
 
 fn status_on_experimentals() {
     let mf = Manifest::read().unwrap();
+
     // both of these should return errors, but work
     let r = lal::status(&mf, false, false, false);
     assert!(r.is_err(), "status should complain at experimental deps");
