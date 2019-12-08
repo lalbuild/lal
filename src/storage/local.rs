@@ -2,6 +2,7 @@
 
 use std::{
     fs,
+    io::ErrorKind,
     path::{Path, PathBuf},
     str::FromStr,
     vec::Vec,
@@ -26,6 +27,13 @@ pub struct LocalBackend {
 
 impl LocalBackend {
     pub fn new(cfg: &LocalConfig, cache: &str) -> Self {
+        match fs::create_dir(&cache) {
+            Ok(()) => Ok(()),
+            Err(ref e) if e.kind() == ErrorKind::AlreadyExists => Ok(()),
+            Err(e) => Err(e),
+        }
+        .unwrap();
+
         LocalBackend {
             config: cfg.clone(),
             cache: cache.into(),
