@@ -1,9 +1,7 @@
 {
   "name": "libhello",
-  "environment": "xenial",
-  "supportedEnvironments": [
-    "xenial"
-  ],
+  "environment": "default",
+  "supportedEnvironments": ["default"],
   "components": {
     "libhello": {
       "defaultConfig": "release",

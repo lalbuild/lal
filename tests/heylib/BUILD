@@ -1,2 +1,2 @@
 #!/bin/sh
-make
+make clean all

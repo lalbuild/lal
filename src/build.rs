@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
 use super::{
-    ensure_dir_exists_fresh, output, CliError, Config, Container, DockerRunFlags, LalResult, Lockfile,
+    ensure_dir_exists_fresh, output, CliError, Config, DockerRunFlags, Environment, LalResult, Lockfile,
     Manifest, ShellModes,
 };
 use shell;
@@ -45,8 +45,8 @@ pub struct BuildOptions {
     pub name: Option<String>,
     /// Configuration to use for the component if specified
     pub configuration: Option<String>,
-    /// Container to run the `./BUILD` script in
-    pub container: Container,
+    /// Environment to run the `./BUILD` script in
+    pub environment: Environment,
     /// Create release tarball in `./ARTIFACT`
     pub release: bool,
     /// An explicit version to put in the lockfile
@@ -60,10 +60,10 @@ pub struct BuildOptions {
 }
 
 
-/// Runs the `./BUILD` script in a container and packages artifacts.
+/// Runs the `./BUILD` script in a controlled environment and packages artifacts.
 ///
-/// The function performs basic sanity checks, before shelling out to `docker run`
-/// to perform the actual execution of the containerized `./BUILD` script.
+/// The function performs basic sanity checks, before shelling out
+/// to perform the actual execution of the `./BUILD` script.
 pub fn build(
     cfg: &Config,
     manifest: &Manifest,
@@ -115,7 +115,7 @@ pub fn build(
     }
     let lockfile = Lockfile::new(
         &component,
-        &opts.container,
+        &opts.environment,
         &envname,
         opts.version.clone(),
         Some(&configuration_name),
@@ -136,14 +136,16 @@ pub fn build(
 
     debug!("Build script is {:?}", cmd);
     if !modes.printonly {
-        info!("Running build script in {} container", envname);
+        info!("Running build script in {} environment", envname);
     }
 
     let run_flags = DockerRunFlags {
         interactive: cfg.interactive,
         privileged: false,
     };
-    shell::docker_run(cfg, &opts.container, cmd, &run_flags, &modes)?;
+
+    shell::run(cfg, &opts.environment, cmd, &run_flags, &modes)?;
+
     if modes.printonly {
         return Ok(()); // nothing else worth doing - warnings are pointless
     }

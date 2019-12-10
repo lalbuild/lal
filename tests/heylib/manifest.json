@@ -1,8 +1,8 @@
 {
   "name": "heylib",
-  "environment": "alpine",
+  "environment": "default",
   "supportedEnvironments": [
-    "alpine"
+    "default", "alpine"
   ],
   "components": {
     "heylib": {

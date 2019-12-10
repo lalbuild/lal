@@ -29,10 +29,10 @@ pub fn publish<T: Backend + ?Sized>(name: &str, backend: &T) -> LalResult<()> {
     }
 
     // always publish to the environment in the lockfile
-    let env = lock.environment;
+    let envname = lock.envname;
 
-    info!("Publishing {}={} to {}", name, version, env);
-    backend.publish_artifact(name, version, &env)?;
+    info!("Publishing {}={} to {}", name, version, envname);
+    backend.publish_artifact(name, version, &envname)?;
 
     Ok(())
 }

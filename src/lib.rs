@@ -51,7 +51,7 @@ pub mod propagate;
 
 
 // lift most other pub functions into our libraries main scope
-// this avoids having to type lal::build::build in tests and main.rs
+// this avoids having to type lal:build in tests and main.rs
 pub use build::{build, BuildOptions};
 pub use clean::clean;
 pub use configure::configure;
@@ -61,7 +61,7 @@ pub use init::init;
 pub use publish::publish;
 pub use query::query;
 pub use remove::remove;
-pub use shell::{docker_run, script, shell, DockerRunFlags, ShellModes};
+pub use shell::{run, script, shell, DockerRunFlags, ShellModes};
 pub use stash::stash;
 pub use status::status;
 pub use update::{update, update_all};

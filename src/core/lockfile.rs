@@ -8,64 +8,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use std::{
-    collections::{BTreeMap, BTreeSet, HashMap},
-    fmt,
-};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
-use super::{input, CliError, LalResult};
+use super::{input, CliError, Environment, LalResult};
 
-/// Representation of a docker container image
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Container {
-    /// The fully qualified image name
-    pub name: String,
-    /// The tag to use
-    pub tag: String,
-}
-
-impl Container {
-    /// Container struct with latest tag
-    pub fn latest(name: &str) -> Self {
-        Container {
-            name: name.into(),
-            tag: "latest".into(),
-        }
-    }
-}
-
-impl fmt::Display for Container {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}:{}", self.name, self.tag)
-    }
-}
-
-/// Convenience default for functions that require Lockfile inspection
-/// Intentionally kept distinct from normal build images
-impl Default for Container {
-    fn default() -> Self {
-        Container {
-            name: "ubuntu".into(),
-            tag: "xenial".into(),
-        }
-    }
-}
-
-impl Container {
-    /// Initialize a container struct
-    ///
-    /// This will split the container on `:` to actually fetch the tag, and if no tag
-    /// was present, it will assume tag is latest as per docker conventions.
-    pub fn new(container: &str) -> Container {
-        let split: Vec<&str> = container.split(':').collect();
-        let tag = if split.len() == 2 { split[1] } else { "latest" };
-        let cname = if split.len() == 2 { split[0] } else { container };
-        Container {
-            name: cname.into(),
-            tag: tag.into(),
-        }
-    }
-}
 
 /// Representation of `lockfile.json`
 #[allow(non_snake_case)]
@@ -75,10 +21,10 @@ pub struct Lockfile {
     pub name: String,
     /// Build configuration used
     pub config: String,
-    /// Container and tag used to build
-    pub container: Container,
-    /// Name of the environment for the container at the time
-    pub environment: String,
+    /// Environment used to build
+    pub environment: Environment,
+    /// Name of the environment for the container (if used) at the time
+    pub envname: String,
     /// Name of the default environment set in the manifest
     pub defaultEnv: Option<String>,
     /// Revision id from version control
@@ -96,7 +42,7 @@ pub struct Lockfile {
 /// Generates a temporary empty lockfile for internal analysis
 impl Default for Lockfile {
     fn default() -> Self {
-        Lockfile::new("templock", &Container::default(), "none", None, None)
+        Lockfile::new("templock", &Environment::default(), "none", None, None)
     }
 }
 
@@ -106,8 +52,8 @@ impl Lockfile {
     /// If no version is given, the version is EXPERIMENTAL-{randhex} for Colony.
     pub fn new(
         name: &str,
-        container: &Container,
-        env: &str,
+        environment: &Environment,
+        envname: &str,
         v: Option<String>,
         build_cfg: Option<&str>,
     ) -> Self {
@@ -117,11 +63,11 @@ impl Lockfile {
             name: name.to_string(),
             version: v.unwrap_or(def_version),
             config: build_cfg.unwrap_or("release").to_string(),
-            container: container.clone(),
+            environment: environment.clone(),
             tool: env!("CARGO_PKG_VERSION").to_string(),
             built: Some(time.format("%Y-%m-%d %H:%M:%S").to_string()),
-            defaultEnv: Some(env.into()),
-            environment: env.into(),
+            defaultEnv: Some(envname.into()),
+            envname: envname.into(),
             dependencies: BTreeMap::new(),
             sha: None,
         }
@@ -203,7 +149,7 @@ impl Lockfile {
         if key == "version" {
             self.version.clone()
         } else if key == "environment" {
-            self.environment.clone()
+            self.envname.clone()
         } else {
             unreachable!("Only using get_value internally");
         }

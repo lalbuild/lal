@@ -1,16 +1,22 @@
 use std::{process::Command, vec::Vec};
 
-use super::{CliError, Config, Container, LalResult, StickyOptions};
+use super::{CliError, Config, Environment, LalResult, StickyOptions};
 
 /// Pull the current environment from docker
-pub fn update(container: &Container, env: &str) -> LalResult<()> {
+pub fn update(environment: &Environment, env: &str) -> LalResult<()> {
     info!("Updating {} container", env);
-    let args: Vec<String> = vec!["pull".into(), format!("{}", container)];
-    trace!("Docker pull {}", container);
-    let s = Command::new("docker").args(&args).status()?;
-    trace!("Exited docker");
-    if !s.success() {
-        return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
+    let args: Vec<String> = vec!["pull".into(), format!("{}", environment)];
+
+    match environment {
+        Environment::Container(container) => {
+            trace!("Docker pull {}", container);
+            let s = Command::new("docker").args(&args).status()?;
+            trace!("Exited docker");
+            if !s.success() {
+                return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
+            }
+        }
+        Environment::None => {}
     }
     Ok(())
 }

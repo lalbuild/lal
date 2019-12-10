@@ -47,12 +47,12 @@ pub fn fetch<T: CachedBackend + ?Sized>(
     })?;
     // filter out what we already have (being careful to examine env)
     for (name, d) in lf.dependencies {
-        // if d.name at d.version in d.environment matches something in deps
+        // if d.name at d.version in d.envname matches something in deps
         if let Some(&cand) = deps.get(&name) {
             // version found in manifest
             // ignore non-integer versions (stashed things must be overwritten)
             if let Ok(n) = d.version.parse::<u32>() {
-                if n == cand && d.environment == env {
+                if n == cand && d.envname == env {
                     info!("Reuse {} {} {}", env, name, n);
                     deps.remove(&name);
                 }

@@ -1,14 +1,18 @@
 pub use self::{
     config::{config_dir, Config, ConfigDefaults, Mount},
+    container::Container,
     ensure::ensure_dir_exists_fresh,
+    environment::Environment,
     errors::{CliError, LalResult},
-    lockfile::{Container, Lockfile},
+    lockfile::Lockfile,
     manifest::{ComponentConfiguration, Manifest, ManifestLocation},
     sticky::StickyOptions,
 };
 
 mod config;
+mod container;
 mod ensure;
+mod environment;
 mod errors;
 mod lockfile;
 mod sticky;

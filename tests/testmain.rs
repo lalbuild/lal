@@ -3,6 +3,7 @@ extern crate lal;
 #[macro_use] extern crate log;
 extern crate loggerv;
 #[macro_use] extern crate serial_test;
+extern crate parameterized_macro;
 extern crate tempdir;
 extern crate walkdir;
 
@@ -15,30 +16,12 @@ use std::{
     sync::Once,
 };
 
+use parameterized_macro::parameterized;
 use tempdir::TempDir;
 use walkdir::WalkDir;
 
 use lal::*;
 use loggerv::init_with_verbosity;
-
-// TODO: macroify this stuff
-
-mod chk {
-    use std::{fmt::Display, process};
-    // TODO: don't need to move T into here, but since they are joined..
-    pub fn is_ok<T, E: Display>(x: Result<T, E>, name: &str) {
-        let _ = x.map_err(|e| {
-            println!("Bail out! {} failed with '{}'", name, e);
-            process::exit(1);
-        });
-    }
-}
-// fn assert_err<T>(x: LalResult<T>, name: &str) {
-//    let _ = x.map(|v| {
-//        println!("Bail out! {} unexpected ok: {}", name, v);
-//        process::exit(1);
-//    });
-//
 
 struct TestState {
     backend: LocalBackend,
@@ -49,10 +32,8 @@ struct TestState {
     tempdir: TempDir,
 }
 
-
 static START: Once = Once::new();
 
-/// Initialise the testing environment and directories
 fn setup() -> TestState {
     START.call_once(|| {
         env::set_var("SSL_CERT_FILE", "/etc/ssl/certs/ca-certificates.crt");
@@ -88,10 +69,13 @@ fn setup() -> TestState {
     }
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_configure_backend() {
+fn test_configure_backend(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     assert_eq!(
         fs::canonicalize(Path::new(&state.backend.get_cache_dir())).unwrap(),
@@ -99,11 +83,13 @@ fn test_configure_backend() {
     );
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_heylib_echo() {
+fn test_heylib_echo(env_name: &str) {
     let state = setup();
-
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // Test basic build functionality with heylib component
     let heylibdir = state.testdir.join("heylib");
@@ -112,14 +98,17 @@ fn test_heylib_echo() {
     kill_input();
     info!("ok kill_input");
 
-    shell_echo();
+    shell_echo(&env_name);
     info!("ok shell_echo");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_shell_permissions() {
+fn test_shell_permissions(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // Test basic build functionality with heylib component
     let heylibdir = state.testdir.join("heylib");
@@ -128,14 +117,17 @@ fn test_shell_permissions() {
     kill_input();
     info!("ok kill_input");
 
-    shell_permissions();
+    shell_permissions(&env_name);
     info!("ok shell_permissions");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_run_scripts() {
+fn test_run_scripts(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // Test basic build functionality with heylib component
     let heylibdir = state.testdir.join("heylib");
@@ -144,14 +136,62 @@ fn test_run_scripts() {
     kill_input();
     info!("ok kill_input");
 
-    run_scripts();
+    run_scripts(&env_name);
     info!("ok run_scripts");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_build_and_stash_update_self() {
+fn test_get_environment_and_fetch_no_deps(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
+
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(&heylibdir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    get_environment_and_fetch(&env_name, &state.backend);
+    info!("ok get_environment_and_fetch");
+}
+
+#[parameterized(env_name = {"default", "alpine"})]
+#[serial]
+fn test_get_environment_and_fetch_with_deps(env_name: &str) {
+    let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
+
+    let heylibdir = state.testdir.join("heylib");
+    assert!(env::set_current_dir(&heylibdir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    fetch_release_build_and_publish(&env_name, &state.backend);
+    info!("ok fetch_release_build_and_publish heylib");
+
+    let helloworlddir = state.testdir.join("helloworld");
+    assert!(env::set_current_dir(&helloworlddir).is_ok());
+
+    kill_input();
+    info!("ok kill_input");
+
+    get_environment_and_fetch(&env_name, &state.backend);
+    info!("ok get_environment_and_fetch");
+}
+
+#[parameterized(env_name = {"default", "alpine"})]
+#[serial]
+fn test_build_and_stash_update_self(env_name: &str) {
+    let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // Test basic build functionality with heylib component
     let heylibdir = state.testdir.join("heylib");
@@ -160,17 +200,20 @@ fn test_build_and_stash_update_self() {
     kill_input();
     info!("ok kill_input");
 
-    build_and_stash_update_self(&state.backend);
+    build_and_stash_update_self(&env_name, &state.backend);
     info!("ok build_and_stash_update_self");
 
     list_everything();
     info!("ok list_everything");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_status_on_experimental() {
+fn test_status_on_experimental(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // Test basic build functionality with heylib component
     let heylibdir = state.testdir.join("heylib");
@@ -179,17 +222,20 @@ fn test_status_on_experimental() {
     kill_input();
     info!("ok kill_input");
 
-    build_and_stash_update_self(&state.backend);
+    build_and_stash_update_self(&env_name, &state.backend);
     info!("ok build_and_stash_update_self");
 
     status_on_experimentals();
     info!("ok status_on_experimentals");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_fetch_release_build_and_publish() {
+fn test_fetch_release_build_and_publish(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // Test basic build functionality with heylib component
     let heylibdir = state.testdir.join("heylib");
@@ -198,17 +244,20 @@ fn test_fetch_release_build_and_publish() {
     kill_input();
     info!("ok kill_input");
 
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
     list_everything();
     info!("ok list_everything");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_no_publish_non_release_builds() {
+fn test_no_publish_non_release_builds(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // Test basic build functionality with heylib component
     let heylibdir = state.testdir.join("heylib");
@@ -217,19 +266,25 @@ fn test_no_publish_non_release_builds() {
     kill_input();
     info!("ok kill_input");
 
-    no_publish_non_release_builds(&state.backend);
+    no_publish_non_release_builds(&env_name, &state.backend);
     info!("ok no_publish_non_release_builds heylib");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_update_save() {
+fn test_update_save(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // "helloworld" depends on "heylib"
     let heylibdir = state.testdir.join("heylib");
     assert!(env::set_current_dir(heylibdir).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    kill_input();
+    info!("ok kill_input");
+
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
     let helloworlddir = state.testdir.join("helloworld");
@@ -240,19 +295,22 @@ fn test_update_save() {
 
     // Fetch published dependencies into ./INPUT
     // update to versions listed in the manifest
+    update_save(&env_name, &state.backend);
     info!("ok update_save");
-    update_save(&state.backend);
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_verify_checks() {
+fn test_verify_checks(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // "helloworld" depends on "heylib"
     let heylibdir = state.testdir.join("heylib");
     assert!(env::set_current_dir(heylibdir).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
     let helloworlddir = state.testdir.join("helloworld");
@@ -261,20 +319,23 @@ fn test_verify_checks() {
     kill_input();
     info!("ok kill_input");
 
-    verify_checks(&state.backend);
+    verify_checks(&env_name, &state.backend);
     info!("ok verify_checks");
 }
 
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_release_build_and_publish() {
+fn test_release_build_and_publish(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // "helloworld" depends on "heylib"
     let heylibdir = state.testdir.join("heylib");
     assert!(env::set_current_dir(heylibdir).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
     let helloworlddir = state.testdir.join("helloworld");
@@ -283,17 +344,20 @@ fn test_release_build_and_publish() {
     kill_input();
     info!("ok kill_input");
 
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
 
     list_everything();
     info!("ok list_everything");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_remove_dependencies() {
+fn test_remove_dependencies(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     // "helloworld" has 1 dependency
     let helloworlddir = state.testdir.join("helloworld");
@@ -306,65 +370,77 @@ fn test_remove_dependencies() {
     info!("ok remove_dependencies");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_export_checks() {
+fn test_export_checks(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     let heylibdir = state.testdir.join("heylib");
     assert!(env::set_current_dir(heylibdir).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
     let helloworlddir = state.testdir.join("helloworld");
     assert!(env::set_current_dir(&helloworlddir).is_ok());
 
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
 
     // back to tmpdir to test export and clean
     assert!(env::set_current_dir(config_dir()).is_ok());
-    export_check(&state.backend);
+    export_check(&env_name, &state.backend);
     info!("ok export_check");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_query_check() {
+fn test_query_check(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     let heylibdir = state.testdir.join("heylib");
     assert!(env::set_current_dir(heylibdir).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
     let helloworlddir = state.testdir.join("helloworld");
     assert!(env::set_current_dir(&helloworlddir).is_ok());
 
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
 
     // back to tmpdir to test export and clean
     assert!(env::set_current_dir(config_dir()).is_ok());
 
-    query_check(&state.backend);
+    query_check(&env_name, &state.backend);
     info!("ok query_check");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_clean_check() {
+fn test_clean_check(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     let heylibdir = state.testdir.join("heylib");
     assert!(env::set_current_dir(heylibdir).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    kill_input();
+
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
     let helloworlddir = state.testdir.join("helloworld");
     assert!(env::set_current_dir(&helloworlddir).is_ok());
+    kill_input();
 
-    fetch_release_build_and_publish(&state.backend);
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
 
     // back to tmpdir to test export and clean
@@ -374,17 +450,20 @@ fn test_clean_check() {
     info!("ok clean_check");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_init_force() {
+fn test_init_force(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     let component = state.tempdir.path().join("new_component");
     fs::create_dir(&component).unwrap();
     assert!(env::set_current_dir(component).is_ok(), "set current dir");
 
     // test out some functionality regarding creating of new components
-    init_force();
+    init_force(&env_name);
     info!("ok init_force");
 
     has_config_and_manifest();
@@ -394,16 +473,19 @@ fn test_init_force() {
     info!("ok list_everything");
 }
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_change_envs() {
+fn test_change_envs(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     let component = state.tempdir.path().join("new_component");
     fs::create_dir(&component).unwrap();
     assert!(env::set_current_dir(component).is_ok(), "set current dir");
 
-    init_force();
+    init_force(&env_name);
     info!("ok init_force");
 
     change_envs();
@@ -411,16 +493,19 @@ fn test_change_envs() {
 }
 
 
-#[test]
+#[parameterized(env_name = {"default", "alpine"})]
 #[serial]
-fn test_propagations() {
+fn test_propagations(env_name: &str) {
     let state = setup();
+    if !cfg!(feature = "docker") && env_name == "alpine" {
+        return;
+    }
 
     let component = state.tempdir.path().join("new_component");
     fs::create_dir(&component).unwrap();
     assert!(env::set_current_dir(component).is_ok(), "new component dir");
 
-    init_force();
+    init_force(&env_name);
     info!("ok init_force");
 
     kill_manifest();
@@ -429,22 +514,30 @@ fn test_propagations() {
     // verify propagations by building prop-leaf -> prop-mid-X -> prop-base
     let propleaf = state.testdir.join("prop-leaf");
     assert!(env::set_current_dir(&propleaf).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    kill_input();
+
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish prop-leaf");
 
     let propmid1 = state.testdir.join("prop-mid-1");
     assert!(env::set_current_dir(&propmid1).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    kill_input();
+
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish prop-mid-1");
 
     let propmid2 = state.testdir.join("prop-mid-2");
     assert!(env::set_current_dir(&propmid2).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    kill_input();
+
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish prop-mid-2");
 
     let propbase = state.testdir.join("prop-base");
     assert!(env::set_current_dir(&propbase).is_ok());
-    fetch_release_build_and_publish(&state.backend);
+    kill_input();
+
+    fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish prop-base");
 
     check_propagation("prop-leaf");
@@ -458,6 +551,7 @@ fn kill_laldir() {
     }
     assert_eq!(laldir.is_dir(), false);
 }
+
 fn kill_input() {
     let input = Path::new(&env::current_dir().unwrap()).join("INPUT");
     if input.is_dir() {
@@ -495,8 +589,8 @@ fn change_envs() {
 
     // update the container associated with the default env
     // (on CI we've already done this at test start => cheap)
-    let container = cfg.get_container(mf.environment.clone()).unwrap();
-    let ru = lal::env::update(&container, &mf.environment);
+    let environment = cfg.get_environment(mf.environment.clone()).unwrap();
+    let ru = lal::env::update(&environment, &mf.environment);
     assert!(ru.is_ok(), "env update succeeded");
 
     let rc = lal::env::set(&sticky_none, &cfg, "xenial");
@@ -563,20 +657,20 @@ fn configure_local_backend(demo_config: &PathBuf) -> LocalBackend {
 }
 
 // Create manifest in a weird directory
-fn init_force() {
+fn init_force(env_name: &str) {
     let cfg = Config::read().expect("read config");
 
     let m1 = Manifest::read();
     assert!(m1.is_err(), "no manifest at this point");
 
     // Creates a manifest in the testtmp directory
-    let m2 = lal::init(&cfg, false, "alpine");
+    let m2 = lal::init(&cfg, false, env_name);
     assert!(m2.is_ok(), "could init without force param");
 
-    let m3 = lal::init(&cfg, true, "alpine");
+    let m3 = lal::init(&cfg, true, env_name);
     assert!(m3.is_ok(), "could re-init with force param");
 
-    let m4 = lal::init(&cfg, false, "alpine");
+    let m4 = lal::init(&cfg, false, env_name);
     assert!(m4.is_err(), "could not re-init without force ");
 
     let m5 = lal::init(&cfg, true, "blah");
@@ -590,37 +684,38 @@ fn has_config_and_manifest() {
     assert!(ldir.is_dir(), "have laldir");
 
     let cfg = Config::read();
-    chk::is_ok(cfg, "could read config");
+    assert!(cfg.is_ok(), "could read config");
 
     let manifest = Manifest::read();
-    chk::is_ok(Manifest::read(), "could read manifest");
+    assert!(manifest.is_ok(), "could read manifest");
 
     // There is no INPUT yet, but we have no dependencies, so this should work:
     let r = lal::verify(&manifest.unwrap(), "xenial".into(), false);
-    chk::is_ok(r, "could verify after install");
+    assert!(r.is_ok(), "could verify after install");
 }
 
 // Shell tests
-fn shell_echo() {
+fn shell_echo(env_name: &str) {
     let cfg = Config::read().unwrap();
-    let container = cfg.get_container("alpine".into()).unwrap();
+    let environment = cfg.get_environment(env_name.into()).unwrap();
     let modes = ShellModes::default();
-    let r = lal::docker_run(
+    let r = lal::run(
         &cfg,
-        &container,
+        &environment,
         vec!["echo".to_string(), "# echo from docker".to_string()],
         &DockerRunFlags::default(),
         &modes,
     );
     assert!(r.is_ok(), "shell echoed");
 }
-fn shell_permissions() {
+
+fn shell_permissions(env_name: &str) {
     let cfg = Config::read().unwrap();
-    let container = cfg.get_container("alpine".into()).unwrap();
+    let environment = cfg.get_environment(env_name.into()).unwrap();
     let modes = ShellModes::default();
-    let r = lal::docker_run(
+    let r = lal::run(
         &cfg,
-        &container,
+        &environment,
         vec!["touch".to_string(), "README.md".to_string()],
         &DockerRunFlags::default(),
         &modes,
@@ -628,18 +723,16 @@ fn shell_permissions() {
     assert!(r.is_ok(), "could touch files in container");
 }
 
-fn build_and_stash_update_self<T: CachedBackend + Backend>(backend: &T) {
+fn build_and_stash_update_self<T: CachedBackend + Backend>(env_name: &str, backend: &T) {
     let mf = Manifest::read().expect("Read manifest");
     let cfg = Config::read().expect("Read config");
-    let container = cfg
-        .get_container("alpine".into())
-        .expect("get 'alpine' Container");
+    let environment = cfg.get_environment(env_name.into()).expect("get environment");
 
     // we'll try with various build options further down with various deps
     let mut bopts = BuildOptions {
         name: Some("heylib".into()),
         configuration: Some("release".into()),
-        container: container,
+        environment: environment,
         release: true,
         version: None,
         sha: None,
@@ -648,10 +741,10 @@ fn build_and_stash_update_self<T: CachedBackend + Backend>(backend: &T) {
     };
     let modes = ShellModes::default();
     // basic build works - all deps are global at right env
-    let r = lal::build(&cfg, &mf, &bopts, "alpine".into(), modes.clone());
+    let r = lal::build(&cfg, &mf, &bopts, env_name.into(), modes.clone());
     if let Err(e) = r {
         println!("error from build: {:?}", e);
-        assert!(false, "could perform an alpine build");
+        assert!(false, "could perform a '{}' build", env_name);
     }
 
     // lal stash blah
@@ -667,11 +760,11 @@ fn build_and_stash_update_self<T: CachedBackend + Backend>(backend: &T) {
         false,
         "garbage", // env not relevant for stash
     );
-    chk::is_ok(ru, "could update heylib from stash");
+    assert!(ru.is_ok(), "could update heylib from stash");
 
     // basic build won't work now without simple verify
-    let r1 = lal::build(&cfg, &mf, &bopts, "alpine".into(), modes.clone());
-    assert!(r1.is_err(), "could not verify a new alpine build");
+    let r1 = lal::build(&cfg, &mf, &bopts, env_name.into(), modes.clone());
+    assert!(r1.is_err(), "could not verify a new '{}' build", env_name);
     if let Err(CliError::NonGlobalDependencies(nonglob)) = r1 {
         assert_eq!(nonglob, "heylib");
     } else {
@@ -680,15 +773,14 @@ fn build_and_stash_update_self<T: CachedBackend + Backend>(backend: &T) {
     }
 
     bopts.simple_verify = true;
-    let r2 = lal::build(&cfg, &mf, &bopts, "alpine".into(), modes.clone());
+    let r2 = lal::build(&cfg, &mf, &bopts, env_name.into(), modes.clone());
     assert!(r2.is_ok(), "can build with stashed deps with simple verify");
-
 
     // force will also work - even with stashed deps from wrong env
     let renv = lal::build(&cfg, &mf, &bopts, "xenial".into(), modes.clone());
     assert!(renv.is_err(), "cannot build with simple verify when wrong env");
     if let Err(CliError::EnvironmentMismatch(_, compenv)) = renv {
-        assert_eq!(compenv, "alpine"); // expected complaints about xenial env
+        assert_eq!(compenv, env_name); // expected complaints about xenial env
     } else {
         println!("actual renv was {:?}", renv);
         assert!(false);
@@ -712,20 +804,28 @@ fn build_and_stash_update_self<T: CachedBackend + Backend>(backend: &T) {
     assert!(printbuild.is_ok(), "saw docker run print with X11 mounts");
 }
 
-
-fn fetch_release_build_and_publish<T: CachedBackend + Backend>(backend: &T) {
+fn get_environment_and_fetch<T: CachedBackend + Backend>(env_name: &str, backend: &T) {
     let mf = Manifest::read().unwrap();
     let cfg = Config::read().unwrap();
-    let container = cfg.get_container("alpine".into()).unwrap();
+    let _environment = cfg.get_environment(env_name.into()).unwrap();
 
-    let rcore = lal::fetch(&mf, backend, true, "alpine");
+    let rcore = lal::fetch(&mf, backend, true, env_name);
+    assert!(rcore.is_ok(), "install core succeeded");
+}
+
+fn fetch_release_build_and_publish<T: CachedBackend + Backend>(env_name: &str, backend: &T) {
+    let mf = Manifest::read().unwrap();
+    let cfg = Config::read().unwrap();
+    let environment = cfg.get_environment(env_name.into()).unwrap();
+
+    let rcore = lal::fetch(&mf, backend, true, env_name);
     assert!(rcore.is_ok(), "install core succeeded");
 
     // we'll try with various build options further down with various deps
     let bopts = BuildOptions {
         name: None,
         configuration: Some("release".into()),
-        container: container,
+        environment: environment,
         release: true,
         version: Some("1".into()), // want to publish version 1 for later
         sha: None,
@@ -733,17 +833,17 @@ fn fetch_release_build_and_publish<T: CachedBackend + Backend>(backend: &T) {
         simple_verify: false,
     };
     let modes = ShellModes::default();
-    let r = lal::build(&cfg, &mf, &bopts, "alpine".into(), modes.clone());
+    let r = lal::build(&cfg, &mf, &bopts, env_name.into(), modes.clone());
     assert!(r.is_ok(), "could build in release");
 
     let rp = lal::publish(&mf.name, backend);
     assert!(rp.is_ok(), "could publish");
 }
 
-fn no_publish_non_release_builds<T: CachedBackend + Backend>(backend: &T) {
+fn no_publish_non_release_builds<T: CachedBackend + Backend>(env_name: &str, backend: &T) {
     let mf = Manifest::read().unwrap();
     let cfg = Config::read().unwrap();
-    let container = cfg.get_container("alpine".into()).unwrap();
+    let environment = cfg.get_environment(env_name.into()).unwrap();
 
     let artifact_dir = Path::new("./ARTIFACT");
     if artifact_dir.is_dir() {
@@ -754,7 +854,7 @@ fn no_publish_non_release_builds<T: CachedBackend + Backend>(backend: &T) {
     let mut bopts = BuildOptions {
         name: None,
         configuration: Some("release".into()),
-        container: container,
+        environment: environment,
         release: false,            // missing releaes bad
         version: Some("2".into()), // but have version
         sha: None,
@@ -762,7 +862,7 @@ fn no_publish_non_release_builds<T: CachedBackend + Backend>(backend: &T) {
         simple_verify: false,
     };
     let modes = ShellModes::default();
-    let r = lal::build(&cfg, &mf, &bopts, "alpine".into(), modes.clone());
+    let r = lal::build(&cfg, &mf, &bopts, env_name.into(), modes.clone());
     assert!(r.is_ok(), "could build without non-release");
 
     let rp = lal::publish(&mf.name, backend);
@@ -771,21 +871,22 @@ fn no_publish_non_release_builds<T: CachedBackend + Backend>(backend: &T) {
     bopts.version = None; // missing version bad
     bopts.release = true; // but at least in release mode now
 
-    let rb2 = lal::build(&cfg, &mf, &bopts, "alpine".into(), modes.clone());
+    let rb2 = lal::build(&cfg, &mf, &bopts, env_name.into(), modes.clone());
     assert!(rb2.is_ok(), "could build in without version");
 
     let rp2 = lal::publish(&mf.name, backend);
     assert!(rp2.is_err(), "could not publish without version set");
 }
+
 // add dependencies to test tree
 // NB: this currently shouldn't do anything as all deps are accounted for
 // Thus if this changes test manifests, something is wrong..
-fn update_save<T: CachedBackend + Backend>(backend: &T) {
+fn update_save<T: CachedBackend + Backend>(env_name: &str, backend: &T) {
     let mf1 = Manifest::read().unwrap();
 
     // update heylib --save
-    let ri = lal::update(&mf1, backend, vec!["heylib".to_string()], true, false, "alpine");
-    chk::is_ok(ri, "could update heylib and save");
+    let ri = lal::update(&mf1, backend, vec!["heylib=1".to_string()], true, false, env_name);
+    ri.expect("could update heylib and save");
 
     // main deps (and re-read manifest to avoid overwriting devedps)
     let mf2 = Manifest::read().unwrap();
@@ -793,27 +894,27 @@ fn update_save<T: CachedBackend + Backend>(backend: &T) {
         "heylib".to_string(),
         // TODO: more deps
     ];
-    let ri = lal::update(&mf2, backend, updates, true, false, "alpine");
-    chk::is_ok(ri, "could update and save");
+    let ri = lal::update(&mf2, backend, updates, true, false, env_name);
+    assert!(ri.is_ok(), "could update and save");
 
     // verify update-all --save
     let mf3 = Manifest::read().unwrap();
-    let ri = lal::update_all(&mf3, backend, true, false, "alpine");
-    chk::is_ok(ri, "could update all and --save");
+    let ri = lal::update_all(&mf3, backend, true, false, env_name);
+    assert!(ri.is_ok(), "could update all and --save");
 
     // verify update-all --save --dev
     let mf4 = Manifest::read().unwrap();
-    let ri = lal::update_all(&mf4, backend, false, true, "alpine");
-    chk::is_ok(ri, "could update all and --save --dev");
+    let ri = lal::update_all(&mf4, backend, false, true, env_name);
+    assert!(ri.is_ok(), "could update all and --save --dev");
 }
 
-fn verify_checks<T: CachedBackend + Backend>(backend: &T) {
+fn verify_checks<T: CachedBackend + Backend>(env_name: &str, backend: &T) {
     let mf = Manifest::read().unwrap();
 
-    let rcore = lal::fetch(&mf, backend, true, "alpine");
+    let rcore = lal::fetch(&mf, backend, true, env_name);
     assert!(rcore.is_ok(), "install core succeeded");
 
-    let r = lal::verify(&mf, "alpine".into(), false);
+    let r = lal::verify(&mf, env_name.into(), false);
     assert!(r.is_ok(), "could verify after install");
 
     let renv1 = lal::verify(&mf, "xenial".into(), false);
@@ -830,32 +931,32 @@ fn verify_checks<T: CachedBackend + Backend>(backend: &T) {
     // clean folders and verify it fails
     fs::remove_dir_all(&heylib).unwrap();
 
-    let r2 = lal::verify(&mf, "alpine".into(), false);
+    let r2 = lal::verify(&mf, env_name.into(), false);
     assert!(r2.is_err(), "verify failed after fiddling");
 
     // fetch --core, resyncs with core deps (removes devDeps and other extraneous)
-    let rcore = lal::fetch(&mf, backend, true, "alpine");
+    let rcore = lal::fetch(&mf, backend, true, env_name);
     assert!(rcore.is_ok(), "install core succeeded");
     assert!(heylib.is_dir(), "heylib was reinstalled from manifest");
     // TODO: add dev dep to verify it wasn't reinstalled here
     // assert!(!gtest.is_dir(), "gtest was was extraneous with --core => removed");
 
     // fetch --core also doesn't install else again
-    let rcore2 = lal::fetch(&mf, backend, true, "alpine");
+    let rcore2 = lal::fetch(&mf, backend, true, env_name);
     assert!(rcore2.is_ok(), "install core succeeded 2");
     assert!(heylib.is_dir(), "heylib still there");
     // assert!(!gtest.is_dir(), "gtest was not reinstalled with --core");
 
     // and it is finally installed if we ask for non-core as well
-    let rall = lal::fetch(&mf, backend, false, "alpine");
+    let rall = lal::fetch(&mf, backend, false, env_name);
     assert!(rall.is_ok(), "install all succeeded");
     // assert!(gtest.is_dir(), "gtest is otherwise installed again");
 
-    let r3 = lal::verify(&mf, "alpine", false);
+    let r3 = lal::verify(&mf, env_name, false);
     assert!(r3.is_ok(), "verify ok again");
 }
 
-fn run_scripts() {
+fn run_scripts(env_name: &str) {
     {
         Command::new("mkdir")
             .arg("-p")
@@ -871,9 +972,16 @@ fn run_scripts() {
             .unwrap();
     }
     let cfg = Config::read().unwrap();
-    let container = cfg.get_container("alpine".into()).unwrap();
+    let environment = cfg.get_environment(env_name.into()).unwrap();
     let modes = ShellModes::default();
-    let r = lal::script(&cfg, &container, "subroutine", vec!["there", "mr"], &modes, false);
+    let r = lal::script(
+        &cfg,
+        &environment,
+        "subroutine",
+        vec!["there", "mr"],
+        &modes,
+        false,
+    );
     assert!(r.is_ok(), "could run subroutine script");
 }
 
@@ -963,15 +1071,15 @@ fn clean_check() {
     assert!(first2.is_none(), "no artifacts left in cache");
 }
 
-fn export_check<T: CachedBackend + Backend>(backend: &T) {
+fn export_check<T: CachedBackend + Backend>(env_name: &str, backend: &T) {
     let tmp = Path::new(".").join("blah");
     if !tmp.is_dir() {
         fs::create_dir(&tmp).unwrap();
     }
-    let r = lal::export(backend, "heylib=1", Some("blah"), Some("alpine"));
+    let r = lal::export(backend, "heylib=1", Some("blah"), Some(env_name));
     assert!(r.is_ok(), "could export heylib=1 into subdir");
 
-    let r2 = lal::export(backend, "hello", None, Some("alpine"));
+    let r2 = lal::export(backend, "hello", None, Some(env_name));
     assert!(r2.is_ok(), "could export latest hello into PWD");
 
     let heylib = Path::new(".").join("blah").join("heylib.tar.gz");
@@ -983,10 +1091,10 @@ fn export_check<T: CachedBackend + Backend>(backend: &T) {
     // TODO: verify we can untar and execute hello binary and grep output after #15
 }
 
-fn query_check<T: Backend>(backend: &T) {
-    let r = lal::query(backend, Some("alpine"), "hello", false);
+fn query_check<T: Backend>(env_name: &str, backend: &T) {
+    let r = lal::query(backend, Some(env_name), "hello", false);
     assert!(r.is_ok(), "could query for hello");
 
-    let rl = lal::query(backend, Some("alpine"), "hello", true);
+    let rl = lal::query(backend, Some(env_name), "hello", true);
     assert!(rl.is_ok(), "could query latest for hello");
 }

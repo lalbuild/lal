@@ -3,6 +3,7 @@
     "local": {}
   },
   "environments": {
+    "default": null,
     "xenial": {
         "name": "clux/lal-xenial",
         "tag": "latest"

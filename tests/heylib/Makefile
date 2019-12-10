@@ -11,4 +11,4 @@ output: libhey.a hey.h
 	cp hey.h OUTPUT/
 
 clean:
-	rm hey.o libhey.a
+	-rm hey.o libhey.a

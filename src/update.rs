@@ -53,8 +53,9 @@ pub fn update<T: CachedBackend + ?Sized>(
 
             // First, since this potentially goes in the manifest
             // make sure the version is found for all supported environments:
-            let ver = backend
-                .get_latest_supported_versions(comp, manifest.supportedEnvironments.clone())?
+            let supported_versions = backend.get_latest_supported_versions(comp, vec![env.to_string()])?;
+
+            let ver = supported_versions
                 .into_iter()
                 .max()
                 .ok_or_else(|| CliError::NoIntersectedVersion(comp.clone()))?;
