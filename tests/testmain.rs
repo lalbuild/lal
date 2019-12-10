@@ -1,5 +1,6 @@
 extern crate lal;
 
+extern crate fs_extra;
 #[macro_use] extern crate log;
 extern crate loggerv;
 #[macro_use] extern crate serial_test;
@@ -16,6 +17,7 @@ use std::{
     sync::Once,
 };
 
+use fs_extra::dir::{copy, CopyOptions};
 use parameterized_macro::parameterized;
 use tempdir::TempDir;
 use walkdir::WalkDir;
@@ -69,6 +71,18 @@ fn setup() -> TestState {
     }
 }
 
+// Copies the component to a temporary location for this test
+// and sets the working directory to that location
+fn chdir_to_component(component: &str, state: &TestState) {
+    let copy_options = CopyOptions::new();
+
+    let from = state.testdir.join(component);
+    let to = state.tempdir.path().join(component);
+
+    copy(&from, state.tempdir.path(), &copy_options).expect("copy component to tempdir");
+    assert!(env::set_current_dir(&to).is_ok());
+}
+
 #[parameterized(env_name = {"default", "alpine"})]
 #[serial]
 fn test_configure_backend(env_name: &str) {
@@ -92,11 +106,7 @@ fn test_heylib_echo(env_name: &str) {
     }
 
     // Test basic build functionality with heylib component
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    chdir_to_component("heylib", &state);
 
     shell_echo(&env_name);
     info!("ok shell_echo");
@@ -111,11 +121,7 @@ fn test_shell_permissions(env_name: &str) {
     }
 
     // Test basic build functionality with heylib component
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    chdir_to_component("heylib", &state);
 
     shell_permissions(&env_name);
     info!("ok shell_permissions");
@@ -130,11 +136,7 @@ fn test_run_scripts(env_name: &str) {
     }
 
     // Test basic build functionality with heylib component
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    chdir_to_component("heylib", &state);
 
     run_scripts(&env_name);
     info!("ok run_scripts");
@@ -148,11 +150,7 @@ fn test_get_environment_and_fetch_no_deps(env_name: &str) {
         return;
     }
 
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(&heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    chdir_to_component("heylib", &state);
 
     get_environment_and_fetch(&env_name, &state.backend);
     info!("ok get_environment_and_fetch");
@@ -166,21 +164,11 @@ fn test_get_environment_and_fetch_with_deps(env_name: &str) {
         return;
     }
 
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(&heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
-
+    chdir_to_component("heylib", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
-    let helloworlddir = state.testdir.join("helloworld");
-    assert!(env::set_current_dir(&helloworlddir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
-
+    chdir_to_component("helloworld", &state);
     get_environment_and_fetch(&env_name, &state.backend);
     info!("ok get_environment_and_fetch");
 }
@@ -194,12 +182,7 @@ fn test_build_and_stash_update_self(env_name: &str) {
     }
 
     // Test basic build functionality with heylib component
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
-
+    chdir_to_component("heylib", &state);
     build_and_stash_update_self(&env_name, &state.backend);
     info!("ok build_and_stash_update_self");
 
@@ -216,11 +199,7 @@ fn test_status_on_experimental(env_name: &str) {
     }
 
     // Test basic build functionality with heylib component
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    chdir_to_component("heylib", &state);
 
     build_and_stash_update_self(&env_name, &state.backend);
     info!("ok build_and_stash_update_self");
@@ -238,12 +217,7 @@ fn test_fetch_release_build_and_publish(env_name: &str) {
     }
 
     // Test basic build functionality with heylib component
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
-
+    chdir_to_component("heylib", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
@@ -260,11 +234,7 @@ fn test_no_publish_non_release_builds(env_name: &str) {
     }
 
     // Test basic build functionality with heylib component
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    chdir_to_component("heylib", &state);
 
     no_publish_non_release_builds(&env_name, &state.backend);
     info!("ok no_publish_non_release_builds heylib");
@@ -279,19 +249,12 @@ fn test_update_save(env_name: &str) {
     }
 
     // "helloworld" depends on "heylib"
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-    kill_input();
-    info!("ok kill_input");
-
+    chdir_to_component("heylib", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
-    let helloworlddir = state.testdir.join("helloworld");
-    assert!(env::set_current_dir(&helloworlddir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    // switch to "helloworld" component
+    chdir_to_component("helloworld", &state);
 
     // Fetch published dependencies into ./INPUT
     // update to versions listed in the manifest
@@ -308,16 +271,12 @@ fn test_verify_checks(env_name: &str) {
     }
 
     // "helloworld" depends on "heylib"
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
+    chdir_to_component("heylib", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
-    let helloworlddir = state.testdir.join("helloworld");
-    assert!(env::set_current_dir(&helloworlddir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    // switch to "helloworld" component
+    chdir_to_component("helloworld", &state);
 
     verify_checks(&env_name, &state.backend);
     info!("ok verify_checks");
@@ -333,17 +292,12 @@ fn test_release_build_and_publish(env_name: &str) {
     }
 
     // "helloworld" depends on "heylib"
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
+    chdir_to_component("heylib", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
-    let helloworlddir = state.testdir.join("helloworld");
-    assert!(env::set_current_dir(&helloworlddir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
-
+    // switch to "helloworld" component
+    chdir_to_component("helloworld", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
 
@@ -360,11 +314,7 @@ fn test_remove_dependencies(env_name: &str) {
     }
 
     // "helloworld" has 1 dependency
-    let helloworlddir = state.testdir.join("helloworld");
-    assert!(env::set_current_dir(&helloworlddir).is_ok());
-
-    kill_input();
-    info!("ok kill_input");
+    chdir_to_component("helloworld", &state);
 
     remove_dependencies();
     info!("ok remove_dependencies");
@@ -378,14 +328,13 @@ fn test_export_checks(env_name: &str) {
         return;
     }
 
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
+    // "helloworld" depends on "heylib"
+    chdir_to_component("heylib", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
-    let helloworlddir = state.testdir.join("helloworld");
-    assert!(env::set_current_dir(&helloworlddir).is_ok());
-
+    // switch to "helloworld" component
+    chdir_to_component("helloworld", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
 
@@ -403,14 +352,13 @@ fn test_query_check(env_name: &str) {
         return;
     }
 
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
+    // "helloworld" depends on "heylib"
+    chdir_to_component("heylib", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
-    let helloworlddir = state.testdir.join("helloworld");
-    assert!(env::set_current_dir(&helloworlddir).is_ok());
-
+    // switch to "helloworld" component
+    chdir_to_component("helloworld", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
 
@@ -429,17 +377,13 @@ fn test_clean_check(env_name: &str) {
         return;
     }
 
-    let heylibdir = state.testdir.join("heylib");
-    assert!(env::set_current_dir(heylibdir).is_ok());
-    kill_input();
-
+    // "helloworld" depends on "heylib"
+    chdir_to_component("heylib", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish heylib");
 
-    let helloworlddir = state.testdir.join("helloworld");
-    assert!(env::set_current_dir(&helloworlddir).is_ok());
-    kill_input();
-
+    // switch to "helloworld" component
+    chdir_to_component("helloworld", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish helloworld");
 
@@ -501,42 +445,20 @@ fn test_propagations(env_name: &str) {
         return;
     }
 
-    let component = state.tempdir.path().join("new_component");
-    fs::create_dir(&component).unwrap();
-    assert!(env::set_current_dir(component).is_ok(), "new component dir");
-
-    init_force(&env_name);
-    info!("ok init_force");
-
-    kill_manifest();
-    info!("ok kill_manifest");
-
     // verify propagations by building prop-leaf -> prop-mid-X -> prop-base
-    let propleaf = state.testdir.join("prop-leaf");
-    assert!(env::set_current_dir(&propleaf).is_ok());
-    kill_input();
-
+    chdir_to_component("prop-leaf", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish prop-leaf");
 
-    let propmid1 = state.testdir.join("prop-mid-1");
-    assert!(env::set_current_dir(&propmid1).is_ok());
-    kill_input();
-
+    chdir_to_component("prop-mid-1", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish prop-mid-1");
 
-    let propmid2 = state.testdir.join("prop-mid-2");
-    assert!(env::set_current_dir(&propmid2).is_ok());
-    kill_input();
-
+    chdir_to_component("prop-mid-2", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish prop-mid-2");
 
-    let propbase = state.testdir.join("prop-base");
-    assert!(env::set_current_dir(&propbase).is_ok());
-    kill_input();
-
+    chdir_to_component("prop-base", &state);
     fetch_release_build_and_publish(&env_name, &state.backend);
     info!("ok fetch_release_build_and_publish prop-base");
 
@@ -550,14 +472,6 @@ fn kill_laldir() {
         fs::remove_dir_all(&laldir).unwrap();
     }
     assert_eq!(laldir.is_dir(), false);
-}
-
-fn kill_input() {
-    let input = Path::new(&env::current_dir().unwrap()).join("INPUT");
-    if input.is_dir() {
-        fs::remove_dir_all(&input).unwrap();
-    }
-    assert_eq!(input.is_dir(), false);
 }
 
 fn remove_dependencies() {
@@ -575,8 +489,6 @@ fn remove_dependencies() {
     let mf2 = Manifest::read().unwrap();
     let xs2 = mf2.dependencies.keys().cloned().collect::<Vec<_>>();
     assert_eq!(xs2.len(), 0);
-
-    mf.write().unwrap(); // save the old one again
 }
 
 fn change_envs() {
@@ -606,15 +518,6 @@ fn change_envs() {
     // we cleared the stickies with that
     let sticky_clear = StickyOptions::read().unwrap();
     assert_eq!(sticky_clear.env, None);
-}
-
-fn kill_manifest() {
-    let pwd = env::current_dir().unwrap();
-    let manifest = Path::new(&pwd).join("manifest.json");
-    if manifest.is_file() {
-        fs::remove_file(&manifest).unwrap();
-    }
-    assert_eq!(manifest.is_file(), false);
 }
 
 fn list_everything() {
