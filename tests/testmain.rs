@@ -339,7 +339,7 @@ fn test_export_checks(env_name: &str) {
     info!("ok fetch_release_build_and_publish helloworld");
 
     // back to tmpdir to test export and clean
-    assert!(env::set_current_dir(config_dir()).is_ok());
+    assert!(env::set_current_dir(config_dir(None)).is_ok());
     export_check(&env_name, &state.backend);
     info!("ok export_check");
 }
@@ -363,7 +363,7 @@ fn test_query_check(env_name: &str) {
     info!("ok fetch_release_build_and_publish helloworld");
 
     // back to tmpdir to test export and clean
-    assert!(env::set_current_dir(config_dir()).is_ok());
+    assert!(env::set_current_dir(config_dir(None)).is_ok());
 
     query_check(&env_name, &state.backend);
     info!("ok query_check");
@@ -388,7 +388,7 @@ fn test_clean_check(env_name: &str) {
     info!("ok fetch_release_build_and_publish helloworld");
 
     // back to tmpdir to test export and clean
-    assert!(env::set_current_dir(config_dir()).is_ok());
+    assert!(env::set_current_dir(config_dir(None)).is_ok());
 
     clean_check();
     info!("ok clean_check");
@@ -467,7 +467,7 @@ fn test_propagations(env_name: &str) {
 }
 
 fn kill_laldir() {
-    let laldir = config_dir();
+    let laldir = config_dir(None);
     if laldir.is_dir() {
         fs::remove_dir_all(&laldir).unwrap();
     }
@@ -583,7 +583,7 @@ fn init_force(env_name: &str) {
 // Tests need to be run in a directory with a manifest
 // and ~/.lal + config must exist
 fn has_config_and_manifest() {
-    let ldir = config_dir();
+    let ldir = config_dir(None);
     assert!(ldir.is_dir(), "have laldir");
 
     let cfg = Config::read();

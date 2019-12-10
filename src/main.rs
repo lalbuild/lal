@@ -553,12 +553,12 @@ fn main() {
     if let Some(a) = args.subcommand_matches("configure") {
         result_exit(
             "configure",
-            lal::configure(true, true, a.value_of("file").unwrap()),
+            lal::configure(true, true, a.value_of("file").unwrap(), None),
         );
     }
 
     // Force config to exists before allowing remaining actions
-    let config = Config::read()
+    let config = Config::read(None)
         .map_err(|e| {
             error!("Configuration error: {}", e);
             println!();

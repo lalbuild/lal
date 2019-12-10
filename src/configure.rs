@@ -190,7 +190,7 @@ fn non_root_sanity() -> LalResult<()> {
 }
 
 fn create_lal_dir() -> LalResult<PathBuf> {
-    let laldir = config_dir();
+    let laldir = config_dir(None);
     if !laldir.is_dir() {
         fs::create_dir(&laldir)?;
     }
@@ -233,7 +233,7 @@ pub fn configure(save: bool, interactive: bool, defaults: &str) -> LalResult<Con
     let mut cfg = Config::new(def);
     cfg.interactive = interactive; // need to override default for tests
     if save {
-        cfg.write(false)?;
+        cfg.write(false, None)?;
     }
     Ok(cfg)
 }

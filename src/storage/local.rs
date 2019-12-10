@@ -48,7 +48,7 @@ impl LocalBackend {
 impl Backend for LocalBackend {
     fn get_versions(&self, name: &str, loc: &str) -> LalResult<Vec<u32>> {
         let tar_dir = format!("{}/environments/{}/{}/", self.cache, loc, name);
-        let dentries = fs::read_dir(config_dir().join(tar_dir));
+        let dentries = fs::read_dir(config_dir(None).join(tar_dir));
         let mut versions = vec![];
         for entry in dentries? {
             let path = entry?;
@@ -107,12 +107,12 @@ impl Backend for LocalBackend {
             self.cache, env, name, version
         );
 
-        if let Some(full_tar_dir) = config_dir().join(tar_dir).to_str() {
+        if let Some(full_tar_dir) = config_dir(None).join(tar_dir).to_str() {
             ensure_dir_exists_fresh(full_tar_dir)?;
         }
 
-        fs::copy(tarball, config_dir().join(tar_path))?;
-        fs::copy(lockfile, config_dir().join(lock_path))?;
+        fs::copy(tarball, config_dir(None).join(tar_path))?;
+        fs::copy(lockfile, config_dir(None).join(lock_path))?;
 
         Ok(())
     }
