@@ -77,7 +77,13 @@ fn status_recurse(
 /// from lockfile data.
 ///
 /// It is not intended as a verifier, but will nevertheless produce a summary at the end.
-pub fn status(component_dir: &Path, manifest: &Manifest, full: bool, show_ver: bool, show_time: bool) -> LalResult<()> {
+pub fn status(
+    component_dir: &Path,
+    manifest: &Manifest,
+    full: bool,
+    show_ver: bool,
+    show_time: bool,
+) -> LalResult<()> {
     let mut error = None;
 
     let lf = Lockfile::default().populate_from_input(&component_dir)?;

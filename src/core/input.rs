@@ -12,7 +12,10 @@ struct PartialLock {
     pub version: String,
 }
 fn read_partial_lockfile(component: &str, component_dir: &Path) -> LalResult<PartialLock> {
-    let lock_path = component_dir.join("./INPUT").join(component).join("lockfile.json");
+    let lock_path = component_dir
+        .join("./INPUT")
+        .join(component)
+        .join("lockfile.json");
     if !lock_path.exists() {
         return Err(CliError::MissingLockfile(component.to_string()));
     }

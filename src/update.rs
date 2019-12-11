@@ -1,6 +1,6 @@
 use super::{CliError, LalResult, Manifest};
-use storage::CachedBackend;
 use std::path::Path;
+use storage::CachedBackend;
 
 /// Update specific dependencies outside the manifest
 ///
@@ -42,10 +42,12 @@ pub fn update<T: CachedBackend + ?Sized>(
             } else {
                 // fetch from stash - this does not go into `updated` it it succeeds
                 // because we wont and cannot save stashed versions in the manifest
-                let _ = backend.unpack_stashed_component(&component_dir, pair[0], pair[1]).map_err(|e| {
-                    warn!("Failed to update {} from stash ({})", pair[0], e);
-                    error = Some(e);
-                });
+                let _ = backend
+                    .unpack_stashed_component(&component_dir, pair[0], pair[1])
+                    .map_err(|e| {
+                        warn!("Failed to update {} from stash ({})", pair[0], e);
+                        error = Some(e);
+                    });
             }
         } else {
             if &comp.to_lowercase() != comp {
@@ -129,5 +131,13 @@ pub fn update_all<T: CachedBackend + ?Sized>(
     } else {
         manifest.dependencies.keys().cloned().collect()
     };
-    update(&component_dir, manifest, backend, deps, save && !dev, save && dev, env)
+    update(
+        &component_dir,
+        manifest,
+        backend,
+        deps,
+        save && !dev,
+        save && dev,
+        env,
+    )
 }

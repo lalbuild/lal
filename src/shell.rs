@@ -170,10 +170,12 @@ pub fn run(
     command: Vec<String>,
     flags: &DockerRunFlags,
     modes: &ShellModes,
-    component_dir: &Path
+    component_dir: &Path,
 ) -> LalResult<()> {
     match environment {
-        Environment::Container(container) => docker_run(&cfg, &container, command, &flags, &modes, &component_dir),
+        Environment::Container(container) => {
+            docker_run(&cfg, &container, command, &flags, &modes, &component_dir)
+        }
         Environment::None => native_run(command, &component_dir),
     }
 }
@@ -292,7 +294,10 @@ pub fn docker_run(
         println!();
     } else {
         debug!("Entering docker");
-        let s = Command::new("docker").args(&args).current_dir(&component_dir).status()?;
+        let s = Command::new("docker")
+            .args(&args)
+            .current_dir(&component_dir)
+            .status()?;
         debug!("Exited docker");
         if !s.success() {
             return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
@@ -405,7 +410,14 @@ pub fn script(
                 privileged,
             };
 
-            Ok(docker_run(cfg, container, command, &flags, modes, &component_dir)?)
+            Ok(docker_run(
+                cfg,
+                container,
+                command,
+                &flags,
+                modes,
+                &component_dir,
+            )?)
         }
         Environment::None => native_run(command, &component_dir),
     }

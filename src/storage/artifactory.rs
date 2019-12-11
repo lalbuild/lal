@@ -367,7 +367,14 @@ impl Backend for ArtifactoryBackend {
         get_tarball_uri(&self.config, name, version, loc)
     }
 
-    fn publish_artifact(&self, _home: Option<&Path>, component_dir: &Path, name: &str, version: u32, env: &str) -> LalResult<()> {
+    fn publish_artifact(
+        &self,
+        _home: Option<&Path>,
+        component_dir: &Path,
+        name: &str,
+        version: u32,
+        env: &str,
+    ) -> LalResult<()> {
         // this fn basically assumes all the sanity checks have been performed
         // files must exist and lockfile must be sensible
         let artdir = component_dir.join("./ARTIFACT");

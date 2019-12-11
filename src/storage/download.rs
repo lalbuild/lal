@@ -185,7 +185,10 @@ where
 
         // Copy the lockfile there for users inspecting the stashed folder
         // NB: this is not really needed, as it's included in the tarball anyway
-        fs::copy(&component_dir.join("OUTPUT/lockfile.json"), destdir.join("lockfile.json"))?;
+        fs::copy(
+            &component_dir.join("OUTPUT/lockfile.json"),
+            destdir.join("lockfile.json"),
+        )?;
         Ok(())
     }
 }

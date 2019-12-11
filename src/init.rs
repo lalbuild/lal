@@ -25,7 +25,12 @@ pub fn init(cfg: &Config, force: bool, component_dir: &Path, env: &str) -> LalRe
     // we are allowed to overwrite or write a new manifest if we are here
     // always create new manifests in new default location
     create_lal_subdir(&component_dir.to_path_buf())?; // create the `.lal` subdir if it's not there already
-    Manifest::new(dirname, env, ManifestLocation::default().as_path(&component_dir.to_path_buf())).write()?;
+    Manifest::new(
+        dirname,
+        env,
+        ManifestLocation::default().as_path(&component_dir.to_path_buf()),
+    )
+    .write()?;
 
     // if the manifest already existed, warn about this now being placed elsewhere
     if let Ok(ManifestLocation::RepoRoot) = mpath {

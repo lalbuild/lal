@@ -1,7 +1,6 @@
 use super::{LalResult, Lockfile, Manifest};
 use serde_json;
-use std::collections::BTreeSet;
-use std::path::Path;
+use std::{collections::BTreeSet, path::Path};
 
 
 /// A single update of of a propagation

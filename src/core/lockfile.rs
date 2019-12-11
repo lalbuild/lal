@@ -91,7 +91,10 @@ impl Lockfile {
 
     // Helper constructor for input populator below
     fn from_input_component(component: &str, component_dir: &Path) -> LalResult<Self> {
-        let lock_path = component_dir.join("./INPUT").join(component).join("lockfile.json");
+        let lock_path = component_dir
+            .join("./INPUT")
+            .join(component)
+            .join("lockfile.json");
         Ok(Lockfile::from_path(&lock_path, component)?)
     }
 

@@ -35,12 +35,7 @@ fn handle_manifest_agnostic_cmds(
 ) {
     let res = if let Some(a) = args.subcommand_matches("export") {
         let curdir = current_dir().unwrap();
-        lal::export(
-            backend,
-            a.value_of("component").unwrap(),
-            &curdir,
-            explicit_env,
-        )
+        lal::export(backend, a.value_of("component").unwrap(), &curdir, explicit_env)
     } else if let Some(a) = args.subcommand_matches("query") {
         lal::query(
             backend,
@@ -59,7 +54,12 @@ fn handle_manifest_agnostic_cmds(
 }
 
 // functions that need a manifest, but do not depend on environment values
-fn handle_environment_agnostic_cmds(args: &ArgMatches, component_dir: &Path, mf: &Manifest, backend: &dyn Backend) {
+fn handle_environment_agnostic_cmds(
+    args: &ArgMatches,
+    component_dir: &Path,
+    mf: &Manifest,
+    backend: &dyn Backend,
+) {
     let res = if let Some(a) = args.subcommand_matches("status") {
         lal::status(
             &component_dir,
@@ -82,18 +82,35 @@ fn handle_environment_agnostic_cmds(args: &ArgMatches, component_dir: &Path, mf:
             .unwrap()
             .map(String::from)
             .collect::<Vec<_>>();
-        lal::remove(&component_dir, mf, xs, a.is_present("save"), a.is_present("savedev"))
+        lal::remove(
+            &component_dir,
+            mf,
+            xs,
+            a.is_present("save"),
+            a.is_present("savedev"),
+        )
     } else if let Some(a) = args.subcommand_matches("stash") {
         lal::stash(&component_dir, backend, mf, a.value_of("name").unwrap())
     } else if let Some(a) = args.subcommand_matches("propagate") {
-        lal::propagate::print(&component_dir, mf, a.value_of("component").unwrap(), a.is_present("json"))
+        lal::propagate::print(
+            &component_dir,
+            mf,
+            a.value_of("component").unwrap(),
+            a.is_present("json"),
+        )
     } else {
         return;
     };
     result_exit(args.subcommand_name().unwrap(), res);
 }
 
-fn handle_network_cmds(args: &ArgMatches, component_dir: &Path,  mf: &Manifest, backend: &dyn Backend, env: &str) {
+fn handle_network_cmds(
+    args: &ArgMatches,
+    component_dir: &Path,
+    mf: &Manifest,
+    backend: &dyn Backend,
+    env: &str,
+) {
     let res = if let Some(a) = args.subcommand_matches("update") {
         let xs = a
             .values_of("components")
@@ -110,7 +127,14 @@ fn handle_network_cmds(args: &ArgMatches, component_dir: &Path,  mf: &Manifest, 
             env,
         )
     } else if let Some(a) = args.subcommand_matches("update-all") {
-        lal::update_all(&component_dir, mf, backend, a.is_present("save"), a.is_present("dev"), env)
+        lal::update_all(
+            &component_dir,
+            mf,
+            backend,
+            a.is_present("save"),
+            a.is_present("dev"),
+            env,
+        )
     } else if let Some(a) = args.subcommand_matches("fetch") {
         lal::fetch(&component_dir, mf, backend, a.is_present("core"), env)
     } else {
@@ -119,7 +143,13 @@ fn handle_network_cmds(args: &ArgMatches, component_dir: &Path,  mf: &Manifest, 
     result_exit(args.subcommand_name().unwrap(), res)
 }
 
-fn handle_env_command(args: &ArgMatches, component_dir: &Path, cfg: &Config, env: &str, stickies: &StickyOptions) -> Environment {
+fn handle_env_command(
+    args: &ArgMatches,
+    component_dir: &Path,
+    cfg: &Config,
+    env: &str,
+    stickies: &StickyOptions,
+) -> Environment {
     // lookup associated container from
     let environment = cfg
         .get_environment(env.into())
@@ -183,7 +213,14 @@ fn handle_upgrade(args: &ArgMatches, cfg: &Config) {
 }
 
 
-fn handle_docker_cmds(args: &ArgMatches, component_dir: &Path, mf: &Manifest, cfg: &Config, env: &str, environment: &Environment) {
+fn handle_docker_cmds(
+    args: &ArgMatches,
+    component_dir: &Path,
+    mf: &Manifest,
+    cfg: &Config,
+    env: &str,
+    environment: &Environment,
+) {
     let res = if let Some(a) = args.subcommand_matches("verify") {
         // not really a docker related command, but it needs
         // the resolved env to verify consistent dependency usage
@@ -218,7 +255,14 @@ fn handle_docker_cmds(args: &ArgMatches, component_dir: &Path, mf: &Manifest, cf
             host_networking: a.is_present("net-host"),
             env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
         };
-        lal::shell(cfg, environment, &modes, xs, a.is_present("privileged"), &component_dir)
+        lal::shell(
+            cfg,
+            environment,
+            &modes,
+            xs,
+            a.is_present("privileged"),
+            &component_dir,
+        )
     } else if let Some(a) = args.subcommand_matches("run") {
         let xs = if a.is_present("parameters") {
             a.values_of("parameters").unwrap().collect::<Vec<_>>()
@@ -596,7 +640,12 @@ fn main() {
     if let Some(a) = args.subcommand_matches("init") {
         result_exit(
             "init",
-            lal::init(&config, a.is_present("force"), &component_dir, a.value_of("environment").unwrap()),
+            lal::init(
+                &config,
+                a.is_present("force"),
+                &component_dir,
+                a.value_of("environment").unwrap(),
+            ),
         );
     } else if let Some(a) = args.subcommand_matches("clean") {
         let days = a.value_of("days").unwrap().parse().unwrap();

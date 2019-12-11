@@ -89,7 +89,14 @@ impl Backend for LocalBackend {
         })
     }
 
-    fn publish_artifact(&self, home: Option<&Path>, component_dir: &Path, name: &str, version: u32, env: &str) -> LalResult<()> {
+    fn publish_artifact(
+        &self,
+        home: Option<&Path>,
+        component_dir: &Path,
+        name: &str,
+        version: u32,
+        env: &str,
+    ) -> LalResult<()> {
         // this fn basically assumes all the sanity checks have been performed
         // files must exist and lockfile must be sensible
         let artifactdir = component_dir.join("./ARTIFACT");

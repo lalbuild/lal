@@ -10,7 +10,10 @@ pub fn update(component_dir: &Path, environment: &Environment, env: &str) -> Lal
     match environment {
         Environment::Container(container) => {
             trace!("Docker pull {}", container);
-            let s = Command::new("docker").args(&args).current_dir(&component_dir).status()?;
+            let s = Command::new("docker")
+                .args(&args)
+                .current_dir(&component_dir)
+                .status()?;
             trace!("Exited docker");
             if !s.success() {
                 return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));

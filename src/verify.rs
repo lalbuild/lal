@@ -1,6 +1,6 @@
 use super::{LalResult, Lockfile, Manifest};
-use std::path::Path;
 use input;
+use std::path::Path;
 
 /// Verifies that `./INPUT` satisfies all strictness conditions.
 ///

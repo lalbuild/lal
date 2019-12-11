@@ -15,7 +15,10 @@ pub fn tar(component_dir: &Path, tarball: &Path) -> LalResult<()> {
     // All links, hidden files, and regular files should go into the tarball.
     let findargs = vec!["OUTPUT/", "-type", "f", "-o", "-type", "l"];
     debug!("find {}", findargs.join(" "));
-    let find_output = Command::new("find").args(&findargs).current_dir(&component_dir).output()?;
+    let find_output = Command::new("find")
+        .args(&findargs)
+        .current_dir(&component_dir)
+        .output()?;
     let find_str = String::from_utf8_lossy(&find_output.stdout);
 
     // append each file as an arg to the main tar process
@@ -25,7 +28,10 @@ pub fn tar(component_dir: &Path, tarball: &Path) -> LalResult<()> {
 
     // basically `tar czf component.tar.gz --transform.. $(find OUTPUT -type f -o -type l)`:
     debug!("tar {}", args.join(" "));
-    let s = Command::new("tar").args(&args).current_dir(&component_dir).status()?;
+    let s = Command::new("tar")
+        .args(&args)
+        .current_dir(&component_dir)
+        .status()?;
 
     if !s.success() {
         return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));

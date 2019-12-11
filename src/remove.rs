@@ -9,7 +9,13 @@ use super::{CliError, LalResult, Manifest};
 ///
 /// If one of `save` or `savedev` was set, `manifest.json` is also updated to remove
 /// the specified components from the corresponding dictionary.
-pub fn remove(component_dir: &Path, manifest: &Manifest, xs: Vec<String>, save: bool, savedev: bool) -> LalResult<()> {
+pub fn remove(
+    component_dir: &Path,
+    manifest: &Manifest,
+    xs: Vec<String>,
+    save: bool,
+    savedev: bool,
+) -> LalResult<()> {
     debug!("Removing dependencies {:?}", xs);
 
     // remove entries in xs from manifest.

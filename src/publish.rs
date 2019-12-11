@@ -8,7 +8,12 @@ use storage::Backend;
 ///
 /// Meant to be done after a `lal build -r <component>`
 /// and requires publish credentials in the local `Config`.
-pub fn publish<T: Backend + ?Sized>(home: Option<&Path>, component_dir: &Path, name: &str, backend: &T) -> LalResult<()> {
+pub fn publish<T: Backend + ?Sized>(
+    home: Option<&Path>,
+    component_dir: &Path,
+    name: &str,
+    backend: &T,
+) -> LalResult<()> {
     let artdir = component_dir.join("./ARTIFACT");
     let tarball = artdir.join(format!("{}.tar.gz", name));
     if !artdir.is_dir() || !tarball.exists() {

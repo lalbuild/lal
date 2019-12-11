@@ -39,13 +39,15 @@ pub fn fetch<T: CachedBackend + ?Sized>(
     let mut extraneous = vec![]; // stuff we should remove
 
     // figure out what we have already
-    let lf = Lockfile::default().populate_from_input(&component_dir).map_err(|e| {
-        // Guide users a bit if they did something dumb - see #77
-        warn!("Populating INPUT data failed - your INPUT may be corrupt");
-        warn!("This can happen if you CTRL-C during `lal fetch`");
-        warn!("Try to `rm -rf INPUT` and `lal fetch` again.");
-        e
-    })?;
+    let lf = Lockfile::default()
+        .populate_from_input(&component_dir)
+        .map_err(|e| {
+            // Guide users a bit if they did something dumb - see #77
+            warn!("Populating INPUT data failed - your INPUT may be corrupt");
+            warn!("This can happen if you CTRL-C during `lal fetch`");
+            warn!("Try to `rm -rf INPUT` and `lal fetch` again.");
+            e
+        })?;
     // filter out what we already have (being careful to examine env)
     for (name, d) in lf.dependencies {
         // if d.name at d.version in d.envname matches something in deps
@@ -78,12 +80,14 @@ pub fn fetch<T: CachedBackend + ?Sized>(
             })?;
         }
 
-        let _ = backend.unpack_published_component(&component_dir, &k, Some(v), env).map_err(|e| {
-            warn!("Failed to completely install {} ({})", k, e);
-            // likely symlinks inside tarball that are being dodgy
-            // this is why we clean_input
-            err = Some(e);
-        });
+        let _ = backend
+            .unpack_published_component(&component_dir, &k, Some(v), env)
+            .map_err(|e| {
+                warn!("Failed to completely install {} ({})", k, e);
+                // likely symlinks inside tarball that are being dodgy
+                // this is why we clean_input
+                err = Some(e);
+            });
     }
 
     // remove extraneous deps

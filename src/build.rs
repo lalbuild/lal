@@ -28,14 +28,17 @@ fn find_valid_build_script(component_dir: &Path) -> LalResult<String> {
     trace!("Using BUILD script found in {}", bpath.display());
     // Need the string to construct a list of argument for docker run
     // lossy convert because paths can somehow contain non-unicode?
-    let build_string = format!("./{}", bpath.strip_prefix(&component_dir).unwrap().to_string_lossy());
+    let build_string = format!(
+        "./{}",
+        bpath.strip_prefix(&component_dir).unwrap().to_string_lossy()
+    );
 
     // presumably we can always get the permissions of a file, right? (inb4 nfs..)
     let mode = bpath.metadata()?.permissions().mode();
     if mode & 0o111 == 0 {
-        return Err(CliError::BuildScriptNotExecutable(build_string.into()));
+        return Err(CliError::BuildScriptNotExecutable(build_string));
     }
-    Ok(build_string.into())
+    Ok(build_string)
 }
 
 
@@ -170,7 +173,9 @@ pub fn build(
         fs::copy(&lockpth, &component_dir.join("./ARTIFACT/lockfile.json"))?;
 
         trace!("Tar up OUTPUT into ARTIFACT/component.tar.gz");
-        let tarpth = component_dir.join("./ARTIFACT").join([component, ".tar.gz".into()].concat());
+        let tarpth = component_dir
+            .join("./ARTIFACT")
+            .join([component, ".tar.gz".into()].concat());
         output::tar(&component_dir, &tarpth)?;
     }
     Ok(())

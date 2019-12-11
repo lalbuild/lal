@@ -497,7 +497,12 @@ fn configure_local_backend(demo_config: &PathBuf, home: &Path) -> LocalBackend {
     let config = Config::read(Some(&home));
     assert!(config.is_err(), "no config at this point");
 
-    let r = lal::configure(true, false, demo_config.as_os_str().to_str().unwrap(), Some(&home));
+    let r = lal::configure(
+        true,
+        false,
+        demo_config.as_os_str().to_str().unwrap(),
+        Some(&home),
+    );
     assert!(r.is_ok(), "configure succeeded");
 
     let cfg = Config::read(Some(&home));
@@ -579,7 +584,12 @@ fn shell_permissions(env_name: &str, home: &Path, component_dir: &Path) {
     assert!(r.is_ok(), "could touch files in container");
 }
 
-fn build_and_stash_update_self<T: CachedBackend + Backend>(component_dir: &Path, env_name: &str, backend: &T, home: &Path) {
+fn build_and_stash_update_self<T: CachedBackend + Backend>(
+    component_dir: &Path,
+    env_name: &str,
+    backend: &T,
+    home: &Path,
+) {
     let cfg = Config::read(Some(&home)).expect("Read config");
     let mf = Manifest::read(&component_dir).expect("Read manifest");
     let environment = cfg.get_environment(env_name.into()).expect("get environment");
@@ -661,7 +671,12 @@ fn build_and_stash_update_self<T: CachedBackend + Backend>(component_dir: &Path,
     assert!(printbuild.is_ok(), "saw docker run print with X11 mounts");
 }
 
-fn get_environment_and_fetch<T: CachedBackend + Backend>(component_dir: &Path, env_name: &str, backend: &T, home: &Path) {
+fn get_environment_and_fetch<T: CachedBackend + Backend>(
+    component_dir: &Path,
+    env_name: &str,
+    backend: &T,
+    home: &Path,
+) {
     let mf = Manifest::read(&component_dir).unwrap();
     let cfg = Config::read(Some(&home)).unwrap();
     let _environment = cfg.get_environment(env_name.into()).unwrap();
@@ -670,7 +685,12 @@ fn get_environment_and_fetch<T: CachedBackend + Backend>(component_dir: &Path, e
     assert!(rcore.is_ok(), "install core succeeded");
 }
 
-fn fetch_release_build_and_publish<T: CachedBackend + Backend>(component_dir: &Path, env_name: &str, backend: &T, home: &Path) {
+fn fetch_release_build_and_publish<T: CachedBackend + Backend>(
+    component_dir: &Path,
+    env_name: &str,
+    backend: &T,
+    home: &Path,
+) {
     let cfg = Config::read(Some(&home)).unwrap();
     let mf = Manifest::read(&component_dir).unwrap();
     let environment = cfg.get_environment(env_name.into()).unwrap();
@@ -690,13 +710,19 @@ fn fetch_release_build_and_publish<T: CachedBackend + Backend>(component_dir: &P
         simple_verify: false,
     };
     let modes = ShellModes::default();
-    lal::build(&component_dir, &cfg, &mf, &bopts, env_name.into(), modes.clone()).expect("could build in release");
+    lal::build(&component_dir, &cfg, &mf, &bopts, env_name.into(), modes.clone())
+        .expect("could build in release");
 
     let rp = lal::publish(Some(&home), &component_dir, &mf.name, backend);
     assert!(rp.is_ok(), "could publish");
 }
 
-fn no_publish_non_release_builds<T: CachedBackend + Backend>(component_dir: &Path, env_name: &str, backend: &T, home: &Path) {
+fn no_publish_non_release_builds<T: CachedBackend + Backend>(
+    component_dir: &Path,
+    env_name: &str,
+    backend: &T,
+    home: &Path,
+) {
     let cfg = Config::read(Some(&home)).unwrap();
     let mf = Manifest::read(&component_dir).unwrap();
     let environment = cfg.get_environment(env_name.into()).unwrap();
@@ -741,7 +767,15 @@ fn update_save<T: CachedBackend + Backend>(component_dir: &Path, env_name: &str,
     let mf1 = Manifest::read(&component_dir).unwrap();
 
     // update heylib --save
-    let ri = lal::update(&component_dir, &mf1, backend, vec!["heylib=1".to_string()], true, false, env_name);
+    let ri = lal::update(
+        &component_dir,
+        &mf1,
+        backend,
+        vec!["heylib=1".to_string()],
+        true,
+        false,
+        env_name,
+    );
     ri.expect("could update heylib and save");
 
     // main deps (and re-read manifest to avoid overwriting devedps)
@@ -781,9 +815,7 @@ fn verify_checks<T: CachedBackend + Backend>(component_dir: &Path, env_name: &st
         "could not verify with wrong env - even with simple"
     );
 
-    let heylib = Path::new(&component_dir)
-        .join("INPUT")
-        .join("heylib");
+    let heylib = Path::new(&component_dir).join("INPUT").join("heylib");
     // clean folders and verify it fails
     fs::remove_dir_all(&heylib).unwrap();
 
