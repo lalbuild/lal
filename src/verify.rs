@@ -1,4 +1,5 @@
 use super::{LalResult, Lockfile, Manifest};
+use std::path::Path;
 use input;
 
 /// Verifies that `./INPUT` satisfies all strictness conditions.
@@ -18,20 +19,20 @@ use input;
 /// Users can use `lal verify --simple` or `lal build -s` aka. `--simple-verify`,
 /// instead of having to use `lal build --force` when just using stashed components.
 /// This avoids problems with different environments going undetected.
-pub fn verify(m: &Manifest, env: &str, simple: bool) -> LalResult<()> {
+pub fn verify(component_dir: &Path, m: &Manifest, env: &str, simple: bool) -> LalResult<()> {
     // 1. Verify that the manifest is sane
     m.verify()?;
 
     // 2. dependencies in `INPUT` match `manifest.json`.
-    if m.dependencies.is_empty() && !input::present() {
+    if m.dependencies.is_empty() && !input::present(&component_dir) {
         // special case where lal fetch is not required and so INPUT may not exist
         // nothing needs to be verified in this case, so allow missing INPUT
         return Ok(());
     }
-    input::verify_dependencies_present(m)?;
+    input::verify_dependencies_present(&component_dir, m)?;
 
     // get data for big verify steps
-    let lf = Lockfile::default().populate_from_input()?;
+    let lf = Lockfile::default().populate_from_input(&component_dir)?;
 
     // 3. verify the root level dependencies match the manifest
     if !simple {

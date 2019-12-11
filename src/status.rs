@@ -1,6 +1,7 @@
 use super::{CliError, LalResult, Lockfile, Manifest};
 use ansi_term::{ANSIString, Colour};
 use core::input;
+use std::path::Path;
 
 fn version_string(lf: Option<&Lockfile>, show_ver: bool, show_time: bool) -> ANSIString<'static> {
     if let Some(lock) = lf {
@@ -76,13 +77,13 @@ fn status_recurse(
 /// from lockfile data.
 ///
 /// It is not intended as a verifier, but will nevertheless produce a summary at the end.
-pub fn status(manifest: &Manifest, full: bool, show_ver: bool, show_time: bool) -> LalResult<()> {
+pub fn status(component_dir: &Path, manifest: &Manifest, full: bool, show_ver: bool, show_time: bool) -> LalResult<()> {
     let mut error = None;
 
-    let lf = Lockfile::default().populate_from_input()?;
+    let lf = Lockfile::default().populate_from_input(&component_dir)?;
 
     println!("{}", manifest.name);
-    let deps = input::analyze_full(manifest)?;
+    let deps = input::analyze_full(manifest, &component_dir)?;
     let len = deps.len();
     for (i, (d, dep)) in deps.iter().enumerate() {
         let notes = if dep.missing && !dep.development {

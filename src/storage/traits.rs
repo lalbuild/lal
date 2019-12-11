@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use super::{ArtifactoryConfig, LocalConfig};
 use core::LalResult;
@@ -59,7 +59,7 @@ pub trait Backend {
     /// Publish a release build's ARTIFACT to a specific location
     ///
     /// This will publish everything inside the ARTIFACT dir created by `lal build -r`
-    fn publish_artifact(&self, name: &str, version: u32, env: &str) -> LalResult<()>;
+    fn publish_artifact(&self, home: Option<&Path>, component_dir: &Path, name: &str, version: u32, env: &str) -> LalResult<()>;
 
     /// Raw fetch of location to a destination
     ///
@@ -91,12 +91,12 @@ pub trait CachedBackend {
     fn retrieve_stashed_component(&self, name: &str, code: &str) -> LalResult<PathBuf>;
 
     /// Retrieve and unpack a cached component in INPUT
-    fn unpack_published_component(&self, name: &str, version: Option<u32>, env: &str)
+    fn unpack_published_component(&self, component_dir: &Path, name: &str, version: Option<u32>, env: &str)
         -> LalResult<Component>;
 
     /// Retrieve and unpack a stashed component to INPUT
-    fn unpack_stashed_component(&self, name: &str, code: &str) -> LalResult<()>;
+    fn unpack_stashed_component(&self, component_dir: &Path, name: &str, code: &str) -> LalResult<()>;
 
     /// Add a stashed component from a folder
-    fn stash_output(&self, name: &str, code: &str) -> LalResult<()>;
+    fn stash_output(&self, component_dir: &Path, name: &str, code: &str) -> LalResult<()>;
 }

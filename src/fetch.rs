@@ -3,8 +3,8 @@ use std::{fs, path::Path};
 use super::{CliError, LalResult, Lockfile, Manifest};
 use storage::CachedBackend;
 
-fn clean_input() {
-    let input = Path::new("./INPUT");
+fn clean_input(component_dir: &Path) {
+    let input = component_dir.join("./INPUT");
     if input.is_dir() {
         fs::remove_dir_all(&input).unwrap();
     }
@@ -15,6 +15,7 @@ fn clean_input() {
 /// This will read, and HTTP GET all the dependencies at the specified versions.
 /// If the `core` bool is set, then `devDependencies` are not installed.
 pub fn fetch<T: CachedBackend + ?Sized>(
+    component_dir: &Path,
     manifest: &Manifest,
     backend: &T,
     core: bool,
@@ -38,7 +39,7 @@ pub fn fetch<T: CachedBackend + ?Sized>(
     let mut extraneous = vec![]; // stuff we should remove
 
     // figure out what we have already
-    let lf = Lockfile::default().populate_from_input().map_err(|e| {
+    let lf = Lockfile::default().populate_from_input(&component_dir).map_err(|e| {
         // Guide users a bit if they did something dumb - see #77
         warn!("Populating INPUT data failed - your INPUT may be corrupt");
         warn!("This can happen if you CTRL-C during `lal fetch`");
@@ -67,7 +68,7 @@ pub fn fetch<T: CachedBackend + ?Sized>(
         info!("Fetch {} {} {}", env, k, v);
 
         // first kill the folders we actually need to fetch:
-        let cmponent_dir = Path::new("./INPUT").join(&k);
+        let cmponent_dir = component_dir.join("./INPUT").join(&k);
         if cmponent_dir.is_dir() {
             // Don't think this can fail, but we are dealing with NFS
             fs::remove_dir_all(&cmponent_dir).map_err(|e| {
@@ -77,7 +78,7 @@ pub fn fetch<T: CachedBackend + ?Sized>(
             })?;
         }
 
-        let _ = backend.unpack_published_component(&k, Some(v), env).map_err(|e| {
+        let _ = backend.unpack_published_component(&component_dir, &k, Some(v), env).map_err(|e| {
             warn!("Failed to completely install {} ({})", k, e);
             // likely symlinks inside tarball that are being dodgy
             // this is why we clean_input
@@ -88,7 +89,7 @@ pub fn fetch<T: CachedBackend + ?Sized>(
     // remove extraneous deps
     for name in extraneous {
         info!("Remove {}", name);
-        let pth = Path::new("./INPUT").join(&name);
+        let pth = component_dir.join("./INPUT").join(&name);
         if pth.is_dir() {
             fs::remove_dir_all(&pth)?;
         }
@@ -96,7 +97,7 @@ pub fn fetch<T: CachedBackend + ?Sized>(
 
     if err.is_some() {
         warn!("Cleaning potentially broken INPUT");
-        clean_input(); // don't want to risk having users in corrupted states
+        clean_input(&component_dir); // don't want to risk having users in corrupted states
         return Err(CliError::InstallFailure);
     }
     Ok(())

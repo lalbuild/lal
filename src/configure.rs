@@ -189,8 +189,8 @@ fn non_root_sanity() -> LalResult<()> {
     }
 }
 
-fn create_lal_dir() -> LalResult<PathBuf> {
-    let laldir = config_dir(None);
+fn create_lal_dir(home: Option<&Path>) -> LalResult<PathBuf> {
+    let laldir = config_dir(home);
     if !laldir.is_dir() {
         fs::create_dir(&laldir)?;
     }
@@ -205,8 +205,8 @@ fn create_lal_dir() -> LalResult<PathBuf> {
 ///
 /// A boolean option to discard the output is supplied for tests.
 /// A defaults file must be supplied to seed the new config with defined environments
-pub fn configure(save: bool, interactive: bool, defaults: &str) -> LalResult<Config> {
-    let _ = create_lal_dir()?;
+pub fn configure(save: bool, interactive: bool, defaults: &str, home: Option<&Path>) -> LalResult<Config> {
+    let _ = create_lal_dir(home)?;
 
     for exe in ["tar", "touch", "id", "find", "mkdir", "chmod", "uname"].iter() {
         executable_on_path(exe)?;
@@ -230,10 +230,10 @@ pub fn configure(save: bool, interactive: bool, defaults: &str) -> LalResult<Con
         lal_version_check(&minlal)?;
     }
 
-    let mut cfg = Config::new(def);
+    let mut cfg = Config::new(def, home);
     cfg.interactive = interactive; // need to override default for tests
     if save {
-        cfg.write(false, None)?;
+        cfg.write(false, home)?;
     }
     Ok(cfg)
 }

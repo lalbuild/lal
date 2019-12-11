@@ -89,10 +89,10 @@ impl Backend for LocalBackend {
         })
     }
 
-    fn publish_artifact(&self, name: &str, version: u32, env: &str) -> LalResult<()> {
+    fn publish_artifact(&self, home: Option<&Path>, component_dir: &Path, name: &str, version: u32, env: &str) -> LalResult<()> {
         // this fn basically assumes all the sanity checks have been performed
         // files must exist and lockfile must be sensible
-        let artifactdir = Path::new("./ARTIFACT");
+        let artifactdir = component_dir.join("./ARTIFACT");
         let tarball = artifactdir.join(format!("{}.tar.gz", name));
         let lockfile = artifactdir.join("lockfile.json");
 
@@ -107,12 +107,11 @@ impl Backend for LocalBackend {
             self.cache, env, name, version
         );
 
-        if let Some(full_tar_dir) = config_dir(None).join(tar_dir).to_str() {
-            ensure_dir_exists_fresh(full_tar_dir)?;
-        }
+        let full_tar_dir = config_dir(home).join(tar_dir);
+        ensure_dir_exists_fresh(&full_tar_dir)?;
 
-        fs::copy(tarball, config_dir(None).join(tar_path))?;
-        fs::copy(lockfile, config_dir(None).join(lock_path))?;
+        fs::copy(tarball, config_dir(home).join(tar_path))?;
+        fs::copy(lockfile, config_dir(home).join(lock_path))?;
 
         Ok(())
     }

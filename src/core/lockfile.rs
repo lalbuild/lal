@@ -84,14 +84,14 @@ impl Lockfile {
     }
 
     /// A reader from ARTIFACT directory
-    pub fn release_build() -> LalResult<Self> {
-        let lpath = Path::new("ARTIFACT").join("lockfile.json");
+    pub fn release_build(component_dir: &Path) -> LalResult<Self> {
+        let lpath = component_dir.join("ARTIFACT").join("lockfile.json");
         Ok(Lockfile::from_path(&lpath, "release build")?)
     }
 
     // Helper constructor for input populator below
-    fn from_input_component(component: &str) -> LalResult<Self> {
-        let lock_path = Path::new("./INPUT").join(component).join("lockfile.json");
+    fn from_input_component(component: &str, component_dir: &Path) -> LalResult<Self> {
+        let lock_path = component_dir.join("./INPUT").join(component).join("lockfile.json");
         Ok(Lockfile::from_path(&lock_path, component)?)
     }
 
@@ -99,12 +99,12 @@ impl Lockfile {
     ///
     /// NB: This currently reads all the lockfiles partially in `analyze`,
     /// the re-reads them fully in `read_lockfile_from_component` so can be sped up.
-    pub fn populate_from_input(mut self) -> LalResult<Self> {
+    pub fn populate_from_input(mut self, component_dir: &Path) -> LalResult<Self> {
         debug!("Reading all lockfiles");
-        let deps = input::analyze()?;
+        let deps = input::analyze(&component_dir)?;
         for name in deps.keys() {
             trace!("Populating lockfile with {}", name);
-            let deplock = Lockfile::from_input_component(name)?;
+            let deplock = Lockfile::from_input_component(name, &component_dir)?;
             self.dependencies.insert(name.clone(), deplock);
         }
         Ok(self)

@@ -129,9 +129,9 @@ impl Manifest {
         deps
     }
 
-    /// Read a manifest file in PWD
-    pub fn read() -> LalResult<Manifest> {
-        Ok(Manifest::read_from(&Path::new(".").to_path_buf())?)
+    /// Read a manifest file in component dir
+    pub fn read(component_dir: &Path) -> LalResult<Manifest> {
+        Ok(Manifest::read_from(&component_dir.to_path_buf())?)
     }
 
     /// Read a manifest file in an arbitrary path

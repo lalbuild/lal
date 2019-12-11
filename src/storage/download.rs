@@ -19,12 +19,12 @@ fn get_cache_dir<T: Backend + ?Sized>(backend: &T, name: &str, version: u32, env
         .join(version.to_string())
 }
 
-fn store_tarball<T: Backend + ?Sized>(
+fn stored_tarball_location<T: Backend + ?Sized>(
     backend: &T,
     name: &str,
     version: u32,
     env: &str,
-) -> Result<(), CliError> {
+) -> Result<PathBuf, CliError> {
     // 1. mkdir -p cacheDir/$name/$version
     let destdir = get_cache_dir(backend, name, version, env);
     if !destdir.is_dir() {
@@ -33,25 +33,19 @@ fn store_tarball<T: Backend + ?Sized>(
     // 2. stuff $PWD/$name.tar.gz in there
     let tarname = [name, ".tar.gz"].concat();
     let dest = Path::new(&destdir).join(&tarname);
-    let src = Path::new(".").join(&tarname);
-    if !src.is_file() {
-        return Err(CliError::MissingTarball);
-    }
-    debug!("Move {:?} -> {:?}", src, dest);
-    fs::copy(&src, &dest)?;
-    fs::remove_file(&src)?;
 
-    Ok(())
+    Ok(dest)
 }
 
 // helper for the unpack_ functions
-fn extract_tarball_to_input(tarname: PathBuf, component: &str) -> LalResult<()> {
+fn extract_tarball_to_input(tarname: PathBuf, component_dir: &Path, component: &str) -> LalResult<()> {
     use flate2::read::GzDecoder;
     use tar::Archive;
 
-    let extract_path = Path::new("./INPUT").join(component);
+    let extract_path = component_dir.join("INPUT").join(component);
     let _ = fs::remove_dir_all(&extract_path); // remove current dir if exists
     fs::create_dir_all(&extract_path)?;
+    debug!("extract path: {}", extract_path.display());
 
     // Open file, conditionally wrap a progress bar around the file reading
     if cfg!(feature = "progress") {
@@ -71,6 +65,7 @@ fn extract_tarball_to_input(tarname: PathBuf, component: &str) -> LalResult<()> 
         archive.unpack(&extract_path)?;
     };
 
+    debug!("---");
     Ok(())
 }
 
@@ -121,9 +116,8 @@ where
 
         if !is_cached(self, &component.name, component.version, env) {
             // download to PWD then move it to stash immediately
-            let local_tarball = Path::new(".").join(format!("{}.tar.gz", name));
-            self.raw_fetch(&component.location, &local_tarball)?;
-            store_tarball(self, name, component.version, env)?;
+            let tarball_location = stored_tarball_location(self, name, component.version, env)?;
+            self.raw_fetch(&component.location, &tarball_location)?;
         }
         assert!(
             is_cached(self, &component.name, component.version, env),
@@ -139,6 +133,7 @@ where
     // basic functionality for `fetch`/`update`
     fn unpack_published_component(
         &self,
+        component_dir: &Path,
         name: &str,
         version: Option<u32>,
         env: &str,
@@ -150,16 +145,16 @@ where
             tarname.to_str().unwrap(),
             component.name
         );
-        extract_tarball_to_input(tarname, name)?;
+        extract_tarball_to_input(tarname, &component_dir, name)?;
 
         Ok(component)
     }
 
     /// helper for `update`
-    fn unpack_stashed_component(&self, name: &str, code: &str) -> LalResult<()> {
+    fn unpack_stashed_component(&self, component_dir: &Path, name: &str, code: &str) -> LalResult<()> {
         let tarpath = self.retrieve_stashed_component(name, code)?;
 
-        extract_tarball_to_input(tarpath, name)?;
+        extract_tarball_to_input(tarpath, &component_dir, name)?;
         Ok(())
     }
 
@@ -177,7 +172,7 @@ where
     }
 
     // helper for `stash`
-    fn stash_output(&self, name: &str, code: &str) -> LalResult<()> {
+    fn stash_output(&self, component_dir: &Path, name: &str, code: &str) -> LalResult<()> {
         let destdir = Path::new(&self.get_cache_dir())
             .join("stash")
             .join(name)
@@ -186,11 +181,11 @@ where
         fs::create_dir_all(&destdir)?;
 
         // Tar it straight into destination
-        output::tar(&destdir.join(format!("{}.tar.gz", name)))?;
+        output::tar(&component_dir, &destdir.join(format!("{}.tar.gz", name)))?;
 
         // Copy the lockfile there for users inspecting the stashed folder
         // NB: this is not really needed, as it's included in the tarball anyway
-        fs::copy("./OUTPUT/lockfile.json", destdir.join("lockfile.json"))?;
+        fs::copy(&component_dir.join("OUTPUT/lockfile.json"), destdir.join("lockfile.json"))?;
         Ok(())
     }
 }

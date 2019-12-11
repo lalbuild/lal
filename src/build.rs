@@ -8,12 +8,12 @@ use shell;
 use verify::verify;
 
 
-fn find_valid_build_script() -> LalResult<String> {
+fn find_valid_build_script(component_dir: &Path) -> LalResult<String> {
     use std::os::unix::fs::PermissionsExt;
 
     // less intrusive location for BUILD scripts
-    let bpath_new = Path::new("./.lal/BUILD");
-    let bpath_old = Path::new("./BUILD"); // fallback if new version does not exist
+    let bpath_new = component_dir.join("./.lal/BUILD");
+    let bpath_old = component_dir.join("./BUILD"); // fallback if new version does not exist
     let bpath = if bpath_new.exists() {
         if bpath_old.exists() {
             warn!("BUILD found in both .lal/ and current directory");
@@ -28,7 +28,7 @@ fn find_valid_build_script() -> LalResult<String> {
     trace!("Using BUILD script found in {}", bpath.display());
     // Need the string to construct a list of argument for docker run
     // lossy convert because paths can somehow contain non-unicode?
-    let build_string = bpath.to_string_lossy();
+    let build_string = format!("./{}", bpath.strip_prefix(&component_dir).unwrap().to_string_lossy());
 
     // presumably we can always get the permissions of a file, right? (inb4 nfs..)
     let mode = bpath.metadata()?.permissions().mode();
@@ -65,6 +65,7 @@ pub struct BuildOptions {
 /// The function performs basic sanity checks, before shelling out
 /// to perform the actual execution of the `./BUILD` script.
 pub fn build(
+    component_dir: &Path,
     cfg: &Config,
     manifest: &Manifest,
     opts: &BuildOptions,
@@ -75,7 +76,7 @@ pub fn build(
 
     // have a better warning on first file-io operation
     // if nfs mounts and stuff cause issues this usually catches it
-    ensure_dir_exists_fresh("./OUTPUT").map_err(|e| {
+    ensure_dir_exists_fresh(&component_dir.join("./OUTPUT")).map_err(|e| {
         error!("Failed to clean out OUTPUT dir: {}", e);
         e
     })?;
@@ -84,7 +85,7 @@ pub fn build(
 
     // Verify INPUT
     let mut verify_failed = false;
-    if let Some(e) = verify(manifest, &envname, opts.simple_verify).err() {
+    if let Some(e) = verify(&component_dir, manifest, &envname, opts.simple_verify).err() {
         if !opts.force {
             return Err(e);
         }
@@ -122,19 +123,19 @@ pub fn build(
     )
     .set_default_env(manifest.environment.clone())
     .attach_revision_id(opts.sha.clone())
-    .populate_from_input()?;
+    .populate_from_input(&component_dir)?;
 
-    let lockpth = Path::new("./OUTPUT/lockfile.json");
-    lockfile.write(lockpth)?; // always put a lockfile in OUTPUT at the start of a build
+    let lockpth = component_dir.join("./OUTPUT/lockfile.json");
+    lockfile.write(&lockpth)?; // always put a lockfile in OUTPUT at the start of a build
 
-    let bpath = find_valid_build_script()?;
+    let bpath = find_valid_build_script(&component_dir)?;
     let cmd = vec![bpath, component.clone(), configuration_name];
 
     if let Some(v) = opts.version.clone() {
         modes.env_vars.push(format!("BUILD_VERSION={}", v));
     }
 
-    debug!("Build script is {:?}", cmd);
+    debug!("Build script is {:?} in {}", cmd, component_dir.display());
     if !modes.printonly {
         info!("Running build script in {} environment", envname);
     }
@@ -144,7 +145,7 @@ pub fn build(
         privileged: false,
     };
 
-    shell::run(cfg, &opts.environment, cmd, &run_flags, &modes)?;
+    shell::run(cfg, &opts.environment, cmd, &run_flags, &modes, &component_dir)?;
 
     if modes.printonly {
         return Ok(()); // nothing else worth doing - warnings are pointless
@@ -164,13 +165,13 @@ pub fn build(
 
     if opts.release && !modes.printonly {
         trace!("Create ARTIFACT dir");
-        ensure_dir_exists_fresh("./ARTIFACT")?;
+        ensure_dir_exists_fresh(&component_dir.join("./ARTIFACT"))?;
         trace!("Copy lockfile to ARTIFACT dir");
-        fs::copy(&lockpth, Path::new("./ARTIFACT/lockfile.json"))?;
+        fs::copy(&lockpth, &component_dir.join("./ARTIFACT/lockfile.json"))?;
 
         trace!("Tar up OUTPUT into ARTIFACT/component.tar.gz");
-        let tarpth = Path::new("./ARTIFACT").join([component, ".tar.gz".into()].concat());
-        output::tar(&tarpth)?;
+        let tarpth = component_dir.join("./ARTIFACT").join([component, ".tar.gz".into()].concat());
+        output::tar(&component_dir, &tarpth)?;
     }
     Ok(())
 }
