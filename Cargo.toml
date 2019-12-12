@@ -40,7 +40,6 @@ tar = "0.4.10"
 walkdir = "1.0.7"
 dirs = "2.0.2"
 tempdir = "0.3.7"
-fs_extra = "1.1.0"
 
 [dependencies.indicatif]
 optional = true
@@ -57,5 +56,5 @@ name = "lal"
 path = "src/lib.rs"
 
 [dev-dependencies]
-serial_test = "0.3.1"
+fs_extra = "1.1.0"
 parameterized-macro = "0.1.1"

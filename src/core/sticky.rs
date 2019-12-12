@@ -1,6 +1,6 @@
 use serde_json;
 use std::{
-    env, fs,
+    fs,
     io::prelude::{Read, Write},
     path::Path,
 };
@@ -24,8 +24,8 @@ impl StickyOptions {
     }
 
     /// Read and deserialize a StickyOptions from `.lal/opts`
-    pub fn read() -> LalResult<StickyOptions> {
-        let opts_path = Path::new(".lal/opts");
+    pub fn read(component_dir: &Path) -> LalResult<StickyOptions> {
+        let opts_path = component_dir.join(".lal/opts");
         if !opts_path.exists() {
             return Ok(StickyOptions::default()); // everything off
         }
@@ -36,10 +36,9 @@ impl StickyOptions {
     }
 
     /// Overwrite `.lal/opts` with current settings
-    pub fn write(&self) -> LalResult<()> {
-        let pwd = env::current_dir()?;
-        create_lal_subdir(&pwd)?; // create the `.lal` subdir if it's not there already
-        let opts_path = Path::new(".lal/opts");
+    pub fn write(&self, component_dir: &Path) -> LalResult<()> {
+        create_lal_subdir(&component_dir.to_path_buf())?; // create the `.lal` subdir if it's not there already
+        let opts_path = component_dir.join(".lal/opts");
         let encoded = serde_json::to_string_pretty(self)?;
 
         let mut f = fs::File::create(&opts_path)?;
@@ -49,8 +48,8 @@ impl StickyOptions {
     }
 
     /// Delete local `.lal/opts`
-    pub fn delete_local() -> LalResult<()> {
-        let opts_path = Path::new(".lal/opts");
+    pub fn delete_local(component_dir: &Path) -> LalResult<()> {
+        let opts_path = component_dir.join(".lal/opts");
         Ok(fs::remove_file(&opts_path)?)
     }
 }

@@ -1,4 +1,4 @@
-use std::{env, path::Path, process::Command, vec::Vec};
+use std::{path::Path, process::Command, vec::Vec};
 
 use super::{CliError, Config, Container, Environment, LalResult};
 
@@ -170,20 +170,13 @@ pub fn run(
     command: Vec<String>,
     flags: &DockerRunFlags,
     modes: &ShellModes,
+    component_dir: &Path,
 ) -> LalResult<()> {
     match environment {
-        Environment::Container(container) => docker_run(&cfg, &container, command, &flags, &modes),
-
-        Environment::None => {
-            let mut command = command.clone();
-            let exe = command.remove(0);
-            let s = Command::new(exe).args(command).status()?;
-            if !s.success() {
-                return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
-            }
-
-            Ok(())
+        Environment::Container(container) => {
+            docker_run(&cfg, &container, command, &flags, &modes, &component_dir)
         }
+        Environment::None => native_run(command, &component_dir),
     }
 }
 
@@ -198,10 +191,11 @@ pub fn docker_run(
     command: Vec<String>,
     flags: &DockerRunFlags,
     modes: &ShellModes,
+    component_dir: &Path,
 ) -> LalResult<()> {
     let mut modified_container_option: Option<Container> = None;
 
-    trace!("Performing docker permission sanity check");
+    debug!("Performing docker permission sanity check");
     if let Err(e) = permission_sanity_check() {
         match e {
             CliError::DockerPermissionSafety(_, u, g) => {
@@ -224,14 +218,13 @@ pub fn docker_run(
     // Shadow container here
     let container = modified_container_option.as_ref().unwrap_or(container);
 
-    trace!("Finding home and cwd");
+    debug!("Finding home and cwd");
     let home = dirs::home_dir().unwrap(); // crash if no $HOME
-    let pwd = env::current_dir().unwrap();
 
     // construct arguments vector
     let mut args: Vec<String> = vec!["run".into(), "--rm".into()];
     for mount in cfg.mounts.clone() {
-        trace!(" - mounting {}", mount.src);
+        debug!(" - mounting {}", mount.src);
         args.push("-v".into());
         let mnt = format!(
             "{}:{}{}",
@@ -241,9 +234,9 @@ pub fn docker_run(
         );
         args.push(mnt);
     }
-    trace!(" - mounting {}", pwd.display());
+    debug!(" - mounting {}", &component_dir.display());
     args.push("-v".into());
-    args.push(format!("{}:/home/lal/volume", pwd.display()));
+    args.push(format!("{}:/home/lal/volume", &component_dir.display()));
 
     // X11 forwarding
     if modes.x11_forwarding {
@@ -300,9 +293,12 @@ pub fn docker_run(
         }
         println!();
     } else {
-        trace!("Entering docker");
-        let s = Command::new("docker").args(&args).status()?;
-        trace!("Exited docker");
+        debug!("Entering docker");
+        let s = Command::new("docker")
+            .args(&args)
+            .current_dir(&component_dir)
+            .status()?;
+        debug!("Exited docker");
         if !s.success() {
             return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
         }
@@ -311,10 +307,11 @@ pub fn docker_run(
 }
 
 /// Runs an arbitrary command natively, without containerization
-pub fn native_run(mut command: Vec<String>) -> LalResult<()> {
+pub fn native_run(mut command: Vec<String>, component_dir: &Path) -> LalResult<()> {
     let cmd = command.remove(0);
     let mut script_cmd = Command::new(cmd);
-    let s = script_cmd.args(command).status()?;
+    script_cmd.args(command).current_dir(&component_dir);
+    let s = script_cmd.status()?;
 
     if !s.success() {
         return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
@@ -347,6 +344,7 @@ pub fn shell(
     modes: &ShellModes,
     cmd: Option<Vec<&str>>,
     privileged: bool,
+    component_dir: &Path,
 ) -> LalResult<()> {
     let flags = DockerRunFlags {
         interactive: cmd.is_none() || cfg.interactive,
@@ -366,14 +364,14 @@ pub fn shell(
                 info!("Entering {}", container);
             }
 
-            docker_run(cfg, container, command, &flags, modes)
+            docker_run(cfg, container, command, &flags, modes, &component_dir)
         }
         Environment::None => {
             if command.is_empty() {
                 command.push("bash".into());
             }
 
-            native_run(command)
+            native_run(command, &component_dir)
         }
     }
 }
@@ -389,9 +387,11 @@ pub fn script(
     args: Vec<&str>,
     modes: &ShellModes,
     privileged: bool,
+    component_dir: &Path,
 ) -> LalResult<()> {
-    let pth = Path::new(".").join(".lal").join("scripts").join(&name);
-    if !pth.exists() {
+    let pth = Path::new(".lal").join("scripts").join(&name);
+    debug!("pth: {}", &pth.display());
+    if !component_dir.join(&pth).exists() {
         return Err(CliError::MissingScript(name.into()));
     }
 
@@ -399,9 +399,10 @@ pub fn script(
     let command = vec![
         "bash".into(),
         "-c".into(),
-        format!("source {}; main {}", pth.display(), args.join(" ")),
+        format!("source {}; main {}", &pth.display(), args.join(" ")),
     ];
 
+    debug!("script command: {:?}", command);
     match environment {
         Environment::Container(container) => {
             let flags = DockerRunFlags {
@@ -409,8 +410,15 @@ pub fn script(
                 privileged,
             };
 
-            Ok(docker_run(cfg, container, command, &flags, modes)?)
+            Ok(docker_run(
+                cfg,
+                container,
+                command,
+                &flags,
+                modes,
+                &component_dir,
+            )?)
         }
-        Environment::None => native_run(command),
+        Environment::None => native_run(command, &component_dir),
     }
 }

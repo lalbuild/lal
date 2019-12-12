@@ -1,4 +1,4 @@
-use std::env;
+use std::path::{Component, Path};
 
 use super::{CliError, Config, LalResult};
 use core::manifest::*;
@@ -11,22 +11,26 @@ use core::manifest::*;
 ///
 /// The function will not overwrite an existing `manifest.json`,
 /// unless the `force` bool is set.
-pub fn init(cfg: &Config, force: bool, env: &str) -> LalResult<()> {
+pub fn init(cfg: &Config, force: bool, component_dir: &Path, env: &str) -> LalResult<()> {
     cfg.get_environment(env.into())?;
 
-    let pwd = env::current_dir()?;
-    let last_comp = pwd.components().last().unwrap(); // std::path::Component
+    let last_comp: Component = component_dir.components().last().unwrap();
     let dirname = last_comp.as_os_str().to_str().unwrap();
 
-    let mpath = ManifestLocation::identify(&pwd);
+    let mpath = ManifestLocation::identify(&component_dir.to_path_buf());
     if !force && mpath.is_ok() {
         return Err(CliError::ManifestExists);
     }
 
     // we are allowed to overwrite or write a new manifest if we are here
     // always create new manifests in new default location
-    create_lal_subdir(&pwd)?; // create the `.lal` subdir if it's not there already
-    Manifest::new(dirname, env, ManifestLocation::default().as_path(&pwd)).write()?;
+    create_lal_subdir(&component_dir.to_path_buf())?; // create the `.lal` subdir if it's not there already
+    Manifest::new(
+        dirname,
+        env,
+        ManifestLocation::default().as_path(&component_dir.to_path_buf()),
+    )
+    .write()?;
 
     // if the manifest already existed, warn about this now being placed elsewhere
     if let Ok(ManifestLocation::RepoRoot) = mpath {

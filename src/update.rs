@@ -1,4 +1,5 @@
 use super::{CliError, LalResult, Manifest};
+use std::path::Path;
 use storage::CachedBackend;
 
 /// Update specific dependencies outside the manifest
@@ -10,6 +11,7 @@ use storage::CachedBackend;
 /// If one `save` or `savedev` was set, the fetched versions are also updated in the
 /// manifest. This provides an easy way to not have to deal with strict JSON manually.
 pub fn update<T: CachedBackend + ?Sized>(
+    component_dir: &Path,
     manifest: &Manifest,
     backend: &T,
     components: Vec<String>,
@@ -30,7 +32,7 @@ pub fn update<T: CachedBackend + ?Sized>(
                     return Err(CliError::InvalidComponentName(pair[0].into()));
                 }
                 // standard fetch with an integer version
-                match backend.unpack_published_component(pair[0], Some(n), env) {
+                match backend.unpack_published_component(&component_dir, pair[0], Some(n), env) {
                     Ok(c) => updated.push(c),
                     Err(e) => {
                         warn!("Failed to update {} ({})", pair[0], e);
@@ -40,10 +42,12 @@ pub fn update<T: CachedBackend + ?Sized>(
             } else {
                 // fetch from stash - this does not go into `updated` it it succeeds
                 // because we wont and cannot save stashed versions in the manifest
-                let _ = backend.unpack_stashed_component(pair[0], pair[1]).map_err(|e| {
-                    warn!("Failed to update {} from stash ({})", pair[0], e);
-                    error = Some(e);
-                });
+                let _ = backend
+                    .unpack_stashed_component(&component_dir, pair[0], pair[1])
+                    .map_err(|e| {
+                        warn!("Failed to update {} from stash ({})", pair[0], e);
+                        error = Some(e);
+                    });
             }
         } else {
             if &comp.to_lowercase() != comp {
@@ -61,7 +65,7 @@ pub fn update<T: CachedBackend + ?Sized>(
                 .ok_or_else(|| CliError::NoIntersectedVersion(comp.clone()))?;
             info!("Fetch {} {}={}", env, comp, ver);
 
-            match backend.unpack_published_component(comp, Some(ver), env) {
+            match backend.unpack_published_component(&component_dir, comp, Some(ver), env) {
                 Ok(c) => updated.push(c),
                 Err(e) => {
                     warn!("Failed to update {} ({})", &comp, e);
@@ -115,6 +119,7 @@ pub fn update<T: CachedBackend + ?Sized>(
 /// If the save flag is set, then the manifest will be updated correctly.
 /// I.e. dev updates will update only the dev portions of the manifest.
 pub fn update_all<T: CachedBackend + ?Sized>(
+    component_dir: &Path,
     manifest: &Manifest,
     backend: &T,
     save: bool,
@@ -126,5 +131,13 @@ pub fn update_all<T: CachedBackend + ?Sized>(
     } else {
         manifest.dependencies.keys().cloned().collect()
     };
-    update(manifest, backend, deps, save && !dev, save && dev, env)
+    update(
+        &component_dir,
+        manifest,
+        backend,
+        deps,
+        save && !dev,
+        save && dev,
+        env,
+    )
 }

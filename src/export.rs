@@ -7,7 +7,7 @@ use storage::CachedBackend;
 pub fn export<T: CachedBackend + ?Sized>(
     backend: &T,
     comp: &str,
-    output: Option<&str>,
+    output: &Path,
     _env: Option<&str>,
 ) -> LalResult<()> {
     let env = match _env {
@@ -22,8 +22,7 @@ pub fn export<T: CachedBackend + ?Sized>(
         return Err(CliError::InvalidComponentName(comp.into()));
     }
 
-    let dir = output.unwrap_or(".");
-    info!("Export {} {} to {}", env, comp, dir);
+    info!("Export {} {} to {}", env, comp, output.display());
 
     let mut component_name = comp; // this is only correct if no =version suffix
     let tarname = if comp.contains('=') {
@@ -42,7 +41,7 @@ pub fn export<T: CachedBackend + ?Sized>(
         backend.retrieve_published_component(comp, None, env)?.0
     };
 
-    let dest = Path::new(dir).join(format!("{}.tar.gz", component_name));
+    let dest = output.join(format!("{}.tar.gz", component_name));
     debug!("Copying {:?} to {:?}", tarname, dest);
 
     fs::copy(tarname, dest)?;

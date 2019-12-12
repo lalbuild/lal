@@ -48,7 +48,7 @@ impl LocalBackend {
 impl Backend for LocalBackend {
     fn get_versions(&self, name: &str, loc: &str) -> LalResult<Vec<u32>> {
         let tar_dir = format!("{}/environments/{}/{}/", self.cache, loc, name);
-        let dentries = fs::read_dir(config_dir().join(tar_dir));
+        let dentries = fs::read_dir(config_dir(None).join(tar_dir));
         let mut versions = vec![];
         for entry in dentries? {
             let path = entry?;
@@ -89,10 +89,17 @@ impl Backend for LocalBackend {
         })
     }
 
-    fn publish_artifact(&self, name: &str, version: u32, env: &str) -> LalResult<()> {
+    fn publish_artifact(
+        &self,
+        home: Option<&Path>,
+        component_dir: &Path,
+        name: &str,
+        version: u32,
+        env: &str,
+    ) -> LalResult<()> {
         // this fn basically assumes all the sanity checks have been performed
         // files must exist and lockfile must be sensible
-        let artifactdir = Path::new("./ARTIFACT");
+        let artifactdir = component_dir.join("./ARTIFACT");
         let tarball = artifactdir.join(format!("{}.tar.gz", name));
         let lockfile = artifactdir.join("lockfile.json");
 
@@ -107,12 +114,11 @@ impl Backend for LocalBackend {
             self.cache, env, name, version
         );
 
-        if let Some(full_tar_dir) = config_dir().join(tar_dir).to_str() {
-            ensure_dir_exists_fresh(full_tar_dir)?;
-        }
+        let full_tar_dir = config_dir(home).join(tar_dir);
+        ensure_dir_exists_fresh(&full_tar_dir)?;
 
-        fs::copy(tarball, config_dir().join(tar_path))?;
-        fs::copy(lockfile, config_dir().join(lock_path))?;
+        fs::copy(tarball, config_dir(home).join(tar_path))?;
+        fs::copy(lockfile, config_dir(home).join(lock_path))?;
 
         Ok(())
     }

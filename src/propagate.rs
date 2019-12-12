@@ -1,6 +1,6 @@
 use super::{LalResult, Lockfile, Manifest};
 use serde_json;
-use std::collections::BTreeSet;
+use std::{collections::BTreeSet, path::Path};
 
 
 /// A single update of of a propagation
@@ -80,13 +80,13 @@ pub fn compute(lf: &Lockfile, component: &str) -> LalResult<UpdateSequence> {
 ///
 /// This will produce a set of sequential steps, each set itself being parallelizable.
 /// The resulting update steps can be performed in order to ensure `lal verify` is happy.
-pub fn print(manifest: &Manifest, component: &str, json_output: bool) -> LalResult<()> {
+pub fn print(component_dir: &Path, manifest: &Manifest, component: &str, json_output: bool) -> LalResult<()> {
     debug!("Calculating update path for {}", component);
 
     // TODO: allow taking a custom lockfile to be used outside a repo.
     let lf = Lockfile::default()
         .set_name(&manifest.name)
-        .populate_from_input()?;
+        .populate_from_input(&component_dir)?;
 
     let result = compute(&lf, component)?;
 

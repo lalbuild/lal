@@ -10,14 +10,19 @@ use storage::CachedBackend;
 /// then copies this to `~/.lal/cache/stash/${name}/`.
 ///
 /// This file can then be installed via `update` using a component=${name} argument.
-pub fn stash<T: CachedBackend + ?Sized>(backend: &T, mf: &Manifest, name: &str) -> LalResult<()> {
+pub fn stash<T: CachedBackend + ?Sized>(
+    component_dir: &Path,
+    backend: &T,
+    mf: &Manifest,
+    name: &str,
+) -> LalResult<()> {
     info!("Stashing OUTPUT into cache under {}/{}", mf.name, name);
     // sanity: verify name does NOT parse as a u32
     if let Ok(n) = name.parse::<u32>() {
         return Err(CliError::InvalidStashName(n));
     }
 
-    let outputdir = Path::new("./OUTPUT");
+    let outputdir = component_dir.join("./OUTPUT");
     if !outputdir.is_dir() {
         return Err(CliError::MissingBuild);
     }
@@ -27,13 +32,13 @@ pub fn stash<T: CachedBackend + ?Sized>(backend: &T, mf: &Manifest, name: &str) 
     // rather than the ugly colony default of "EXPERIMENTAL-${hex}"
     // stashed builds are only used locally so this allows easier inspection
     // full version list is available in `lal ls -f`
-    let lf_path = Path::new("OUTPUT").join("lockfile.json");
+    let lf_path = component_dir.join("OUTPUT").join("lockfile.json");
     let mut lf = Lockfile::from_path(&lf_path, &mf.name)?;
     lf.version = name.to_string();
     lf.write(&lf_path)?;
 
     // main operation:
-    backend.stash_output(&mf.name, name)?;
+    backend.stash_output(&component_dir, &mf.name, name)?;
 
     Ok(())
 }

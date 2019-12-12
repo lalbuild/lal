@@ -6,7 +6,7 @@ extern crate openssl_probe;
 extern crate lal;
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 use lal::*;
-use std::{ops::Deref, process};
+use std::{env::current_dir, ops::Deref, path::Path, process};
 
 fn is_integer(v: String) -> Result<(), String> {
     if v.parse::<u32>().is_ok() {
@@ -29,16 +29,13 @@ fn result_exit<T>(name: &str, x: LalResult<T>) {
 fn handle_manifest_agnostic_cmds(
     args: &ArgMatches,
     cfg: &Config,
+    component_dir: &Path,
     backend: &dyn Backend,
     explicit_env: Option<&str>,
 ) {
     let res = if let Some(a) = args.subcommand_matches("export") {
-        lal::export(
-            backend,
-            a.value_of("component").unwrap(),
-            a.value_of("output"),
-            explicit_env,
-        )
+        let curdir = current_dir().unwrap();
+        lal::export(backend, a.value_of("component").unwrap(), &curdir, explicit_env)
     } else if let Some(a) = args.subcommand_matches("query") {
         lal::query(
             backend,
@@ -47,7 +44,7 @@ fn handle_manifest_agnostic_cmds(
             a.is_present("latest"),
         )
     } else if let Some(a) = args.subcommand_matches("publish") {
-        lal::publish(a.value_of("component").unwrap(), backend)
+        lal::publish(None, &component_dir, a.value_of("component").unwrap(), backend)
     } else if args.subcommand_matches("list-environments").is_some() {
         lal::list::environments(cfg)
     } else {
@@ -57,9 +54,15 @@ fn handle_manifest_agnostic_cmds(
 }
 
 // functions that need a manifest, but do not depend on environment values
-fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend) {
+fn handle_environment_agnostic_cmds(
+    args: &ArgMatches,
+    component_dir: &Path,
+    mf: &Manifest,
+    backend: &dyn Backend,
+) {
     let res = if let Some(a) = args.subcommand_matches("status") {
         lal::status(
+            &component_dir,
             mf,
             a.is_present("full"),
             a.is_present("origin"),
@@ -79,18 +82,35 @@ fn handle_environment_agnostic_cmds(args: &ArgMatches, mf: &Manifest, backend: &
             .unwrap()
             .map(String::from)
             .collect::<Vec<_>>();
-        lal::remove(mf, xs, a.is_present("save"), a.is_present("savedev"))
+        lal::remove(
+            &component_dir,
+            mf,
+            xs,
+            a.is_present("save"),
+            a.is_present("savedev"),
+        )
     } else if let Some(a) = args.subcommand_matches("stash") {
-        lal::stash(backend, mf, a.value_of("name").unwrap())
+        lal::stash(&component_dir, backend, mf, a.value_of("name").unwrap())
     } else if let Some(a) = args.subcommand_matches("propagate") {
-        lal::propagate::print(mf, a.value_of("component").unwrap(), a.is_present("json"))
+        lal::propagate::print(
+            &component_dir,
+            mf,
+            a.value_of("component").unwrap(),
+            a.is_present("json"),
+        )
     } else {
         return;
     };
     result_exit(args.subcommand_name().unwrap(), res);
 }
 
-fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend, env: &str) {
+fn handle_network_cmds(
+    args: &ArgMatches,
+    component_dir: &Path,
+    mf: &Manifest,
+    backend: &dyn Backend,
+    env: &str,
+) {
     let res = if let Some(a) = args.subcommand_matches("update") {
         let xs = a
             .values_of("components")
@@ -98,6 +118,7 @@ fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend, 
             .map(String::from)
             .collect::<Vec<_>>();
         lal::update(
+            &component_dir,
             mf,
             backend,
             xs,
@@ -106,16 +127,29 @@ fn handle_network_cmds(args: &ArgMatches, mf: &Manifest, backend: &dyn Backend, 
             env,
         )
     } else if let Some(a) = args.subcommand_matches("update-all") {
-        lal::update_all(mf, backend, a.is_present("save"), a.is_present("dev"), env)
+        lal::update_all(
+            &component_dir,
+            mf,
+            backend,
+            a.is_present("save"),
+            a.is_present("dev"),
+            env,
+        )
     } else if let Some(a) = args.subcommand_matches("fetch") {
-        lal::fetch(mf, backend, a.is_present("core"), env)
+        lal::fetch(&component_dir, mf, backend, a.is_present("core"), env)
     } else {
         return; // not a network cmnd
     };
     result_exit(args.subcommand_name().unwrap(), res)
 }
 
-fn handle_env_command(args: &ArgMatches, cfg: &Config, env: &str, stickies: &StickyOptions) -> Environment {
+fn handle_env_command(
+    args: &ArgMatches,
+    component_dir: &Path,
+    cfg: &Config,
+    env: &str,
+    stickies: &StickyOptions,
+) -> Environment {
     // lookup associated container from
     let environment = cfg
         .get_environment(env.into())
@@ -129,17 +163,17 @@ fn handle_env_command(args: &ArgMatches, cfg: &Config, env: &str, stickies: &Sti
     // resolve env updates and sticky options before main subcommands
     if let Some(a) = args.subcommand_matches("env") {
         if a.subcommand_matches("update").is_some() {
-            result_exit("env update", lal::env::update(&environment, env))
+            result_exit("env update", lal::env::update(&component_dir, &environment, env))
         } else if a.subcommand_matches("reset").is_some() {
             // NB: if .lal/opts.env points at an environment not in config
             // reset will fail.. possible to fix, but complects this file too much
             // .lal/opts writes are checked in lal::env::set anyway so this
             // would be purely the users fault for editing it manually
-            result_exit("env clear", lal::env::clear())
+            result_exit("env clear", lal::env::clear(&component_dir))
         } else if let Some(sa) = a.subcommand_matches("set") {
             result_exit(
                 "env override",
-                lal::env::set(stickies, cfg, sa.value_of("environment").unwrap()),
+                lal::env::set(&component_dir, stickies, cfg, sa.value_of("environment").unwrap()),
             )
         } else {
             // just print current environment
@@ -179,11 +213,18 @@ fn handle_upgrade(args: &ArgMatches, cfg: &Config) {
 }
 
 
-fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str, environment: &Environment) {
+fn handle_docker_cmds(
+    args: &ArgMatches,
+    component_dir: &Path,
+    mf: &Manifest,
+    cfg: &Config,
+    env: &str,
+    environment: &Environment,
+) {
     let res = if let Some(a) = args.subcommand_matches("verify") {
         // not really a docker related command, but it needs
         // the resolved env to verify consistent dependency usage
-        lal::verify(mf, env, a.is_present("simple"))
+        lal::verify(&component_dir, mf, env, a.is_present("simple"))
     } else if let Some(a) = args.subcommand_matches("build") {
         let bopts = BuildOptions {
             name: a.value_of("component").map(String::from),
@@ -201,7 +242,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             host_networking: a.is_present("net-host"),
             env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
         };
-        lal::build(cfg, mf, &bopts, env.into(), modes)
+        lal::build(&component_dir, cfg, mf, &bopts, env.into(), modes)
     } else if let Some(a) = args.subcommand_matches("shell") {
         let xs = if a.is_present("cmd") {
             Some(a.values_of("cmd").unwrap().collect::<Vec<_>>())
@@ -214,7 +255,14 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             host_networking: a.is_present("net-host"),
             env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
         };
-        lal::shell(cfg, environment, &modes, xs, a.is_present("privileged"))
+        lal::shell(
+            cfg,
+            environment,
+            &modes,
+            xs,
+            a.is_present("privileged"),
+            &component_dir,
+        )
     } else if let Some(a) = args.subcommand_matches("run") {
         let xs = if a.is_present("parameters") {
             a.values_of("parameters").unwrap().collect::<Vec<_>>()
@@ -234,6 +282,7 @@ fn handle_docker_cmds(args: &ArgMatches, mf: &Manifest, cfg: &Config, env: &str,
             xs,
             &modes,
             a.is_present("privileged"),
+            &component_dir,
         )
     } else {
         return; // no valid docker related command found
@@ -553,12 +602,12 @@ fn main() {
     if let Some(a) = args.subcommand_matches("configure") {
         result_exit(
             "configure",
-            lal::configure(true, true, a.value_of("file").unwrap()),
+            lal::configure(true, true, a.value_of("file").unwrap(), None),
         );
     }
 
     // Force config to exists before allowing remaining actions
-    let config = Config::read()
+    let config = Config::read(None)
         .map_err(|e| {
             error!("Configuration error: {}", e);
             println!();
@@ -586,11 +635,17 @@ fn main() {
     #[cfg(feature = "upgrade")]
     handle_upgrade(&args, &config);
 
+    let component_dir = current_dir().unwrap();
     // Allow lal init / clean without manifest existing in PWD
     if let Some(a) = args.subcommand_matches("init") {
         result_exit(
             "init",
-            lal::init(&config, a.is_present("force"), a.value_of("environment").unwrap()),
+            lal::init(
+                &config,
+                a.is_present("force"),
+                &component_dir,
+                a.value_of("environment").unwrap(),
+            ),
         );
     } else if let Some(a) = args.subcommand_matches("clean") {
         let days = a.value_of("days").unwrap().parse().unwrap();
@@ -598,7 +653,7 @@ fn main() {
     }
 
     // Read .lal/opts if it exists
-    let stickies = StickyOptions::read()
+    let stickies = StickyOptions::read(&component_dir)
         .map_err(|e| {
             // Should not happen unless people are mucking with it manually
             error!("Options error: {}", e);
@@ -618,10 +673,10 @@ fn main() {
             })
             .unwrap();
     }
-    handle_manifest_agnostic_cmds(&args, &config, backend.deref(), explicit_env);
+    handle_manifest_agnostic_cmds(&args, &config, &component_dir, backend.deref(), explicit_env);
 
     // Force manifest to exist before allowing remaining actions
-    let manifest = Manifest::read()
+    let manifest = Manifest::read(&component_dir)
         .map_err(|e| {
             error!("Manifest error: {}", e);
             println!("Ensure manifest.json is valid json or run `lal init`");
@@ -630,7 +685,7 @@ fn main() {
         .unwrap();
 
     // Subcommands that are environment agnostic
-    handle_environment_agnostic_cmds(&args, &manifest, backend.deref());
+    handle_environment_agnostic_cmds(&args, &component_dir, &manifest, backend.deref());
 
     // Force a valid container key configured in manifest and corr. value in config
     // NB: --env overrides sticky env overrides manifest.env
@@ -641,7 +696,7 @@ fn main() {
     } else {
         manifest.environment.clone()
     };
-    let environment = handle_env_command(&args, &config, &env, &stickies);
+    let environment = handle_env_command(&args, &component_dir, &config, &env, &stickies);
 
     // Warn users who are using an unsupported environment
     if !manifest
@@ -658,8 +713,8 @@ fn main() {
     }
 
     // Main subcommands
-    handle_network_cmds(&args, &manifest, backend.deref(), &env);
-    handle_docker_cmds(&args, &manifest, &config, &env, &environment);
+    handle_network_cmds(&args, &component_dir, &manifest, backend.deref(), &env);
+    handle_docker_cmds(&args, &component_dir, &manifest, &config, &env, &environment);
 
     unreachable!("Subcommand valid, but not implemented");
 }

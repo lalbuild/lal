@@ -11,8 +11,11 @@ use super::{CliError, LalResult, Lockfile, Manifest};
 struct PartialLock {
     pub version: String,
 }
-fn read_partial_lockfile(component: &str) -> LalResult<PartialLock> {
-    let lock_path = Path::new("./INPUT").join(component).join("lockfile.json");
+fn read_partial_lockfile(component: &str, component_dir: &Path) -> LalResult<PartialLock> {
+    let lock_path = component_dir
+        .join("./INPUT")
+        .join(component)
+        .join("lockfile.json");
     if !lock_path.exists() {
         return Err(CliError::MissingLockfile(component.to_string()));
     }
@@ -22,19 +25,19 @@ fn read_partial_lockfile(component: &str) -> LalResult<PartialLock> {
     Ok(serde_json::from_str(&lock_str)?)
 }
 
-pub fn present() -> bool {
-    Path::new("./INPUT").is_dir()
+pub fn present(component_dir: &Path) -> bool {
+    component_dir.join("./INPUT").is_dir()
 }
 
 /// Simple INPUT analyzer for the lockfile generator and `analyze_full`
-pub fn analyze() -> LalResult<BTreeMap<String, String>> {
-    let input = Path::new("./INPUT");
+pub fn analyze(component_dir: &Path) -> LalResult<BTreeMap<String, String>> {
+    let input = component_dir.join("./INPUT");
 
     let mut deps = BTreeMap::new();
     if !input.is_dir() {
         return Ok(deps);
     }
-    let dirs = WalkDir::new("INPUT")
+    let dirs = WalkDir::new(&component_dir.join("INPUT"))
         .min_depth(1)
         .max_depth(1)
         .into_iter()
@@ -42,9 +45,9 @@ pub fn analyze() -> LalResult<BTreeMap<String, String>> {
         .filter(|e| e.path().is_dir());
 
     for d in dirs {
-        let pth = d.path().strip_prefix("INPUT").unwrap();
+        let pth = d.path().strip_prefix(&component_dir.join("INPUT")).unwrap();
         let component = pth.to_str().unwrap();
-        let lck = read_partial_lockfile(component)?;
+        let lck = read_partial_lockfile(component, &component_dir)?;
         deps.insert(component.to_string(), lck.version);
     }
     Ok(deps)
@@ -63,10 +66,10 @@ pub struct InputDependency {
 pub type InputMap = BTreeMap<String, InputDependency>;
 
 /// Helper for `lal::status`
-pub fn analyze_full(manifest: &Manifest) -> LalResult<InputMap> {
-    let input = Path::new("./INPUT");
+pub fn analyze_full(manifest: &Manifest, component_dir: &Path) -> LalResult<InputMap> {
+    let input = component_dir.join("./INPUT");
 
-    let deps = analyze()?;
+    let deps = analyze(&component_dir)?;
     let saved_deps = manifest.all_dependencies();
 
     let mut depmap = InputMap::new();
@@ -111,17 +114,17 @@ pub fn analyze_full(manifest: &Manifest) -> LalResult<InputMap> {
 }
 
 /// Basic part of input verifier - checks that everything is at least present
-pub fn verify_dependencies_present(m: &Manifest) -> LalResult<()> {
+pub fn verify_dependencies_present(component_dir: &Path, m: &Manifest) -> LalResult<()> {
     let mut error = None;
     let mut deps = vec![];
-    let dirs = WalkDir::new("INPUT")
+    let dirs = WalkDir::new(component_dir.join("INPUT"))
         .min_depth(1)
         .max_depth(1)
         .into_iter()
         .filter_map(|e| e.ok())
         .filter(|e| e.path().is_dir());
     for entry in dirs {
-        let pth = entry.path().strip_prefix("INPUT").unwrap();
+        let pth = entry.path().strip_prefix(component_dir.join("INPUT")).unwrap();
         debug!("-> {}", pth.display());
 
         let component = pth.to_str().unwrap();

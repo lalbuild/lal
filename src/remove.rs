@@ -9,7 +9,13 @@ use super::{CliError, LalResult, Manifest};
 ///
 /// If one of `save` or `savedev` was set, `manifest.json` is also updated to remove
 /// the specified components from the corresponding dictionary.
-pub fn remove(manifest: &Manifest, xs: Vec<String>, save: bool, savedev: bool) -> LalResult<()> {
+pub fn remove(
+    component_dir: &Path,
+    manifest: &Manifest,
+    xs: Vec<String>,
+    save: bool,
+    savedev: bool,
+) -> LalResult<()> {
     debug!("Removing dependencies {:?}", xs);
 
     // remove entries in xs from manifest.
@@ -44,12 +50,12 @@ pub fn remove(manifest: &Manifest, xs: Vec<String>, save: bool, savedev: bool) -
     }
 
     // delete the folder (ignore if the folder does not exist)
-    let input = Path::new("./INPUT");
+    let input = component_dir.join("./INPUT");
     if !input.is_dir() {
         return Ok(());
     }
     for component in xs {
-        let pth = Path::new(&input).join(&component);
+        let pth = input.join(&component);
         if pth.is_dir() {
             debug!("Deleting INPUT/{}", component);
             fs::remove_dir_all(&pth)?;

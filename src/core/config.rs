@@ -21,9 +21,12 @@ fn find_home_dir() -> PathBuf {
 }
 
 /// Master override for where the .lal config lives
-pub fn config_dir() -> PathBuf {
-    let home = find_home_dir();
-    Path::new(&home).join(".lal")
+pub fn config_dir(home: Option<&Path>) -> PathBuf {
+    let home: PathBuf = match home {
+        Some(ref home) => home.to_path_buf(),
+        None => find_home_dir(),
+    };
+    home.join(".lal")
 }
 
 /// Docker volume mount representation
@@ -124,8 +127,8 @@ impl Config {
     ///
     /// This will locate you homedir, and set last update check 2 days in the past.
     /// Thus, with a blank default config, you will always trigger an upgrade check.
-    pub fn new(defaults: ConfigDefaults) -> Config {
-        let cachepath = config_dir().join("cache");
+    pub fn new(defaults: ConfigDefaults, home: Option<&Path>) -> Config {
+        let cachepath = config_dir(home).join("cache");
         let cache = cachepath.as_path().to_str().unwrap().into();
 
         // reset last update time
@@ -158,8 +161,8 @@ impl Config {
     }
 
     /// Read and deserialize a Config from ~/.lal/config
-    pub fn read() -> LalResult<Config> {
-        let cfg_path = config_dir().join("config");
+    pub fn read(home: Option<&Path>) -> LalResult<Config> {
+        let cfg_path = config_dir(home).join("config");
         if !cfg_path.exists() {
             return Err(CliError::MissingConfig);
         }
@@ -187,8 +190,8 @@ impl Config {
     }
 
     /// Overwrite `~/.lal/config` with serialized data from this struct
-    pub fn write(&self, silent: bool) -> LalResult<()> {
-        let cfg_path = config_dir().join("config");
+    pub fn write(&self, silent: bool, home: Option<&Path>) -> LalResult<()> {
+        let cfg_path = config_dir(home).join("config");
         let encoded = serde_json::to_string_pretty(self)?;
 
         let mut f = fs::File::create(&cfg_path)?;
