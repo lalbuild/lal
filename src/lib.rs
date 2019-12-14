@@ -39,6 +39,9 @@ extern crate walkdir;
 mod core;
 pub use core::*;
 
+mod runners;
+pub use runners::*;
+
 mod storage;
 pub use storage::*;
 
@@ -61,7 +64,7 @@ pub use init::init;
 pub use publish::publish;
 pub use query::query;
 pub use remove::remove;
-pub use shell::{run, script, shell, DockerRunFlags, ShellModes};
+pub use shell::{run, script, shell};
 pub use stash::stash;
 pub use status::status;
 pub use update::{update, update_all};
