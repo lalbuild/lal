@@ -61,23 +61,6 @@ fn test_run_scripts(env_name: &str) {
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_status_on_experimental(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // Test basic build functionality with heylib component
-    let component_dir = clone_component_dir("heylib", &state);
-
-    build_and_stash_update_self(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok build_and_stash_update_self");
-
-    status_on_experimentals(&component_dir);
-    info!("ok status_on_experimentals");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_verify_checks(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -396,93 +379,6 @@ fn shell_permissions(env_name: &str, home: &Path, component_dir: &Path) {
     assert!(r.is_ok(), "could touch files in container");
 }
 
-fn build_and_stash_update_self<T: CachedBackend + Backend>(
-    component_dir: &Path,
-    env_name: &str,
-    backend: &T,
-    home: &Path,
-) {
-    let cfg = Config::read(Some(&home)).expect("Read config");
-    let mf = Manifest::read(&component_dir).expect("Read manifest");
-    let environment = cfg.get_environment(env_name.into()).expect("get environment");
-
-    // we'll try with various build options further down with various deps
-    let mut bopts = BuildOptions {
-        name: Some("heylib".into()),
-        configuration: Some("release".into()),
-        environment: environment,
-        release: true,
-        version: None,
-        sha: None,
-        force: false,
-        simple_verify: false,
-    };
-    let modes = ShellModes::default();
-    // basic build works - all deps are global at right env
-    let r = lal::build(&component_dir, &cfg, &mf, &bopts, env_name.into(), modes.clone());
-    if let Err(e) = r {
-        println!("error from build: {:?}", e);
-        assert!(false, "could perform a '{}' build", env_name);
-    }
-
-    // lal stash blah
-    let rs = lal::stash(&component_dir, backend, &mf, "blah");
-    assert!(rs.is_ok(), "could stash lal build artifact");
-
-    // lal update heylib=blah
-    let ru = lal::update(
-        &component_dir,
-        &mf,
-        backend,
-        vec!["heylib=blah".to_string()],
-        false,
-        false,
-        "garbage", // env not relevant for stash
-    );
-    assert!(ru.is_ok(), "could update heylib from stash");
-
-    // basic build won't work now without simple verify
-    let r1 = lal::build(&component_dir, &cfg, &mf, &bopts, env_name.into(), modes.clone());
-    assert!(r1.is_err(), "could not verify a new '{}' build", env_name);
-    if let Err(CliError::NonGlobalDependencies(nonglob)) = r1 {
-        assert_eq!(nonglob, "heylib");
-    } else {
-        println!("actual r1 was {:?}", r1);
-        assert!(false);
-    }
-
-    bopts.simple_verify = true;
-    let r2 = lal::build(&component_dir, &cfg, &mf, &bopts, env_name.into(), modes.clone());
-    assert!(r2.is_ok(), "can build with stashed deps with simple verify");
-
-    // force will also work - even with stashed deps from wrong env
-    let renv = lal::build(&component_dir, &cfg, &mf, &bopts, "xenial".into(), modes.clone());
-    assert!(renv.is_err(), "cannot build with simple verify when wrong env");
-    if let Err(CliError::EnvironmentMismatch(_, compenv)) = renv {
-        assert_eq!(compenv, env_name); // expected complaints about xenial env
-    } else {
-        println!("actual renv was {:?}", renv);
-        assert!(false);
-    }
-
-    // settings that reflect lal build -f
-    bopts.simple_verify = false;
-    bopts.force = true;
-    let renv2 = lal::build(&component_dir, &cfg, &mf, &bopts, "xenial".into(), modes.clone());
-    assert!(renv2.is_ok(), "could force build in different env");
-
-    // additionally do a build with printonly
-    let all_modes = ShellModes {
-        printonly: true,
-        x11_forwarding: true,
-        host_networking: true,
-        env_vars: vec![],
-    };
-    let printbuild = lal::build(&component_dir, &cfg, &mf, &bopts, "alpine".into(), all_modes);
-    // TODO: verify output!
-    assert!(printbuild.is_ok(), "saw docker run print with X11 mounts");
-}
-
 fn fetch_release_build_and_publish<T: CachedBackend + Backend>(
     component_dir: &Path,
     env_name: &str,
@@ -627,16 +523,6 @@ fn check_propagation(component_dir: &Path, leaf: &str) {
     // print tree for extra coverage of bigger trees
     let rs = lal::status(&component_dir, &mf, true, true, true);
     assert!(rs.is_ok(), "could print status of propagation root");
-}
-
-fn status_on_experimentals(component_dir: &Path) {
-    let mf = Manifest::read(&component_dir).unwrap();
-
-    // both of these should return errors, but work
-    let r = lal::status(&component_dir, &mf, false, false, false);
-    assert!(r.is_err(), "status should complain at experimental deps");
-    let r = lal::status(&component_dir, &mf, true, true, true);
-    assert!(r.is_err(), "status should complain at experimental deps");
 }
 
 #[cfg(feature = "upgrade")]

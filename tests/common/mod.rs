@@ -22,6 +22,7 @@ pub mod build;
 pub mod fetch;
 pub mod publish;
 pub mod stash;
+pub mod status;
 pub mod update;
 
 pub struct TestState {
@@ -130,4 +131,20 @@ pub fn publish_component_versions(
             "Could not publish any components"
         ))),
     }
+}
+
+pub fn stash_component(
+    state: &TestState,
+    env_name: &str,
+    component: &str,
+    stash_name: &str,
+) -> lal::LalResult<PathBuf> {
+    let component_dir = clone_component_dir(component, &state);
+    let build_opts = build::options(Some(&state.tempdir.path()), &env_name)?;
+
+    fetch::fetch_input(&component_dir, &env_name, &state.backend)?;
+    build::build_with_options(&component_dir, &env_name, &state.tempdir.path(), &build_opts)?;
+    stash::stash(&component_dir, &state.backend, stash_name)?;
+
+    Ok(component_dir)
 }
