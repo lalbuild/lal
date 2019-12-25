@@ -18,6 +18,10 @@ use std::{
 
 use lal::{BackendConfiguration, Config, LocalBackend};
 
+pub mod build;
+pub mod fetch;
+pub mod publish;
+
 pub struct TestState {
     pub backend: LocalBackend,
     pub testdir: PathBuf,
@@ -89,4 +93,19 @@ pub fn clone_component_dir(component: &str, state: &TestState) -> PathBuf {
 
     copy(&from, state.tempdir.path(), &copy_options).expect("copy component to tempdir");
     return to;
+}
+
+pub fn publish_component(
+    state: &TestState,
+    env_name: &str,
+    component: &str,
+    version: &str,
+) -> lal::LalResult<PathBuf> {
+    let component_dir = clone_component_dir(component, &state);
+
+    fetch::fetch_input(&component_dir, &env_name, &state.backend)?;
+    build::build_for_release(&component_dir, &env_name, &state.tempdir.path(), version)?;
+    publish::publish_release(&component_dir, &state.backend, &state.tempdir.path())?;
+
+    Ok(component_dir)
 }

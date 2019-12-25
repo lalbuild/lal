@@ -74,22 +74,6 @@ fn test_run_scripts(env_name: &str) {
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_get_environment_and_fetch_with_deps(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    let component_dir = clone_component_dir("heylib", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish heylib");
-
-    let component_dir = clone_component_dir("helloworld", &state);
-    get_environment_and_fetch(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok get_environment_and_fetch");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_build_and_stash_update_self(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -120,22 +104,6 @@ fn test_status_on_experimental(env_name: &str) {
 
     status_on_experimentals(&component_dir);
     info!("ok status_on_experimentals");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_fetch_release_build_and_publish(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // Test basic build functionality with heylib component
-    let component_dir = clone_component_dir("heylib", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish heylib");
-
-    list_everything(&state.tempdir.path(), &component_dir);
-    info!("ok list_everything");
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
@@ -577,20 +545,6 @@ fn build_and_stash_update_self<T: CachedBackend + Backend>(
     let printbuild = lal::build(&component_dir, &cfg, &mf, &bopts, "alpine".into(), all_modes);
     // TODO: verify output!
     assert!(printbuild.is_ok(), "saw docker run print with X11 mounts");
-}
-
-fn get_environment_and_fetch<T: CachedBackend + Backend>(
-    component_dir: &Path,
-    env_name: &str,
-    backend: &T,
-    home: &Path,
-) {
-    let mf = Manifest::read(&component_dir).unwrap();
-    let cfg = Config::read(Some(&home)).unwrap();
-    let _environment = cfg.get_environment(env_name.into()).unwrap();
-
-    let rcore = lal::fetch(&component_dir, &mf, backend, true, env_name);
-    assert!(rcore.is_ok(), "install core succeeded");
 }
 
 fn fetch_release_build_and_publish<T: CachedBackend + Backend>(
