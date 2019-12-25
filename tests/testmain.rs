@@ -11,29 +11,11 @@ mod cases;
 mod common;
 use common::*;
 
-use std::{fs, path::Path};
+use std::path::Path;
 
 use parameterized_macro::parameterized;
 
 use lal::*;
-
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_change_envs(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    let component = state.tempdir.path().join("new_component");
-    fs::create_dir(&component).unwrap();
-
-    init_force(&env_name, &state.tempdir.path(), &component);
-    info!("ok init_force");
-
-    change_envs(&state.tempdir.path(), &component);
-    info!("ok change_envs");
-}
-
 
 #[parameterized(env_name = {"default", "alpine"})]
 fn test_propagations(env_name: &str) {
@@ -61,56 +43,6 @@ fn test_propagations(env_name: &str) {
 
     check_propagation(&component_dir, "prop-leaf");
     info!("ok check_propagation prop-leaf -> prop-base");
-}
-
-fn change_envs(home: &Path, component_dir: &Path) {
-    let cfg = Config::read(Some(&home)).unwrap();
-    let mf = Manifest::read(&component_dir).unwrap();
-
-    // no sticky flags set yet
-    let sticky_none = StickyOptions::read(&component_dir).unwrap();
-    assert_eq!(sticky_none.env, None);
-
-    // update the container associated with the default env
-    // (on CI we've already done this at test start => cheap)
-    let environment = cfg.get_environment(mf.environment.clone()).unwrap();
-    let ru = lal::env::update(&component_dir, &environment, &mf.environment);
-    assert!(ru.is_ok(), "env update succeeded");
-
-    let rc = lal::env::set(&component_dir, &sticky_none, &cfg, "xenial");
-    assert!(rc.is_ok(), "env set xenial succeeded");
-
-    // we changed the sticky option with that
-    let sticky_set = StickyOptions::read(&component_dir).unwrap();
-    assert_eq!(sticky_set.env, Some("xenial".into()));
-
-    let rc = lal::env::clear(&component_dir);
-    assert!(rc.is_ok(), "env clear succeeded");
-
-    // we cleared the stickies with that
-    let sticky_clear = StickyOptions::read(&component_dir).unwrap();
-    assert_eq!(sticky_clear.env, None);
-}
-
-// Create manifest in a weird directory
-fn init_force(env_name: &str, home: &Path, component_dir: &Path) {
-    let cfg = Config::read(Some(&home)).expect("read config");
-
-    let m1 = Manifest::read(&component_dir);
-    assert!(m1.is_err(), "no manifest at this point");
-
-    // Creates a manifest in the testtmp directory
-    let m2 = lal::init(&cfg, false, &component_dir, env_name);
-    assert!(m2.is_ok(), "could init without force param");
-
-    let m3 = lal::init(&cfg, true, &component_dir, env_name);
-    assert!(m3.is_ok(), "could re-init with force param");
-
-    let m4 = lal::init(&cfg, false, &component_dir, env_name);
-    assert!(m4.is_err(), "could not re-init without force ");
-
-    let m5 = lal::init(&cfg, true, &component_dir, "blah");
-    assert!(m5.is_err(), "could not init without valid environment");
 }
 
 fn fetch_release_build_and_publish<T: CachedBackend + Backend>(

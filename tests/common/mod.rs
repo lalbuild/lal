@@ -19,6 +19,7 @@ use std::{
 use lal::{BackendConfiguration, Config, LocalBackend};
 
 pub mod build;
+pub mod envs;
 pub mod fetch;
 pub mod init;
 pub mod list;
