@@ -47,3 +47,23 @@ pub fn build_with_options(
         modes,
     )
 }
+
+pub fn build_with_options_and_modes(
+    component_dir: &Path,
+    env_name: &str,
+    home: &Path,
+    build_opts: &lal::BuildOptions,
+    modes: lal::ShellModes,
+) -> lal::LalResult<()> {
+    let config = lal::Config::read(Some(&home))?;
+    let manifest = lal::Manifest::read(&component_dir)?;
+
+    lal::build(
+        &component_dir,
+        &config,
+        &manifest,
+        &build_opts,
+        env_name.to_string(),
+        modes,
+    )
+}
