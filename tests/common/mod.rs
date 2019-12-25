@@ -23,6 +23,7 @@ pub mod envs;
 pub mod fetch;
 pub mod init;
 pub mod list;
+pub mod propagate;
 pub mod publish;
 pub mod shell;
 pub mod stash;

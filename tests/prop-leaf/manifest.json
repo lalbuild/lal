@@ -2,7 +2,7 @@
   "name": "prop-leaf",
   "environment": "alpine",
   "supportedEnvironments": [
-    "alpine"
+    "default", "alpine"
   ],
   "components": {
     "prop-leaf": {

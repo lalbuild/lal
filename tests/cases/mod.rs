@@ -6,6 +6,7 @@ mod test_export;
 mod test_fetch;
 mod test_init;
 mod test_list;
+mod test_propagate;
 mod test_publish;
 mod test_query;
 mod test_remove;
