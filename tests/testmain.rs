@@ -19,27 +19,6 @@ use walkdir::WalkDir;
 use lal::*;
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_release_build_and_publish(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // "helloworld" depends on "heylib"
-    let component_dir = clone_component_dir("heylib", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish heylib");
-
-    // switch to "helloworld" component
-    let component_dir = clone_component_dir("helloworld", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish helloworld");
-
-    list_everything(&state.tempdir.path(), &component_dir);
-    info!("ok list_everything");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_remove_dependencies(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -133,9 +112,6 @@ fn test_init_force(env_name: &str) {
 
     has_config_and_manifest(&state.tempdir.path(), &component);
     info!("ok has_config_and_manifest");
-
-    list_everything(&state.tempdir.path(), &component);
-    info!("ok list_everything");
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
@@ -228,25 +204,6 @@ fn change_envs(home: &Path, component_dir: &Path) {
     // we cleared the stickies with that
     let sticky_clear = StickyOptions::read(&component_dir).unwrap();
     assert_eq!(sticky_clear.env, None);
-}
-
-fn list_everything(home: &Path, component_dir: &Path) {
-    let cfg = Config::read(Some(&home)).unwrap();
-    let mf = Manifest::read(&component_dir).unwrap();
-
-    let re = lal::list::environments(&cfg);
-    assert!(re.is_ok(), "list envs succeeded");
-
-    let rdc = lal::list::dependencies(&mf, true);
-    assert!(rdc.is_ok(), "list deps --core succeeded");
-    let rd = lal::list::dependencies(&mf, false);
-    assert!(rd.is_ok(), "list deps succeeded");
-
-    let rc = lal::list::configurations(&mf.name, &mf);
-    assert!(rc.is_ok(), "list configurations succeeded");
-
-    let rb = lal::list::buildables(&mf);
-    assert!(rb.is_ok(), "list buildables succeeded");
 }
 
 // Create manifest in a weird directory

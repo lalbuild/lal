@@ -20,6 +20,7 @@ use lal::{BackendConfiguration, Config, LocalBackend};
 
 pub mod build;
 pub mod fetch;
+pub mod list;
 pub mod publish;
 pub mod shell;
 pub mod stash;
@@ -113,6 +114,26 @@ pub fn publish_component(
     publish::publish_release(&component_dir, &state.backend, &state.tempdir.path())?;
 
     Ok(component_dir)
+}
+
+pub fn publish_components(
+    state: &TestState,
+    env_name: &str,
+    components: Vec<&str>,
+    version: &str,
+) -> lal::LalResult<PathBuf> {
+    let mut component_dirs = Vec::<PathBuf>::new();
+    for component in components {
+        let component_dir = publish_component(&state, &env_name, &component, &version)?;
+        component_dirs.push(component_dir);
+    }
+
+    match component_dirs.last() {
+        Some(last) => Ok(last.to_path_buf()),
+        None => Err(lal::CliError::UploadFailure(format!(
+            "Could not publish any components"
+        ))),
+    }
 }
 
 pub fn publish_component_versions(

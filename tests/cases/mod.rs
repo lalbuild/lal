@@ -1,6 +1,7 @@
 mod test_backend;
 mod test_build;
 mod test_fetch;
+mod test_list;
 mod test_publish;
 mod test_shell;
 mod test_stash;
