@@ -94,27 +94,6 @@ fn test_status_on_experimental(env_name: &str) {
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_update_save(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // "helloworld" depends on "heylib"
-    let component_dir = clone_component_dir("heylib", &state);
-    fetch_release_build_and_publish(&component_dir, env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish heylib");
-
-    // switch to "helloworld" component
-    let component_dir = clone_component_dir("helloworld", &state);
-
-    // Fetch published dependencies into ./INPUT
-    // update to versions listed in the manifest
-    update_save(&component_dir, &env_name, &state.backend);
-    info!("ok update_save");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_verify_checks(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -550,44 +529,6 @@ fn fetch_release_build_and_publish<T: CachedBackend + Backend>(
 
     let rp = lal::publish(Some(&home), &component_dir, &mf.name, backend);
     assert!(rp.is_ok(), "could publish");
-}
-
-// add dependencies to test tree
-// NB: this currently shouldn't do anything as all deps are accounted for
-// Thus if this changes test manifests, something is wrong..
-fn update_save<T: CachedBackend + Backend>(component_dir: &Path, env_name: &str, backend: &T) {
-    let mf1 = Manifest::read(&component_dir).unwrap();
-
-    // update heylib --save
-    let ri = lal::update(
-        &component_dir,
-        &mf1,
-        backend,
-        vec!["heylib=1".to_string()],
-        true,
-        false,
-        env_name,
-    );
-    ri.expect("could update heylib and save");
-
-    // main deps (and re-read manifest to avoid overwriting devedps)
-    let mf2 = Manifest::read(&component_dir).unwrap();
-    let updates = vec![
-        "heylib".to_string(),
-        // TODO: more deps
-    ];
-    let ri = lal::update(&component_dir, &mf2, backend, updates, true, false, env_name);
-    assert!(ri.is_ok(), "could update and save");
-
-    // verify update-all --save
-    let mf3 = Manifest::read(&component_dir).unwrap();
-    let ri = lal::update_all(&component_dir, &mf3, backend, true, false, env_name);
-    assert!(ri.is_ok(), "could update all and --save");
-
-    // verify update-all --save --dev
-    let mf4 = Manifest::read(&component_dir).unwrap();
-    let ri = lal::update_all(&component_dir, &mf4, backend, false, true, env_name);
-    assert!(ri.is_ok(), "could update all and --save --dev");
 }
 
 fn verify_checks<T: CachedBackend + Backend>(component_dir: &Path, env_name: &str, backend: &T) {
