@@ -1,5 +1,6 @@
 mod test_backend;
 mod test_build;
+mod test_clean;
 mod test_export;
 mod test_fetch;
 mod test_list;

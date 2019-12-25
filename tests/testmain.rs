@@ -14,30 +14,8 @@ use common::*;
 use std::{fs, path::Path};
 
 use parameterized_macro::parameterized;
-use walkdir::WalkDir;
 
 use lal::*;
-
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_clean_check(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // "helloworld" depends on "heylib"
-    let component_dir = clone_component_dir("heylib", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish heylib");
-
-    // switch to "helloworld" component
-    let component_dir = clone_component_dir("helloworld", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish helloworld");
-
-    clean_check(&state.tempdir.path());
-    info!("ok clean_check");
-}
 
 #[parameterized(env_name = {"default", "alpine"})]
 fn test_init_force(env_name: &str) {
@@ -243,36 +221,4 @@ fn upgrade_does_not_fail() {
     assert!(uc.is_ok(), "could perform upgrade check");
     let upgraded = uc.unwrap();
     assert!(!upgraded, "we never have upgrades in the tip source tree");
-}
-
-fn clean_check(home: &Path) {
-    let cfg = Config::read(Some(&home)).unwrap();
-    let r = lal::clean(&cfg.cache, 1);
-    assert!(r.is_ok(), "could run partial lal cleanup");
-
-    // scan cache dir
-    let mut dirs = WalkDir::new(&cfg.cache)
-        .min_depth(3)
-        .max_depth(3)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.path().is_dir());
-
-    let first = dirs.next();
-    assert!(first.is_some(), "some artifacts cached since last time");
-
-    // run check again cleaning everything
-    let r = lal::clean(&cfg.cache, 0);
-    assert!(r.is_ok(), "could run full lal cleanup");
-
-    // scan cache dir
-    let mut dirs2 = WalkDir::new(&cfg.cache)
-        .min_depth(3)
-        .max_depth(3)
-        .into_iter()
-        .filter_map(|e| e.ok())
-        .filter(|e| e.path().is_dir());
-
-    let first2 = dirs2.next();
-    assert!(first2.is_none(), "no artifacts left in cache");
 }
