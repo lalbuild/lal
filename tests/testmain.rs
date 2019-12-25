@@ -19,20 +19,6 @@ use walkdir::WalkDir;
 use lal::*;
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_remove_dependencies(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // "helloworld" has 1 dependency
-    let component_dir = clone_component_dir("helloworld", &state);
-
-    remove_dependencies(&component_dir);
-    info!("ok remove_dependencies");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_export_checks(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -158,23 +144,6 @@ fn test_propagations(env_name: &str) {
 
     check_propagation(&component_dir, "prop-leaf");
     info!("ok check_propagation prop-leaf -> prop-base");
-}
-
-fn remove_dependencies(component_dir: &Path) {
-    let mf = Manifest::read(&component_dir).unwrap();
-    let xs = mf.dependencies.keys().cloned().collect::<Vec<_>>();
-    assert_eq!(xs.len(), 1);
-
-    let r = lal::remove(&component_dir, &mf, xs.clone(), false, false);
-    assert!(r.is_ok(), "could lal rm all dependencies");
-
-    let rs = lal::remove(&component_dir, &mf, xs, true, false);
-    assert!(rs.is_ok(), "could lal rm all dependencies and save");
-
-    // should be no dependencies now
-    let mf2 = Manifest::read(&component_dir).unwrap();
-    let xs2 = mf2.dependencies.keys().cloned().collect::<Vec<_>>();
-    assert_eq!(xs2.len(), 0);
 }
 
 fn change_envs(home: &Path, component_dir: &Path) {

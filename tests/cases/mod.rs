@@ -3,6 +3,7 @@ mod test_build;
 mod test_fetch;
 mod test_list;
 mod test_publish;
+mod test_remove;
 mod test_shell;
 mod test_stash;
 mod test_status;
