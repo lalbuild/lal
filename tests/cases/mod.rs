@@ -14,4 +14,5 @@ mod test_shell;
 mod test_stash;
 mod test_status;
 mod test_update;
+mod test_upgrade;
 mod test_verify;
