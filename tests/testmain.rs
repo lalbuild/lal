@@ -94,20 +94,6 @@ fn test_status_on_experimental(env_name: &str) {
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_no_publish_non_release_builds(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // Test basic build functionality with heylib component
-    let component_dir = clone_component_dir("heylib", &state);
-
-    no_publish_non_release_builds(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok no_publish_non_release_builds heylib");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_update_save(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -564,49 +550,6 @@ fn fetch_release_build_and_publish<T: CachedBackend + Backend>(
 
     let rp = lal::publish(Some(&home), &component_dir, &mf.name, backend);
     assert!(rp.is_ok(), "could publish");
-}
-
-fn no_publish_non_release_builds<T: CachedBackend + Backend>(
-    component_dir: &Path,
-    env_name: &str,
-    backend: &T,
-    home: &Path,
-) {
-    let cfg = Config::read(Some(&home)).unwrap();
-    let mf = Manifest::read(&component_dir).unwrap();
-    let environment = cfg.get_environment(env_name.into()).unwrap();
-
-    let artifact_dir = component_dir.join("./ARTIFACT");
-    if artifact_dir.is_dir() {
-        debug!("Deleting existing artifact dir");
-        fs::remove_dir_all(&artifact_dir).unwrap();
-    }
-
-    let mut bopts = BuildOptions {
-        name: None,
-        configuration: Some("release".into()),
-        environment: environment,
-        release: false,            // missing releaes bad
-        version: Some("2".into()), // but have version
-        sha: None,
-        force: false,
-        simple_verify: false,
-    };
-    let modes = ShellModes::default();
-    let r = lal::build(&component_dir, &cfg, &mf, &bopts, env_name.into(), modes.clone());
-    assert!(r.is_ok(), "could build without non-release");
-
-    let rp = lal::publish(Some(&home), &component_dir, &mf.name, backend);
-    assert!(rp.is_err(), "could not publish non-release build");
-
-    bopts.version = None; // missing version bad
-    bopts.release = true; // but at least in release mode now
-
-    let rb2 = lal::build(&component_dir, &cfg, &mf, &bopts, env_name.into(), modes.clone());
-    assert!(rb2.is_ok(), "could build in without version");
-
-    let rp2 = lal::publish(Some(&home), &component_dir, &mf.name, backend);
-    assert!(rp2.is_err(), "could not publish without version set");
 }
 
 // add dependencies to test tree
