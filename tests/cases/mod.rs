@@ -4,6 +4,7 @@ mod test_export;
 mod test_fetch;
 mod test_list;
 mod test_publish;
+mod test_query;
 mod test_remove;
 mod test_shell;
 mod test_stash;

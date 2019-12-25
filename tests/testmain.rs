@@ -19,27 +19,6 @@ use walkdir::WalkDir;
 use lal::*;
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_query_check(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // "helloworld" depends on "heylib"
-    let component_dir = clone_component_dir("heylib", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish heylib");
-
-    // switch to "helloworld" component
-    let component_dir = clone_component_dir("helloworld", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish helloworld");
-
-    query_check(&env_name, &state.backend);
-    info!("ok query_check");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_clean_check(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -296,12 +275,4 @@ fn clean_check(home: &Path) {
 
     let first2 = dirs2.next();
     assert!(first2.is_none(), "no artifacts left in cache");
-}
-
-fn query_check<T: Backend>(env_name: &str, backend: &T) {
-    let r = lal::query(backend, Some(env_name), "hello", false);
-    assert!(r.is_ok(), "could query for hello");
-
-    let rl = lal::query(backend, Some(env_name), "hello", true);
-    assert!(rl.is_ok(), "could query latest for hello");
 }
