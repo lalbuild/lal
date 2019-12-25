@@ -19,28 +19,6 @@ use walkdir::WalkDir;
 use lal::*;
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_export_checks(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // "helloworld" depends on "heylib"
-    let component_dir = clone_component_dir("heylib", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish heylib");
-
-    // switch to "helloworld" component
-    let component_dir = clone_component_dir("helloworld", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish helloworld");
-
-    // back to tmpdir to test export and clean
-    export_check(&env_name, &state.backend, &component_dir);
-    info!("ok export_check");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_query_check(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -318,28 +296,6 @@ fn clean_check(home: &Path) {
 
     let first2 = dirs2.next();
     assert!(first2.is_none(), "no artifacts left in cache");
-}
-
-fn export_check<T: CachedBackend + Backend>(env_name: &str, backend: &T, component_dir: &Path) {
-    let tmp = component_dir.join("blah");
-    debug!("tmp: {}", tmp.display());
-    if !tmp.is_dir() {
-        fs::create_dir(&tmp).unwrap();
-    }
-
-    let r = lal::export(backend, "heylib=1", &tmp, Some(env_name));
-    assert!(r.is_ok(), "could export heylib=1 into subdir");
-
-    let r2 = lal::export(backend, "hello", &tmp, Some(env_name));
-    assert!(r2.is_ok(), "could export latest hello into subdir");
-
-    let heylib = component_dir.join("blah").join("heylib.tar.gz");
-    assert!(heylib.is_file(), "heylib was copied correctly");
-
-    let hello = component_dir.join("blah").join("hello.tar.gz");
-    assert!(hello.is_file(), "hello was copied correctly");
-
-    // TODO: verify we can untar and execute hello binary and grep output after #15
 }
 
 fn query_check<T: Backend>(env_name: &str, backend: &T) {
