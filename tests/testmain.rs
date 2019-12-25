@@ -7,72 +7,16 @@ extern crate parameterized_macro;
 extern crate tempdir;
 extern crate walkdir;
 
-use std::{
-    env, fs,
-    fs::File,
-    io::prelude::*,
-    path::{Path, PathBuf},
-    process::Command,
-    sync::Once,
-};
+mod cases;
+mod common;
+use common::*;
 
-use fs_extra::dir::{copy, CopyOptions};
+use std::{fs, fs::File, io::prelude::*, path::Path, process::Command};
+
 use parameterized_macro::parameterized;
-use tempdir::TempDir;
 use walkdir::WalkDir;
 
 use lal::*;
-use loggerv::init_with_verbosity;
-
-struct TestState {
-    backend: LocalBackend,
-    testdir: PathBuf,
-
-    // Keep the tempdir with TestState.
-    // The directory will be cleaned with the TestState is `Drop`ed.
-    tempdir: TempDir,
-}
-
-static START: Once = Once::new();
-
-fn setup() -> TestState {
-    START.call_once(|| {
-        env::set_var("SSL_CERT_FILE", "/etc/ssl/certs/ca-certificates.crt");
-        env::set_var("LAL_CODE_DIR", env::current_dir().unwrap().as_os_str());
-
-        // print debug output and greater from lal during tests
-        init_with_verbosity(2).expect("Setting up test logging");
-    });
-
-    let mut demo_config = PathBuf::from(env::var("LAL_CODE_DIR").unwrap());
-    demo_config.push("./configs/demo.json");
-
-    let mut testdir = PathBuf::from(env::var("LAL_CODE_DIR").unwrap());
-    testdir.push("tests");
-
-    // Do all lal tests in a tempdir as it messes with the manifest
-    let tempdir = TempDir::new("laltest").unwrap();
-
-    let backend = configure_local_backend(&demo_config, &tempdir.path());
-
-    TestState {
-        backend,
-        tempdir,
-        testdir,
-    }
-}
-
-// Copies the component to a temporary location for this test
-// and sets the working directory to that location
-fn clone_component_dir(component: &str, state: &TestState) -> PathBuf {
-    let copy_options = CopyOptions::new();
-
-    let from = state.testdir.join(component);
-    let to = state.tempdir.path().join(component);
-
-    copy(&from, state.tempdir.path(), &copy_options).expect("copy component to tempdir");
-    return to;
-}
 
 #[parameterized(env_name = {"default", "alpine"})]
 fn test_configure_backend(env_name: &str) {
@@ -127,19 +71,6 @@ fn test_run_scripts(env_name: &str) {
 
     run_scripts(&env_name, &state.tempdir.path(), &component_dir);
     info!("ok run_scripts");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_get_environment_and_fetch_no_deps(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    let component_dir = clone_component_dir("heylib", &state);
-
-    get_environment_and_fetch(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok get_environment_and_fetch");
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
@@ -491,29 +422,6 @@ fn list_everything(home: &Path, component_dir: &Path) {
 
     let rb = lal::list::buildables(&mf);
     assert!(rb.is_ok(), "list buildables succeeded");
-}
-
-fn configure_local_backend(demo_config: &PathBuf, home: &Path) -> LocalBackend {
-    let config = Config::read(Some(&home));
-    assert!(config.is_err(), "no config at this point");
-
-    let r = lal::configure(
-        true,
-        false,
-        demo_config.as_os_str().to_str().unwrap(),
-        Some(&home),
-    );
-    assert!(r.is_ok(), "configure succeeded");
-
-    let cfg = Config::read(Some(&home));
-    assert!(cfg.is_ok(), "config exists now");
-
-    let cfgu = cfg.unwrap();
-
-    match &cfgu.backend {
-        &BackendConfiguration::Local(ref local_cfg) => LocalBackend::new(&local_cfg, &cfgu.cache),
-        _ => unreachable!(), // demo.json uses local backend
-    }
 }
 
 // Create manifest in a weird directory
