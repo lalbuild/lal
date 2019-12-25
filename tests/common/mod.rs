@@ -25,6 +25,7 @@ pub mod shell;
 pub mod stash;
 pub mod status;
 pub mod update;
+pub mod verify;
 
 pub struct TestState {
     pub backend: LocalBackend,

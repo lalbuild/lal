@@ -19,26 +19,6 @@ use walkdir::WalkDir;
 use lal::*;
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_verify_checks(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // "helloworld" depends on "heylib"
-    let component_dir = clone_component_dir("heylib", &state);
-    fetch_release_build_and_publish(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok fetch_release_build_and_publish heylib");
-
-    // switch to "helloworld" component
-    let component_dir = clone_component_dir("helloworld", &state);
-
-    verify_checks(&component_dir, &env_name, &state.backend);
-    info!("ok verify_checks");
-}
-
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_release_build_and_publish(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -336,52 +316,6 @@ fn fetch_release_build_and_publish<T: CachedBackend + Backend>(
 
     let rp = lal::publish(Some(&home), &component_dir, &mf.name, backend);
     assert!(rp.is_ok(), "could publish");
-}
-
-fn verify_checks<T: CachedBackend + Backend>(component_dir: &Path, env_name: &str, backend: &T) {
-    let mf = Manifest::read(&component_dir).unwrap();
-
-    let rcore = lal::fetch(&component_dir, &mf, backend, true, env_name);
-    assert!(rcore.is_ok(), "install core succeeded");
-
-    let r = lal::verify(&component_dir, &mf, env_name.into(), false);
-    assert!(r.is_ok(), "could verify after install");
-
-    let renv1 = lal::verify(&component_dir, &mf, "xenial".into(), false);
-    assert!(renv1.is_err(), "could not verify with wrong env");
-    let renv2 = lal::verify(&component_dir, &mf, "xenial".into(), true);
-    assert!(
-        renv2.is_err(),
-        "could not verify with wrong env - even with simple"
-    );
-
-    let heylib = Path::new(&component_dir).join("INPUT").join("heylib");
-    // clean folders and verify it fails
-    fs::remove_dir_all(&heylib).unwrap();
-
-    let r2 = lal::verify(&component_dir, &mf, env_name.into(), false);
-    assert!(r2.is_err(), "verify failed after fiddling");
-
-    // fetch --core, resyncs with core deps (removes devDeps and other extraneous)
-    let rcore = lal::fetch(&component_dir, &mf, backend, true, env_name);
-    assert!(rcore.is_ok(), "install core succeeded");
-    assert!(heylib.is_dir(), "heylib was reinstalled from manifest");
-    // TODO: add dev dep to verify it wasn't reinstalled here
-    // assert!(!gtest.is_dir(), "gtest was was extraneous with --core => removed");
-
-    // fetch --core also doesn't install else again
-    let rcore2 = lal::fetch(&component_dir, &mf, backend, true, env_name);
-    assert!(rcore2.is_ok(), "install core succeeded 2");
-    assert!(heylib.is_dir(), "heylib still there");
-    // assert!(!gtest.is_dir(), "gtest was not reinstalled with --core");
-
-    // and it is finally installed if we ask for non-core as well
-    let rall = lal::fetch(&component_dir, &mf, backend, false, env_name);
-    assert!(rall.is_ok(), "install all succeeded");
-    // assert!(gtest.is_dir(), "gtest is otherwise installed again");
-
-    let r3 = lal::verify(&component_dir, &mf, env_name, false);
-    assert!(r3.is_ok(), "verify ok again");
 }
 
 fn check_propagation(component_dir: &Path, leaf: &str) {
