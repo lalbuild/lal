@@ -20,6 +20,7 @@ use lal::{BackendConfiguration, Config, LocalBackend};
 
 pub mod build;
 pub mod fetch;
+pub mod init;
 pub mod list;
 pub mod publish;
 pub mod shell;

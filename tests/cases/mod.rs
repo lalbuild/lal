@@ -3,6 +3,7 @@ mod test_build;
 mod test_clean;
 mod test_export;
 mod test_fetch;
+mod test_init;
 mod test_list;
 mod test_publish;
 mod test_query;

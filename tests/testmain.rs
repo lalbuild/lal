@@ -18,24 +18,6 @@ use parameterized_macro::parameterized;
 use lal::*;
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_init_force(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    let component = state.tempdir.path().join("new_component");
-    fs::create_dir(&component).unwrap();
-
-    // test out some functionality regarding creating of new components
-    init_force(&env_name, &state.tempdir.path(), &component);
-    info!("ok init_force");
-
-    has_config_and_manifest(&state.tempdir.path(), &component);
-    info!("ok has_config_and_manifest");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_change_envs(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
@@ -129,22 +111,6 @@ fn init_force(env_name: &str, home: &Path, component_dir: &Path) {
 
     let m5 = lal::init(&cfg, true, &component_dir, "blah");
     assert!(m5.is_err(), "could not init without valid environment");
-}
-
-// Tests need to be run in a directory with a manifest
-// and ~/.lal + config must exist
-fn has_config_and_manifest(home: &Path, component_dir: &Path) {
-    assert!(home.is_dir(), "have laldir");
-
-    let cfg = Config::read(Some(&home));
-    assert!(cfg.is_ok(), "could read config");
-
-    let manifest = Manifest::read(&component_dir);
-    assert!(manifest.is_ok(), "could read manifest");
-
-    // There is no INPUT yet, but we have no dependencies, so this should work:
-    let r = lal::verify(&component_dir, &manifest.unwrap(), "xenial".into(), false);
-    assert!(r.is_ok(), "could verify after install");
 }
 
 fn fetch_release_build_and_publish<T: CachedBackend + Backend>(
