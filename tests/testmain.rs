@@ -61,22 +61,6 @@ fn test_run_scripts(env_name: &str) {
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
-fn test_build_and_stash_update_self(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // Test basic build functionality with heylib component
-    let component_dir = clone_component_dir("heylib", &state);
-    build_and_stash_update_self(&component_dir, &env_name, &state.backend, &state.tempdir.path());
-    info!("ok build_and_stash_update_self");
-
-    list_everything(&state.tempdir.path(), &component_dir);
-    info!("ok list_everything");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
 fn test_status_on_experimental(env_name: &str) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {

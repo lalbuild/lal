@@ -21,6 +21,7 @@ use lal::{BackendConfiguration, Config, LocalBackend};
 pub mod build;
 pub mod fetch;
 pub mod publish;
+pub mod stash;
 pub mod update;
 
 pub struct TestState {
