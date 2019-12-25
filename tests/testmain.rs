@@ -11,54 +11,12 @@ mod cases;
 mod common;
 use common::*;
 
-use std::{fs, fs::File, io::prelude::*, path::Path, process::Command};
+use std::{fs, path::Path};
 
 use parameterized_macro::parameterized;
 use walkdir::WalkDir;
 
 use lal::*;
-
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_heylib_echo(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // Test basic build functionality with heylib component
-    let component_dir = clone_component_dir("heylib", &state);
-
-    shell_echo(&env_name, &state.tempdir.path(), &component_dir);
-    info!("ok shell_echo");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_shell_permissions(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // Test basic build functionality with heylib component
-    let component_dir = clone_component_dir("heylib", &state);
-
-    shell_permissions(&env_name, &state.tempdir.path(), &component_dir);
-    info!("ok shell_permissions");
-}
-
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_run_scripts(env_name: &str) {
-    let state = setup();
-    if !cfg!(feature = "docker") && env_name == "alpine" {
-        return;
-    }
-
-    // Test basic build functionality with heylib component
-    let component_dir = clone_component_dir("heylib", &state);
-
-    run_scripts(&env_name, &state.tempdir.path(), &component_dir);
-    info!("ok run_scripts");
-}
 
 #[parameterized(env_name = {"default", "alpine"})]
 fn test_verify_checks(env_name: &str) {
@@ -348,37 +306,6 @@ fn has_config_and_manifest(home: &Path, component_dir: &Path) {
     assert!(r.is_ok(), "could verify after install");
 }
 
-// Shell tests
-fn shell_echo(env_name: &str, home: &Path, component_dir: &Path) {
-    let cfg = Config::read(Some(&home)).unwrap();
-    let environment = cfg.get_environment(env_name.into()).unwrap();
-    let modes = ShellModes::default();
-    let r = lal::run(
-        &cfg,
-        &environment,
-        vec!["echo".to_string(), "# echo from docker".to_string()],
-        &DockerRunFlags::default(),
-        &modes,
-        &component_dir,
-    );
-    assert!(r.is_ok(), "shell echoed");
-}
-
-fn shell_permissions(env_name: &str, home: &Path, component_dir: &Path) {
-    let cfg = Config::read(Some(&home)).unwrap();
-    let environment = cfg.get_environment(env_name.into()).unwrap();
-    let modes = ShellModes::default();
-    let r = lal::run(
-        &cfg,
-        &environment,
-        vec!["touch".to_string(), "README.md".to_string()],
-        &DockerRunFlags::default(),
-        &modes,
-        &component_dir,
-    );
-    assert!(r.is_ok(), "could touch files in container");
-}
-
 fn fetch_release_build_and_publish<T: CachedBackend + Backend>(
     component_dir: &Path,
     env_name: &str,
@@ -455,38 +382,6 @@ fn verify_checks<T: CachedBackend + Backend>(component_dir: &Path, env_name: &st
 
     let r3 = lal::verify(&component_dir, &mf, env_name, false);
     assert!(r3.is_ok(), "verify ok again");
-}
-
-fn run_scripts(env_name: &str, home: &Path, component_dir: &Path) {
-    {
-        Command::new("mkdir")
-            .arg("-p")
-            .arg(".lal/scripts")
-            .current_dir(&component_dir)
-            .output()
-            .unwrap();
-        let mut f = File::create(&component_dir.join("./.lal/scripts/subroutine")).unwrap();
-        write!(f, "main() {{ echo hi $1 $2 ;}}\n").unwrap();
-        Command::new("chmod")
-            .arg("+x")
-            .arg(".lal/scripts/subroutine")
-            .current_dir(&component_dir)
-            .output()
-            .unwrap();
-    }
-    let cfg = Config::read(Some(&home)).unwrap();
-    let environment = cfg.get_environment(env_name.into()).unwrap();
-    let modes = ShellModes::default();
-    let r = lal::script(
-        &cfg,
-        &environment,
-        "subroutine",
-        vec!["there", "mr"],
-        &modes,
-        false,
-        &component_dir,
-    );
-    assert!(r.is_ok(), "could run subroutine script");
 }
 
 fn check_propagation(component_dir: &Path, leaf: &str) {
