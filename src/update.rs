@@ -1,5 +1,5 @@
 use super::{CliError, LalResult, Manifest};
-use std::path::Path;
+use std::{cmp::Ordering, path::Path};
 use storage::CachedBackend;
 
 /// Update specific dependencies outside the manifest
@@ -91,12 +91,10 @@ pub fn update<T: CachedBackend + ?Sized>(
             debug!("Successfully updated {} at version {}", &c.name, c.version);
             if hmap.contains_key(&c.name) {
                 let val = hmap.get_mut(&c.name).unwrap();
-                if c.version < *val {
-                    warn!("Downgrading {} from {} to {}", c.name, *val, c.version);
-                } else if c.version > *val {
-                    info!("Upgrading {} from {} to {}", c.name, *val, c.version);
-                } else {
-                    info!("Maintaining {} at version {}", c.name, c.version);
+                match c.version.cmp(&*val) {
+                    Ordering::Greater => info!("Upgrading {} from {} to {}", c.name, *val, c.version),
+                    Ordering::Less => warn!("Downgrading {} from {} to {}", c.name, *val, c.version),
+                    Ordering::Equal => info!("Maintaining {} at version {}", c.name, c.version),
                 }
                 *val = c.version;
             } else {

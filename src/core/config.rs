@@ -214,8 +214,8 @@ impl Config {
     /// Resolve an arbitrary container shorthand
     pub fn get_container(&self, env: String) -> LalResult<Container> {
         match self.get_environment(env.clone())? {
-            Environment::Container(container) => Ok(container.clone()),
-            Environment::None => Err(CliError::MissingEnvironment(env.clone())),
+            Environment::Container(container) => Ok(container),
+            Environment::None => Err(CliError::MissingEnvironment(env)),
         }
     }
 }

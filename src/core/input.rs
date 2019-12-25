@@ -190,7 +190,7 @@ pub fn verify_consistent_dependency_versions(lf: &Lockfile, m: &Manifest) -> Lal
                  you need to follow `lal propagate {0}`",
                 name
             );
-            return Err(CliError::MultipleVersions(name.clone()));
+            return Err(CliError::MultipleVersions(name));
         }
     }
     Ok(())
@@ -202,11 +202,11 @@ pub fn verify_environment_consistency(lf: &Lockfile, env: &str) -> LalResult<()>
         debug!("Found environment(s) for {} as {:?}", name, envs);
         if envs.len() != 1 {
             warn!("Multiple environments used to build {}", name.clone());
-            return Err(CliError::MultipleEnvironments(name.clone()));
+            return Err(CliError::MultipleEnvironments(name));
         } else {
             let used_env = envs.iter().next().unwrap();
             if used_env != env {
-                return Err(CliError::EnvironmentMismatch(name.clone(), used_env.clone()));
+                return Err(CliError::EnvironmentMismatch(name, used_env.clone()));
             }
         }
     }
