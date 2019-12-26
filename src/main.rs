@@ -3,9 +3,8 @@
 use loggerv;
 use openssl_probe;
 
-use lal;
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use lal::*;
+use lal::{self, *};
 use std::{env::current_dir, ops::Deref, path::Path, process};
 
 fn is_integer(v: String) -> Result<(), String> {

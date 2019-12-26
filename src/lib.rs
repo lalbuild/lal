@@ -23,16 +23,7 @@
 #[macro_use] extern crate serde_derive;
 
 
-
-
-
-
 #[macro_use] extern crate log;
-
-
-
-
-
 
 
 // re-exports
@@ -55,20 +46,22 @@ pub mod propagate;
 
 // lift most other pub functions into our libraries main scope
 // this avoids having to type lal:build in tests and main.rs
-pub use crate::build::{build, BuildOptions};
-pub use crate::clean::clean;
-pub use crate::configure::configure;
-pub use crate::export::export;
-pub use crate::fetch::fetch;
-pub use crate::init::init;
-pub use crate::publish::publish;
-pub use crate::query::query;
-pub use crate::remove::remove;
-pub use crate::shell::{run, script, shell};
-pub use crate::stash::stash;
-pub use crate::status::status;
-pub use crate::update::{update, update_all};
-pub use crate::verify::verify;
+pub use crate::{
+    build::{build, BuildOptions},
+    clean::clean,
+    configure::configure,
+    export::export,
+    fetch::fetch,
+    init::init,
+    publish::publish,
+    query::query,
+    remove::remove,
+    shell::{run, script, shell},
+    stash::stash,
+    status::status,
+    update::{update, update_all},
+    verify::verify,
+};
 
 mod build;
 mod clean;
