@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use super::{CliError, LalResult, Lockfile, Manifest};
-use storage::CachedBackend;
+use crate::storage::CachedBackend;
 
 
 /// Saves current build `./OUTPUT` to the local cache under a specific name

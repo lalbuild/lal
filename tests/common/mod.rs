@@ -4,7 +4,7 @@ extern crate loggerv;
 extern crate tempdir;
 extern crate walkdir;
 
-use common::{
+use crate::common::{
     fs_extra::dir::{copy, CopyOptions},
     loggerv::init_with_verbosity,
     tempdir::TempDir,

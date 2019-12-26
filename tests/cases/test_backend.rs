@@ -1,4 +1,4 @@
-use common::*;
+use crate::common::*;
 use lal::Backend;
 use parameterized_macro::parameterized;
 use std::{fs, path::Path};

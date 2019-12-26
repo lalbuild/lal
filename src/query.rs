@@ -1,7 +1,7 @@
 use std::io::{self, Write};
 
 use super::{CliError, LalResult};
-use storage::Backend;
+use crate::storage::Backend;
 
 /// Prints a list of versions associated with a component
 pub fn query(backend: &dyn Backend, _env: Option<&str>, component: &str, last: bool) -> LalResult<()> {

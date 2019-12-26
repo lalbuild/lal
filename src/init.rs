@@ -1,7 +1,7 @@
 use std::path::{Component, Path};
 
 use super::{CliError, Config, LalResult};
-use core::manifest::*;
+use crate::core::manifest::*;
 
 
 /// Generates a blank manifest in the current directory

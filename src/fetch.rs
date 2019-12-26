@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
 use super::{CliError, LalResult, Lockfile, Manifest};
-use storage::CachedBackend;
+use crate::storage::CachedBackend;
 
 fn clean_input(component_dir: &Path) {
     let input = component_dir.join("./INPUT");

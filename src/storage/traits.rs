@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use super::{ArtifactoryConfig, LocalConfig};
-use core::LalResult;
+use crate::core::LalResult;
 
 /// An enum struct for the currently configured `Backend`
 ///

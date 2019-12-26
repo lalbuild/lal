@@ -1,5 +1,5 @@
 use super::{LalResult, Lockfile, Manifest};
-use input;
+use crate::input;
 use std::path::Path;
 
 /// Verifies that `./INPUT` satisfies all strictness conditions.

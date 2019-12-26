@@ -1,6 +1,6 @@
 use std::{path::Path, process::Command, vec::Vec};
 
-use core::{CliError, LalResult};
+use crate::core::{CliError, LalResult};
 
 /// Runs an arbitrary command natively, without containerization
 pub fn native_run(mut command: Vec<String>, component_dir: &Path) -> LalResult<()> {

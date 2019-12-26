@@ -6,7 +6,7 @@ use std::{
 };
 
 use super::LalResult;
-use manifest::create_lal_subdir;
+use crate::manifest::create_lal_subdir;
 
 /// Representation of .lal/opts
 ///

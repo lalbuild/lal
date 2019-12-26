@@ -1,6 +1,6 @@
 use std::{path::Path, process::Command, vec::Vec};
 
-use core::{CliError, Config, Container, LalResult};
+use crate::core::{CliError, Config, Container, LalResult};
 
 /// Flags for docker run that vary for different use cases
 ///

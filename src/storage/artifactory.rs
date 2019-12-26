@@ -20,7 +20,7 @@ use hyper_native_tls::NativeTlsClient;
 use serde_json;
 use sha1;
 
-use core::{CliError, LalResult};
+use crate::core::{CliError, LalResult};
 
 
 /// Artifactory credentials

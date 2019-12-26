@@ -1,4 +1,4 @@
-use common::*;
+use crate::common::*;
 
 #[test]
 pub fn test_remove_dependencies_no_save() {

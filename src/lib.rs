@@ -37,13 +37,13 @@ extern crate walkdir;
 
 // re-exports
 mod core;
-pub use core::*;
+pub use crate::core::*;
 
 mod runners;
-pub use runners::*;
+pub use crate::runners::*;
 
 mod storage;
-pub use storage::*;
+pub use crate::storage::*;
 
 /// Env module for env subcommand (which has further subcommands)
 pub mod env;
@@ -55,20 +55,20 @@ pub mod propagate;
 
 // lift most other pub functions into our libraries main scope
 // this avoids having to type lal:build in tests and main.rs
-pub use build::{build, BuildOptions};
-pub use clean::clean;
-pub use configure::configure;
-pub use export::export;
-pub use fetch::fetch;
-pub use init::init;
-pub use publish::publish;
-pub use query::query;
-pub use remove::remove;
-pub use shell::{run, script, shell};
-pub use stash::stash;
-pub use status::status;
-pub use update::{update, update_all};
-pub use verify::verify;
+pub use crate::build::{build, BuildOptions};
+pub use crate::clean::clean;
+pub use crate::configure::configure;
+pub use crate::export::export;
+pub use crate::fetch::fetch;
+pub use crate::init::init;
+pub use crate::publish::publish;
+pub use crate::query::query;
+pub use crate::remove::remove;
+pub use crate::shell::{run, script, shell};
+pub use crate::stash::stash;
+pub use crate::status::status;
+pub use crate::update::{update, update_all};
+pub use crate::verify::verify;
 
 mod build;
 mod clean;

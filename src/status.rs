@@ -1,6 +1,6 @@
 use super::{CliError, LalResult, Lockfile, Manifest};
 use ansi_term::{ANSIString, Colour};
-use core::input;
+use crate::core::input;
 use std::path::Path;
 
 fn version_string(lf: Option<&Lockfile>, show_ver: bool, show_time: bool) -> ANSIString<'static> {
