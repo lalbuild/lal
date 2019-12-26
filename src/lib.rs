@@ -18,22 +18,22 @@
 //! explicitly or implicitly is listed on the left of this page.
 
 #[macro_use] extern crate hyper;
-extern crate hyper_native_tls;
-extern crate openssl_probe;
+
+
 #[macro_use] extern crate serde_derive;
-extern crate ansi_term;
-extern crate flate2;
-extern crate regex;
-extern crate serde_json;
-extern crate sha1;
-extern crate tar;
+
+
+
+
+
+
 #[macro_use] extern crate log;
-extern crate chrono;
-extern crate filetime;
-#[cfg(feature = "progress")] extern crate indicatif;
-extern crate rand;
-extern crate semver;
-extern crate walkdir;
+
+
+
+
+
+
 
 // re-exports
 mod core;
