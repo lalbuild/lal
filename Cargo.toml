@@ -8,6 +8,7 @@ license = "MIT"
 categories = ["command-line-utilities"]
 keywords = ["package", "dependency", "build", "docker", "artifactory"]
 readme = "README.md"
+edition = "2018"
 
 [badges]
 travis-ci = { repository = "lalbuild/lal", branch = "master" }
