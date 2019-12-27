@@ -46,6 +46,10 @@ pub fn build_with_options(
         env_name.to_string(),
         modes,
     )
+    .map_err(|err| {
+        error!("build: {:?}", err);
+        err
+    })
 }
 
 pub fn build_with_options_and_modes(

@@ -118,7 +118,7 @@ fn test_update_all_to_latest_no_save(env_name: &str) {
     }
 
     let r = publish_component_versions(&state, &env_name, "heylib", vec!["1", "2"]);
-    assert!(r.is_ok(), "published heylib=1 and heylib=2");
+    assert!(r.is_ok(), "published heylib=1 and heylib=2: {:?}", r);
 
     // switch to "helloworld" component
     let component_dir = clone_component_dir("helloworld", &state);
@@ -129,13 +129,13 @@ fn test_update_all_to_latest_no_save(env_name: &str) {
 
     // lal update heylib=1
     let r = update::update(&component_dir, &env_name, &state.backend, vec!["heylib=1"]);
-    assert!(r.is_ok(), "updated heylib=1");
+    assert!(r.is_ok(), "updated heylib=1: {:?}", r);
     assert_manifest(&component_dir, "heylib", 1);
     assert_lockfile(&component_dir.join("INPUT/heylib/lockfile.json"), "heylib", 1);
 
     // lal update-all, should pick up the latest version
     let r = update::update_all(&component_dir, &env_name, &state.backend);
-    assert!(r.is_ok(), "updated all helloworld INPUTs");
+    assert!(r.is_ok(), "updated all helloworld INPUTs: {:?}", r);
 
     // latest version is 2, manifest unchanged
     assert_manifest(&component_dir, "heylib", 1);
@@ -152,7 +152,7 @@ fn test_update_with_save(env_name: &str) {
     }
 
     let r = publish_component_versions(&state, &env_name, "heylib", vec!["1", "2"]);
-    assert!(r.is_ok(), "published heylib=1 and heylib=2");
+    assert!(r.is_ok(), "published heylib=1 and heylib=2: {:?}", r);
 
     // switch to "helloworld" component
     let component_dir = clone_component_dir("helloworld", &state);
@@ -195,7 +195,7 @@ fn test_update_to_latest_with_save(env_name: &str) {
     }
 
     let r = publish_component_versions(&state, &env_name, "heylib", vec!["1", "2"]);
-    assert!(r.is_ok(), "published heylib=1 and heylib=2");
+    assert!(r.is_ok(), "published heylib=1 and heylib=2: {:?}", r);
 
     // switch to "helloworld" component
     let component_dir = clone_component_dir("helloworld", &state);
@@ -212,7 +212,7 @@ fn test_update_to_latest_with_save(env_name: &str) {
         save,
         savedev,
     );
-    assert!(r.is_ok(), "updated heylib=1");
+    assert!(r.is_ok(), "updated heylib=1: {:?}", r);
     assert_manifest(&component_dir, "heylib", 1);
     assert_lockfile(&component_dir.join("INPUT/heylib/lockfile.json"), "heylib", 1);
 
@@ -225,7 +225,7 @@ fn test_update_to_latest_with_save(env_name: &str) {
         save,
         savedev,
     );
-    assert!(r.is_ok(), "updated heylib");
+    assert!(r.is_ok(), "updated heylib: {:?}", r);
 
     // latest version is 2
     assert_manifest(&component_dir, "heylib", 2);
@@ -359,10 +359,10 @@ fn test_update_with_save_savedev(env_name: &str) {
     }
 
     let r = publish_component_versions(&state, &env_name, "heylib", vec!["1", "2"]);
-    assert!(r.is_ok(), "published heylib=1 and heylib=2");
+    assert!(r.is_ok(), "published heylib=1 and heylib=2: {:?}", r);
 
     let r = publish_component_versions(&state, &env_name, "prop-leaf", vec!["1", "2"]);
-    assert!(r.is_ok(), "published prop-leaf=1 and prop-leaf=2");
+    assert!(r.is_ok(), "published prop-leaf=1 and prop-leaf=2: {:?}", r);
 
     // switch to "helloworld" component
     let component_dir = clone_component_dir("helloworld", &state);
@@ -388,7 +388,7 @@ fn test_update_with_save_savedev(env_name: &str) {
         save,
         savedev,
     );
-    assert!(r.is_ok(), "updated heylib=1");
+    assert!(r.is_ok(), "updated heylib=1: {:?}", r);
     assert_manifest(&component_dir, "heylib", 1);
     assert_missing_manifest_dev(&component_dir, "heylib");
 
@@ -440,10 +440,10 @@ fn test_update_to_latest_with_savedev(env_name: &str) {
     }
 
     let r = publish_component_versions(&state, &env_name, "heylib", vec!["1", "2"]);
-    assert!(r.is_ok(), "published heylib=1 and heylib=2");
+    assert!(r.is_ok(), "published heylib=1 and heylib=2: {:?}", r);
 
     let r = publish_component_versions(&state, &env_name, "prop-leaf", vec!["1", "2"]);
-    assert!(r.is_ok(), "published prop-leaf=1 and prop-leaf=2");
+    assert!(r.is_ok(), "published prop-leaf=1 and prop-leaf=2: {:?}", r);
 
     // switch to "helloworld" component
     let component_dir = clone_component_dir("helloworld", &state);
@@ -466,7 +466,7 @@ fn test_update_to_latest_with_savedev(env_name: &str) {
         save,
         savedev,
     );
-    assert!(r.is_ok(), "updated heylib=1");
+    assert!(r.is_ok(), "updated heylib=1: {:?}", r);
 
     assert_manifest(&component_dir, "heylib", 1);
     assert_missing_lockfile(&component_dir.join("INPUT/heylib/lockfile.json"), "heylib");
@@ -487,7 +487,7 @@ fn test_update_to_latest_with_savedev(env_name: &str) {
         save,
         savedev,
     );
-    assert!(r.is_ok(), "updated heylib");
+    assert!(r.is_ok(), "updated heylib: {:?}", r);
 
     // Remains as a core dependency
     // XXX: Bug that the core dependency isn't bumped?
@@ -651,10 +651,10 @@ fn test_update_all_to_latest_with_save_savedev(env_name: &str) {
     }
 
     let r = publish_component_versions(&state, &env_name, "heylib", vec!["1", "2"]);
-    assert!(r.is_ok(), "published heylib=1 and heylib=2");
+    assert!(r.is_ok(), "published heylib=1 and heylib=2: {:?}", r);
 
     let r = publish_component_versions(&state, &env_name, "prop-leaf", vec!["1", "2"]);
-    assert!(r.is_ok(), "published prop-leaf=1 and prop-leaf=2");
+    assert!(r.is_ok(), "published prop-leaf=1 and prop-leaf=2: {:?}", r);
 
     // switch to "helloworld" component
     let component_dir = clone_component_dir("helloworld", &state);
@@ -677,7 +677,7 @@ fn test_update_all_to_latest_with_save_savedev(env_name: &str) {
         save,
         savedev,
     );
-    assert!(r.is_ok(), "updated prop-leaf=1");
+    assert!(r.is_ok(), "updated prop-leaf=1: {:?}", r);
 
     assert_manifest(&component_dir, "heylib", 1);
     assert_missing_manifest_dev(&component_dir, "heylib");
@@ -699,7 +699,7 @@ fn test_update_all_to_latest_with_save_savedev(env_name: &str) {
 
     // lal update-all --save --dev, should pick up the latest versions of core and dev dependencies
     let r = update::update_all_with_save(&component_dir, &env_name, &state.backend, save, savedev);
-    assert!(r.is_ok(), "updated all helloworld INPUTs");
+    assert!(r.is_ok(), "updated all helloworld INPUTs: {:?}", r);
 
     // BUG: should be at version 2
     assert_manifest(&component_dir, "heylib", 1);
