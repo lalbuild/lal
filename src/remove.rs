@@ -35,7 +35,7 @@ pub fn remove(
             // => all components uninstalled from either dependencies, or all from devDependencies
             // if doing multiple components from different maps, do multiple calls
             if !hmap.contains_key(&component) {
-                return Err(CliError::MissingComponent(component.to_string()));
+                return Err(CliError::MissingComponent(component));
             }
             debug!("Removing {} from manifest", component);
             hmap.remove(&component);

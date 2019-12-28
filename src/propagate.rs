@@ -37,7 +37,7 @@ pub fn compute(lf: &Lockfile, component: &str) -> LalResult<UpdateSequence> {
 
     // initialize mutables
     let mut result = UpdateSequence::default();
-    let mut remaining = all_required.clone();
+    let mut remaining = all_required;
     // assume we already updated the component itself
     let mut handled = vec![component.to_string()].into_iter().collect();
 

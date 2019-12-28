@@ -186,7 +186,7 @@ impl Config {
     #[cfg(feature = "upgrade")]
     pub fn performed_upgrade(&mut self) -> LalResult<()> {
         self.lastUpgrade = UTC::now().to_rfc3339();
-        Ok(self.write(true)?)
+        Ok(self.write(true, None)?)
     }
 
     /// Overwrite `~/.lal/config` with serialized data from this struct
@@ -214,8 +214,8 @@ impl Config {
     /// Resolve an arbitrary container shorthand
     pub fn get_container(&self, env: String) -> LalResult<Container> {
         match self.get_environment(env.clone())? {
-            Environment::Container(container) => Ok(container.clone()),
-            Environment::None => Err(CliError::MissingEnvironment(env.clone())),
+            Environment::Container(container) => Ok(container),
+            Environment::None => Err(CliError::MissingEnvironment(env)),
         }
     }
 }

@@ -5,10 +5,10 @@ use super::{CliError, Config, Environment, LalResult, StickyOptions};
 /// Pull the current environment from docker
 pub fn update(component_dir: &Path, environment: &Environment, env: &str) -> LalResult<()> {
     info!("Updating {} container", env);
-    let args: Vec<String> = vec!["pull".into(), format!("{}", environment)];
 
     match environment {
         Environment::Container(container) => {
+            let args: Vec<String> = vec!["pull".into(), format!("{}", container)];
             trace!("Docker pull {}", container);
             let s = Command::new("docker")
                 .args(&args)
