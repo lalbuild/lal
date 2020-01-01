@@ -1,4 +1,4 @@
-use common::*;
+use crate::common::*;
 use parameterized_macro::parameterized;
 use std::path::{Path, PathBuf};
 

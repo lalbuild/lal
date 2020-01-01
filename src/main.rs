@@ -1,11 +1,10 @@
 #[macro_use] extern crate clap;
 #[macro_use] extern crate log;
-extern crate loggerv;
-extern crate openssl_probe;
+use loggerv;
+use openssl_probe;
 
-extern crate lal;
 use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
-use lal::*;
+use lal::{self, *};
 use std::{env::current_dir, ops::Deref, path::Path, process};
 
 fn is_integer(v: String) -> Result<(), String> {
@@ -27,7 +26,7 @@ fn result_exit<T>(name: &str, x: LalResult<T>) {
 
 // functions that work without a manifest, and thus can run without a set env
 fn handle_manifest_agnostic_cmds(
-    args: &ArgMatches,
+    args: &ArgMatches<'_>,
     cfg: &Config,
     component_dir: &Path,
     backend: &dyn Backend,
@@ -55,7 +54,7 @@ fn handle_manifest_agnostic_cmds(
 
 // functions that need a manifest, but do not depend on environment values
 fn handle_environment_agnostic_cmds(
-    args: &ArgMatches,
+    args: &ArgMatches<'_>,
     component_dir: &Path,
     mf: &Manifest,
     backend: &dyn Backend,
@@ -105,7 +104,7 @@ fn handle_environment_agnostic_cmds(
 }
 
 fn handle_network_cmds(
-    args: &ArgMatches,
+    args: &ArgMatches<'_>,
     component_dir: &Path,
     mf: &Manifest,
     backend: &dyn Backend,
@@ -144,7 +143,7 @@ fn handle_network_cmds(
 }
 
 fn handle_env_command(
-    args: &ArgMatches,
+    args: &ArgMatches<'_>,
     component_dir: &Path,
     cfg: &Config,
     env: &str,
@@ -214,7 +213,7 @@ fn handle_upgrade(args: &ArgMatches, cfg: &Config) {
 
 
 fn handle_docker_cmds(
-    args: &ArgMatches,
+    args: &ArgMatches<'_>,
     component_dir: &Path,
     mf: &Manifest,
     cfg: &Config,

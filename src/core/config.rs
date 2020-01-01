@@ -9,7 +9,7 @@ use std::{
 };
 
 use super::{CliError, Container, Environment, LalResult};
-use storage::BackendConfiguration;
+use crate::storage::BackendConfiguration;
 
 fn find_home_dir() -> PathBuf {
     // Either we have LAL_CONFIG_HOME evar, or HOME

@@ -1,6 +1,6 @@
 use super::{CliError, LalResult, Manifest};
+use crate::storage::CachedBackend;
 use std::{cmp::Ordering, path::Path};
-use storage::CachedBackend;
 
 /// Update specific dependencies outside the manifest
 ///

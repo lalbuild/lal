@@ -3,8 +3,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use core::{output, CliError, LalResult};
-use storage::{Backend, CachedBackend, Component};
+use crate::{
+    core::{output, CliError, LalResult},
+    storage::{Backend, CachedBackend, Component},
+};
 
 fn is_cached<T: Backend + ?Sized>(backend: &T, name: &str, version: u32, env: &str) -> bool {
     get_cache_dir(backend, name, version, env).is_dir()

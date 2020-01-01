@@ -18,32 +18,23 @@
 //! explicitly or implicitly is listed on the left of this page.
 
 #[macro_use] extern crate hyper;
-extern crate hyper_native_tls;
-extern crate openssl_probe;
+
+
 #[macro_use] extern crate serde_derive;
-extern crate ansi_term;
-extern crate flate2;
-extern crate regex;
-extern crate serde_json;
-extern crate sha1;
-extern crate tar;
+
+
 #[macro_use] extern crate log;
-extern crate chrono;
-extern crate filetime;
-#[cfg(feature = "progress")] extern crate indicatif;
-extern crate rand;
-extern crate semver;
-extern crate walkdir;
+
 
 // re-exports
 mod core;
-pub use core::*;
+pub use crate::core::*;
 
 mod runners;
-pub use runners::*;
+pub use crate::runners::*;
 
 mod storage;
-pub use storage::*;
+pub use crate::storage::*;
 
 /// Env module for env subcommand (which has further subcommands)
 pub mod env;
@@ -55,20 +46,22 @@ pub mod propagate;
 
 // lift most other pub functions into our libraries main scope
 // this avoids having to type lal:build in tests and main.rs
-pub use build::{build, BuildOptions};
-pub use clean::clean;
-pub use configure::configure;
-pub use export::export;
-pub use fetch::fetch;
-pub use init::init;
-pub use publish::publish;
-pub use query::query;
-pub use remove::remove;
-pub use shell::{run, script, shell};
-pub use stash::stash;
-pub use status::status;
-pub use update::{update, update_all};
-pub use verify::verify;
+pub use crate::{
+    build::{build, BuildOptions},
+    clean::clean,
+    configure::configure,
+    export::export,
+    fetch::fetch,
+    init::init,
+    publish::publish,
+    query::query,
+    remove::remove,
+    shell::{run, script, shell},
+    stash::stash,
+    status::status,
+    update::{update, update_all},
+    verify::verify,
+};
 
 mod build;
 mod clean;

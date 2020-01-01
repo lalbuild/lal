@@ -401,7 +401,7 @@ dependencies = [
 
 [[package]]
 name = "lal"
-version = "3.9.0"
+version = "3.10.0"
 dependencies = [
  "ansi_term 0.7.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.2.25 (registry+https://github.com/rust-lang/crates.io-index)",

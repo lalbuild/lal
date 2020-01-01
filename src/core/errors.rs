@@ -124,7 +124,7 @@ pub enum CliError {
 
 // Format implementation used when printing an error
 impl fmt::Display for CliError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match *self {
             CliError::Io(ref err) => {
                 let knd = err.kind();

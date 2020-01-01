@@ -4,8 +4,7 @@ use super::{
     ensure_dir_exists_fresh, output, CliError, Config, DockerRunFlags, Environment, LalResult, Lockfile,
     Manifest, ShellModes,
 };
-use shell;
-use verify::verify;
+use crate::{shell, verify::verify};
 
 
 fn find_valid_build_script(component_dir: &Path) -> LalResult<String> {

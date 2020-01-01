@@ -1,7 +1,7 @@
 use std::path::{Component, Path};
 
 use super::{CliError, Config, LalResult};
-use core::manifest::*;
+use crate::core::manifest::*;
 
 
 /// Generates a blank manifest in the current directory
@@ -14,7 +14,7 @@ use core::manifest::*;
 pub fn init(cfg: &Config, force: bool, component_dir: &Path, env: &str) -> LalResult<()> {
     cfg.get_environment(env.into())?;
 
-    let last_comp: Component = component_dir.components().last().unwrap();
+    let last_comp: Component<'_> = component_dir.components().last().unwrap();
     let dirname = last_comp.as_os_str().to_str().unwrap();
 
     let mpath = ManifestLocation::identify(&component_dir.to_path_buf());

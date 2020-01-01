@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
 use super::{CliError, LalResult};
-use storage::CachedBackend;
+use crate::storage::CachedBackend;
 
 /// Export a specific component from the storage backend
 pub fn export<T: CachedBackend + ?Sized>(

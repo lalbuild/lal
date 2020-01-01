@@ -1,10 +1,10 @@
-extern crate fs_extra;
-extern crate lal;
-extern crate loggerv;
-extern crate tempdir;
-extern crate walkdir;
+use fs_extra;
+use lal;
+use loggerv;
+use tempdir;
 
-use common::{
+
+use crate::common::{
     fs_extra::dir::{copy, CopyOptions},
     loggerv::init_with_verbosity,
     tempdir::TempDir,

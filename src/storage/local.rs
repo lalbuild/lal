@@ -8,7 +8,7 @@ use std::{
     vec::Vec,
 };
 
-use core::{config_dir, ensure_dir_exists_fresh, CliError, LalResult};
+use crate::core::{config_dir, ensure_dir_exists_fresh, CliError, LalResult};
 
 
 /// LocalBackend configuration options (currently none)

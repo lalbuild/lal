@@ -2,7 +2,7 @@ use std::path::Path;
 
 // Need both the struct and the trait
 use super::{CliError, LalResult, Lockfile};
-use storage::Backend;
+use crate::storage::Backend;
 
 /// Publish a release build to the storage backend
 ///

@@ -1,13 +1,14 @@
 [package]
 name = "lal"
-version = "3.9.0"
-authors = ["Eirik Albrigtsen <sszynrae@gmail.com>"]
+version = "3.10.0"
+authors = ["Eirik Albrigtsen <sszynrae@gmail.com>", "Ben Cordero <bencord0@condi.me>"]
 description = "A strict, language-agnostic build system and dependency manager"
 documentation = "http://lalbuild.github.io/lal"
 license = "MIT"
 categories = ["command-line-utilities"]
 keywords = ["package", "dependency", "build", "docker", "artifactory"]
 readme = "README.md"
+edition = "2018"
 
 [badges]
 travis-ci = { repository = "lalbuild/lal", branch = "master" }
