@@ -1,4 +1,4 @@
-use std::{path::Path, process::Command, vec::Vec};
+use std::{ffi::OsString, path::Path, process::Command, vec::Vec};
 
 use super::{CliError, Config, Environment, LalResult, StickyOptions};
 
@@ -26,12 +26,14 @@ pub fn update(component_dir: &Path, environment: &Environment, env: &str) -> Lal
 
 /// Creates and sets the environment in the local .lal/opts file
 pub fn set(component_dir: &Path, opts_: &StickyOptions, cfg: &Config, env: &str) -> LalResult<()> {
-    if !cfg.environments.contains_key(env) {
-        return Err(CliError::MissingEnvironment(env.into()));
+    let env_name = OsString::from(env);
+    let env = env.to_owned();
+    if !cfg.environments.contains_key(&env_name) {
+        return Err(CliError::MissingEnvironment(env));
     }
     // mutate a temporary copy - lal binary is done after this function anyway
     let mut opts = opts_.clone();
-    opts.env = Some(env.into());
+    opts.env = Some(env);
     opts.write(&component_dir)?;
     Ok(())
 }

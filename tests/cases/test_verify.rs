@@ -1,11 +1,12 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
+use std::ffi::OsStr;
 
 #[parameterized(
-    env_name = {"default", "default", "alpine", "alpine"},
+    env_name = {OsStr::new("default"), OsStr::new("default"), OsStr::new("alpine"), OsStr::new("alpine")},
     simple = {true, false, true, false},
 )]
-fn test_verify_no_deps(env_name: &str, simple: bool) {
+fn test_verify_no_deps(env_name: &OsStr, simple: bool) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -22,10 +23,10 @@ fn test_verify_no_deps(env_name: &str, simple: bool) {
 }
 
 #[parameterized(
-    env_name = {"default", "default", "alpine", "alpine"},
+    env_name = {OsStr::new("default"), OsStr::new("default"), OsStr::new("alpine"), OsStr::new("alpine")},
     simple = {true, false, true, false},
 )]
-fn test_verify_with_deps(env_name: &str, simple: bool) {
+fn test_verify_with_deps(env_name: &OsStr, simple: bool) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -47,10 +48,10 @@ fn test_verify_with_deps(env_name: &str, simple: bool) {
 }
 
 #[parameterized(
-    env_name = {"default", "default", "alpine", "alpine"},
+    env_name = {OsStr::new("default"), OsStr::new("default"), OsStr::new("alpine"), OsStr::new("alpine")},
     simple = {true, false, true, false},
 )]
-fn test_verify_with_deps_in_wrong_env(env_name: &str, simple: bool) {
+fn test_verify_with_deps_in_wrong_env(env_name: &OsStr, simple: bool) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -67,15 +68,15 @@ fn test_verify_with_deps_in_wrong_env(env_name: &str, simple: bool) {
     let r = verify::verify(&component_dir, &env_name, simple);
     assert!(r.is_ok(), "verified INPUT consistency");
 
-    let r = verify::verify(&component_dir, "xenial", simple);
+    let r = verify::verify(&component_dir, OsStr::new("xenial"), simple);
     assert!(
         r.is_err(),
         "verify fails when checking with inconsistent environments"
     );
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_verify_with_stashed_deps(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_verify_with_stashed_deps(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

@@ -1,8 +1,8 @@
-use std::path::Path;
+use std::{ffi::OsStr, path::Path};
 
-pub fn options(home: Option<&Path>, env_name: &str) -> lal::LalResult<lal::BuildOptions> {
+pub fn options(home: Option<&Path>, env_name: &OsStr) -> lal::LalResult<lal::BuildOptions> {
     let config = lal::Config::read(home)?;
-    let environment = config.get_environment(env_name.to_string())?;
+    let environment = config.get_environment(&env_name)?;
 
     Ok(lal::BuildOptions {
         name: None,
@@ -18,7 +18,7 @@ pub fn options(home: Option<&Path>, env_name: &str) -> lal::LalResult<lal::Build
 
 pub fn build_for_release(
     component_dir: &Path,
-    env_name: &str,
+    env_name: &OsStr,
     home: &Path,
     version: &str,
 ) -> lal::LalResult<()> {
@@ -30,13 +30,17 @@ pub fn build_for_release(
 
 pub fn build_with_options(
     component_dir: &Path,
-    env_name: &str,
+    env_name: &OsStr,
     home: &Path,
     build_opts: &lal::BuildOptions,
 ) -> lal::LalResult<()> {
     let config = lal::Config::read(Some(&home))?;
     let manifest = lal::Manifest::read(&component_dir)?;
     let modes = lal::ShellModes::default();
+    let env_name = env_name.to_str()
+        // Convert Option to Result, until try_trait is stable
+        // https://doc.rust-lang.org/std/option/enum.Option.html#impl-Try
+        .ok_or(lal::CliError::OptionIsNone)?;
 
     lal::build(
         &component_dir,
@@ -50,13 +54,17 @@ pub fn build_with_options(
 
 pub fn build_with_options_and_modes(
     component_dir: &Path,
-    env_name: &str,
+    env_name: &OsStr,
     home: &Path,
     build_opts: &lal::BuildOptions,
     modes: lal::ShellModes,
 ) -> lal::LalResult<()> {
     let config = lal::Config::read(Some(&home))?;
     let manifest = lal::Manifest::read(&component_dir)?;
+    let env_name = env_name.to_str()
+        // Convert Option to Result, until try_trait is stable
+        // https://doc.rust-lang.org/std/option/enum.Option.html#impl-Try
+        .ok_or(lal::CliError::OptionIsNone)?;
 
     lal::build(
         &component_dir,

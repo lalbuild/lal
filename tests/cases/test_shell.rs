@@ -1,8 +1,9 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
+use std::ffi::OsStr;
 
-#[parameterized(env_name = {"default", "alpine"})]
-pub fn test_heylib_echo(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+pub fn test_heylib_echo(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -18,8 +19,8 @@ pub fn test_heylib_echo(env_name: &str) {
     assert!(r.is_ok(), "shell echoed");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-pub fn test_shell_permissions(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+pub fn test_shell_permissions(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -35,8 +36,8 @@ pub fn test_shell_permissions(env_name: &str) {
     assert!(r.is_ok(), "could touch files in container");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-pub fn test_run_scripts(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+pub fn test_run_scripts(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

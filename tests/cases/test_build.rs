@@ -1,8 +1,9 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
+use std::ffi::OsStr;
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_build(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_build(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -18,8 +19,8 @@ fn test_build(env_name: &str) {
     assert!(r.is_ok(), "built heylib release");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_build_with_force(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_build_with_force(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -39,8 +40,8 @@ fn test_build_with_force(env_name: &str) {
     assert!(r.is_ok(), "built heylib with force");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_build_with_force_in_wrong_environment(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_build_with_force_in_wrong_environment(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -56,12 +57,12 @@ fn test_build_with_force_in_wrong_environment(env_name: &str) {
     let mut build_opts = build::options(Some(&state.tempdir.path()), &env_name).expect("build options");
     build_opts.force = true;
 
-    let r = build::build_with_options(&component_dir, "nonexistant", &state.tempdir.path(), &build_opts);
+    let r = build::build_with_options(&component_dir, OsStr::new("nonexistant"), &state.tempdir.path(), &build_opts);
     assert!(r.is_ok(), "built heylib with force in nonexistant environment");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_build_with_printonly(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_build_with_printonly(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

@@ -1,6 +1,6 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
-use std::path::PathBuf;
+use std::{ffi::OsStr, path::PathBuf};
 
 fn assert_missing_lockfile(path: &PathBuf, name: &str) {
     match lal::Lockfile::from_path(path, &name) {
@@ -11,8 +11,8 @@ fn assert_missing_lockfile(path: &PathBuf, name: &str) {
     .expect("dependency not in INPUT");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_status_without_deps(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_status_without_deps(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -37,8 +37,8 @@ fn test_status_without_deps(env_name: &str) {
     assert!(r.is_ok(), "checked fully described heylib dependencies");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_status_with_deps(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_status_with_deps(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -72,8 +72,8 @@ fn test_status_with_deps(env_name: &str) {
     assert!(r.is_ok(), "checked fully described helloworld dependencies");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_status_with_stashed_dependency(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_status_with_stashed_dependency(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

@@ -1,8 +1,9 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
+use std::ffi::OsStr;
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_list_environments(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_list_environments(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -16,8 +17,8 @@ fn test_list_environments(env_name: &str) {
     assert!(r.is_ok(), "list environments");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_list_core_dependencies(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_list_core_dependencies(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -32,8 +33,8 @@ fn test_list_core_dependencies(env_name: &str) {
     assert!(r.is_ok(), "list core dependencies");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_list_all_dependencies(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_list_all_dependencies(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -48,8 +49,8 @@ fn test_list_all_dependencies(env_name: &str) {
     assert!(r.is_ok(), "list all dependencies");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_list_configurations(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_list_configurations(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -62,8 +63,8 @@ fn test_list_configurations(env_name: &str) {
     assert!(r.is_ok(), "list configurations");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_list_buildables(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_list_buildables(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

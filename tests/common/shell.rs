@@ -1,8 +1,8 @@
-use std::path::Path;
+use std::{ffi::OsStr, path::Path};
 
-pub fn run(env_name: &str, home: &Path, component_dir: &Path, command_args: Vec<&str>) -> lal::LalResult<()> {
+pub fn run(env_name: &OsStr, home: &Path, component_dir: &Path, command_args: Vec<&str>) -> lal::LalResult<()> {
     let cfg = lal::Config::read(Some(&home))?;
-    let environment = cfg.get_environment(env_name.into())?;
+    let environment = cfg.get_environment(&env_name)?;
     let modes = lal::ShellModes::default();
 
     let mut args = Vec::<String>::new();
@@ -21,14 +21,14 @@ pub fn run(env_name: &str, home: &Path, component_dir: &Path, command_args: Vec<
 }
 
 pub fn run_script(
-    env_name: &str,
+    env_name: &OsStr,
     home: &Path,
     component_dir: &Path,
     script_name: &str,
     script_args: Vec<&str>,
 ) -> lal::LalResult<()> {
     let cfg = lal::Config::read(Some(&home))?;
-    let environment = cfg.get_environment(env_name.into())?;
+    let environment = cfg.get_environment(env_name)?;
     let modes = lal::ShellModes::default();
 
     lal::script(

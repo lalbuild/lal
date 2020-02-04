@@ -1,6 +1,6 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
-use std::path::{Path, PathBuf};
+use std::{ffi::OsStr, path::{Path, PathBuf}};
 
 fn assert_missing_lockfile(path: &PathBuf, name: &str) {
     match lal::Lockfile::from_path(path, &name) {
@@ -45,8 +45,8 @@ fn assert_missing_manifest_dev(component_dir: &Path, name: &str) {
 
 // -- Update without saving
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_no_save(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_no_save(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -78,8 +78,8 @@ fn test_update_no_save(env_name: &str) {
     assert_lockfile(&component_dir.join("INPUT/heylib/lockfile.json"), "heylib", 2);
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_to_latest_no_save(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_to_latest_no_save(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -110,8 +110,8 @@ fn test_update_to_latest_no_save(env_name: &str) {
     assert_lockfile(&component_dir.join("INPUT/heylib/lockfile.json"), "heylib", 2);
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_all_to_latest_no_save(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_all_to_latest_no_save(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -144,8 +144,8 @@ fn test_update_all_to_latest_no_save(env_name: &str) {
 
 // -- Update and save to the manifest
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_with_save(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_with_save(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -187,8 +187,8 @@ fn test_update_with_save(env_name: &str) {
     assert_lockfile(&component_dir.join("INPUT/heylib/lockfile.json"), "heylib", 2);
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_to_latest_with_save(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_to_latest_with_save(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -232,8 +232,8 @@ fn test_update_to_latest_with_save(env_name: &str) {
     assert_lockfile(&component_dir.join("INPUT/heylib/lockfile.json"), "heylib", 2);
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_all_to_latest_with_save(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_all_to_latest_with_save(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -272,8 +272,8 @@ fn test_update_all_to_latest_with_save(env_name: &str) {
 
 // -- Update and savedev to the manifest
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_with_savedev(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_with_savedev(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -351,8 +351,8 @@ fn test_update_with_savedev(env_name: &str) {
     );
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_with_save_savedev(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_with_save_savedev(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -432,8 +432,8 @@ fn test_update_with_save_savedev(env_name: &str) {
     );
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_to_latest_with_savedev(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_to_latest_with_savedev(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -505,8 +505,8 @@ fn test_update_to_latest_with_savedev(env_name: &str) {
     );
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_to_latest_with_save_savedev(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_to_latest_with_save_savedev(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -581,8 +581,8 @@ fn test_update_to_latest_with_save_savedev(env_name: &str) {
     );
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_all_to_latest_with_savedev(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_all_to_latest_with_savedev(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -643,8 +643,8 @@ fn test_update_all_to_latest_with_savedev(env_name: &str) {
     );
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_update_all_to_latest_with_save_savedev(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_update_all_to_latest_with_save_savedev(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

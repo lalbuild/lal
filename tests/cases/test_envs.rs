@@ -1,9 +1,9 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
-use std::fs;
+use std::{ffi::OsStr, fs};
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_change_envs(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_change_envs(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -22,7 +22,7 @@ fn test_change_envs(env_name: &str) {
     assert_eq!(sticky.env, None);
 
     // Change env (even works with unsupported envs)
-    let r = envs::set_environment(&component_dir, &state.tempdir.path(), &sticky, "xenial");
+    let r = envs::set_environment(&component_dir, &state.tempdir.path(), &sticky, OsStr::new("xenial"));
     assert!(r.is_ok(), "environment set to xenial");
 
     // Reread sticky options

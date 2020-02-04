@@ -1,8 +1,9 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
+use std::ffi::OsStr;
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_fetch_no_deps(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_fetch_no_deps(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -15,8 +16,8 @@ fn test_fetch_no_deps(env_name: &str) {
     assert!(r.is_ok(), "installed core dependencies");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_fetch_no_dev_deps(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_fetch_no_dev_deps(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -29,8 +30,8 @@ fn test_fetch_no_dev_deps(env_name: &str) {
     assert!(r.is_ok(), "installed dev dependencies");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_fetch_with_deps(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_fetch_with_deps(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -45,8 +46,8 @@ fn test_fetch_with_deps(env_name: &str) {
     assert!(r.is_ok(), "installed helloworld dependencies");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_fetch_with_dev_deps(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_fetch_with_dev_deps(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

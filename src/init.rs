@@ -1,4 +1,4 @@
-use std::path::{Component, Path};
+use std::{ffi::OsStr, path::{Component, Path}};
 
 use super::{CliError, Config, LalResult};
 use crate::core::manifest::*;
@@ -12,7 +12,7 @@ use crate::core::manifest::*;
 /// The function will not overwrite an existing `manifest.json`,
 /// unless the `force` bool is set.
 pub fn init(cfg: &Config, force: bool, component_dir: &Path, env: &str) -> LalResult<()> {
-    cfg.get_environment(env.into())?;
+    cfg.get_environment(&OsStr::new(env))?;
 
     let last_comp: Component<'_> = component_dir.components().last().unwrap();
     let dirname = last_comp.as_os_str().to_str().unwrap();

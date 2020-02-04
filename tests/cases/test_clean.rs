@@ -1,8 +1,9 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
+use std::ffi::OsStr;
 
-#[parameterized(env_name = {"default", "alpine"})]
-pub fn test_clean_keep_1_day(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+pub fn test_clean_keep_1_day(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -29,8 +30,8 @@ pub fn test_clean_keep_1_day(env_name: &str) {
     assert!(first.is_some(), "some artifacts cached since last time");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-pub fn test_clean_keep_nothing(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+pub fn test_clean_keep_nothing(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

@@ -1,8 +1,8 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
-use std::path::PathBuf;
+use std::{ffi::OsStr, path::PathBuf};
 
-fn publish_components(state: &TestState, env_name: &str) -> lal::LalResult<PathBuf> {
+fn publish_components(state: &TestState, env_name: &OsStr) -> lal::LalResult<PathBuf> {
     // verify propagations by building prop-leaf -> prop-mid-X -> prop-base
     publish_component(&state, &env_name, "prop-leaf", "1")?;
     publish_component(&state, &env_name, "prop-mid-1", "1")?;
@@ -10,8 +10,8 @@ fn publish_components(state: &TestState, env_name: &str) -> lal::LalResult<PathB
     publish_component(&state, &env_name, "prop-base", "1")
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_propagate_compute(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_propagate_compute(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -54,8 +54,8 @@ fn test_propagate_compute(env_name: &str) {
     assert!(r.is_ok(), "could print status of propagation root");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_propagate_print(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_propagate_print(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -67,8 +67,8 @@ fn test_propagate_print(env_name: &str) {
     assert!(r.is_ok(), "pretty printed propagation tree");
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_propagate_print_json(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_propagate_print_json(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;

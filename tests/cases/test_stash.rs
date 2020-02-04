@@ -1,8 +1,9 @@
 use crate::common::*;
 use parameterized_macro::parameterized;
+use std::ffi::OsStr;
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_build_and_stash(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_build_and_stash(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -21,8 +22,8 @@ fn test_build_and_stash(env_name: &str) {
     assert!(r.is_ok(), "stashed heylib=blah artifact")
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_build_stashed_self_with_simple_verify(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_build_stashed_self_with_simple_verify(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
@@ -72,8 +73,8 @@ fn test_build_stashed_self_with_simple_verify(env_name: &str) {
     );
 }
 
-#[parameterized(env_name = {"default", "alpine"})]
-fn test_build_stashed_self_with_force(env_name: &str) {
+#[parameterized(env_name = {OsStr::new("default"), OsStr::new("alpine")})]
+fn test_build_stashed_self_with_force(env_name: &OsStr) {
     let state = setup();
     if !cfg!(feature = "docker") && env_name == "alpine" {
         return;
