@@ -32,7 +32,7 @@ pub fn configurations(component: &str, manifest: &Manifest) -> LalResult<()> {
 
 /// Print the configured environments from the config
 pub fn environments(cfg: &Config) -> LalResult<()> {
-    for k in cfg.environments.keys() {
+    for k in cfg.list_environments() {
         println!("{}", k);
     }
     Ok(())

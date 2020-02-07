@@ -27,13 +27,12 @@ pub fn update(component_dir: &Path, environment: &Environment, env: &str) -> Lal
 /// Creates and sets the environment in the local .lal/opts file
 pub fn set(component_dir: &Path, opts_: &StickyOptions, cfg: &Config, env: &str) -> LalResult<()> {
     let env_name = OsString::from(env);
-    let env = env.to_owned();
-    if !cfg.environments.contains_key(&env_name) {
+    if !cfg.has_environment(&env_name) {
         return Err(CliError::MissingEnvironment(env_name));
     }
     // mutate a temporary copy - lal binary is done after this function anyway
     let mut opts = opts_.clone();
-    opts.env = Some(env);
+    opts.env = Some(env.to_owned());
     opts.write(&component_dir)?;
     Ok(())
 }

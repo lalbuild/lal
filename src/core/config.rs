@@ -223,4 +223,15 @@ impl Config {
             Environment::None => Err(CliError::MissingEnvironment(env_name.to_owned())),
         }
     }
+
+    /// Determine if an environment is available
+    pub fn has_environment(&self, env_name: &OsStr) -> bool {
+        let env = env_name.to_string_lossy().to_string();
+        self.environments.contains_key(&env)
+    }
+
+    /// List environments available
+    pub fn list_environments(&self) -> Vec<String> {
+        self.environments.keys().map(|k| k.clone()).collect()
+    }
 }
