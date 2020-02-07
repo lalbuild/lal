@@ -1,10 +1,10 @@
 use std::io::{self, Write};
 
 use super::{CliError, LalResult};
-use crate::storage::Backend;
+use crate::storage::CachedBackend;
 
 /// Prints a list of versions associated with a component
-pub fn query(backend: &dyn Backend, _env: Option<&str>, component: &str, last: bool) -> LalResult<()> {
+pub fn query(backend: &dyn CachedBackend, _env: Option<&str>, component: &str, last: bool) -> LalResult<()> {
     if component.to_lowercase() != component {
         return Err(CliError::InvalidComponentName(component.into()));
     }

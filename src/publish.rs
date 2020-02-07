@@ -2,17 +2,17 @@ use std::path::Path;
 
 // Need both the struct and the trait
 use super::{CliError, LalResult, Lockfile};
-use crate::storage::Backend;
+use crate::storage::CachedBackend;
 
 /// Publish a release build to the storage backend
 ///
 /// Meant to be done after a `lal build -r <component>`
 /// and requires publish credentials in the local `Config`.
-pub fn publish<T: Backend + ?Sized>(
+pub fn publish(
     home: Option<&Path>,
     component_dir: &Path,
     name: &str,
-    backend: &T,
+    backend: &dyn CachedBackend,
 ) -> LalResult<()> {
     let artdir = component_dir.join("./ARTIFACT");
     let tarball = artdir.join(format!("{}.tar.gz", name));

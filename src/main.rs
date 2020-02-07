@@ -29,7 +29,7 @@ fn handle_manifest_agnostic_cmds(
     args: &ArgMatches<'_>,
     cfg: &Config,
     component_dir: &Path,
-    backend: &dyn Backend,
+    backend: &dyn CachedBackend,
     explicit_env: Option<&str>,
 ) {
     let res = if let Some(a) = args.subcommand_matches("export") {
@@ -57,7 +57,7 @@ fn handle_environment_agnostic_cmds(
     args: &ArgMatches<'_>,
     component_dir: &Path,
     mf: &Manifest,
-    backend: &dyn Backend,
+    backend: &dyn CachedBackend,
 ) {
     let res = if let Some(a) = args.subcommand_matches("status") {
         lal::status(
@@ -107,7 +107,7 @@ fn handle_network_cmds(
     args: &ArgMatches<'_>,
     component_dir: &Path,
     mf: &Manifest,
-    backend: &dyn Backend,
+    backend: &dyn CachedBackend,
     env: &str,
 ) {
     let res = if let Some(a) = args.subcommand_matches("update") {
@@ -620,7 +620,7 @@ fn main() {
         .unwrap();
 
     // Create a storage backend (something that implements storage/traits.rs)
-    let backend: Box<dyn Backend> = match config.backend {
+    let backend: Box<dyn CachedBackend> = match config.backend {
         BackendConfiguration::Artifactory(ref art_cfg) => {
             Box::new(ArtifactoryBackend::new(&art_cfg, &config.cache))
         }

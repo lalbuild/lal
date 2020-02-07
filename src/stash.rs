@@ -10,9 +10,9 @@ use crate::storage::CachedBackend;
 /// then copies this to `~/.lal/cache/stash/${name}/`.
 ///
 /// This file can then be installed via `update` using a component=${name} argument.
-pub fn stash<T: CachedBackend + ?Sized>(
+pub fn stash(
     component_dir: &Path,
-    backend: &T,
+    backend: &dyn CachedBackend,
     mf: &Manifest,
     name: &str,
 ) -> LalResult<()> {

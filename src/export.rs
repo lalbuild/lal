@@ -4,8 +4,8 @@ use super::{CliError, LalResult};
 use crate::storage::CachedBackend;
 
 /// Export a specific component from the storage backend
-pub fn export<T: CachedBackend + ?Sized>(
-    backend: &T,
+pub fn export(
+    backend: &dyn CachedBackend,
     comp: &str,
     output: &Path,
     _env: Option<&str>,

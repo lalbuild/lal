@@ -1,19 +1,19 @@
 use std::path::Path;
 
-pub fn fetch_input<T: lal::CachedBackend + lal::Backend>(
+pub fn fetch_input(
     component_dir: &Path,
     env_name: &str,
-    backend: &T,
+    backend: &dyn lal::CachedBackend,
 ) -> lal::LalResult<()> {
     let manifest = lal::Manifest::read(&component_dir)?;
 
     lal::fetch(&component_dir, &manifest, backend, true, &env_name)
 }
 
-pub fn fetch_dev_input<T: lal::CachedBackend + lal::Backend>(
+pub fn fetch_dev_input(
     component_dir: &Path,
     env_name: &str,
-    backend: &T,
+    backend: &dyn lal::CachedBackend,
 ) -> lal::LalResult<()> {
     let manifest = lal::Manifest::read(&component_dir)?;
 

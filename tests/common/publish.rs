@@ -1,8 +1,8 @@
 use std::path::Path;
 
-pub fn publish_release<T: lal::CachedBackend + lal::Backend>(
+pub fn publish_release(
     component_dir: &Path,
-    backend: &T,
+    backend: &dyn lal::CachedBackend,
     home: &Path,
 ) -> lal::LalResult<()> {
     let manifest = lal::Manifest::read(&component_dir)?;

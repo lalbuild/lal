@@ -1,9 +1,9 @@
 use std::path::Path;
 
-pub fn update<T: lal::CachedBackend + lal::Backend>(
+pub fn update(
     component_dir: &Path,
     env_name: &str,
-    backend: &T,
+    backend: &dyn lal::CachedBackend,
     components: Vec<&str>,
 ) -> lal::LalResult<()> {
     let manifest = lal::Manifest::read(&component_dir)?;
@@ -24,19 +24,19 @@ pub fn update<T: lal::CachedBackend + lal::Backend>(
     )
 }
 
-pub fn update_all<T: lal::CachedBackend + lal::Backend>(
+pub fn update_all(
     component_dir: &Path,
     env_name: &str,
-    backend: &T,
+    backend: &dyn lal::CachedBackend,
 ) -> lal::LalResult<()> {
     let manifest = lal::Manifest::read(&component_dir)?;
     lal::update_all(&component_dir, &manifest, backend, false, false, &env_name)
 }
 
-pub fn update_with_save<T: lal::CachedBackend + lal::Backend>(
+pub fn update_with_save(
     component_dir: &Path,
     env_name: &str,
-    backend: &T,
+    backend: &dyn lal::CachedBackend,
     components: Vec<&str>,
     save: bool,
     savedev: bool,
@@ -59,10 +59,10 @@ pub fn update_with_save<T: lal::CachedBackend + lal::Backend>(
     )
 }
 
-pub fn update_all_with_save<T: lal::CachedBackend + lal::Backend>(
+pub fn update_all_with_save(
     component_dir: &Path,
     env_name: &str,
-    backend: &T,
+    backend: &dyn lal::CachedBackend,
     save: bool,
     savedev: bool,
 ) -> lal::LalResult<()> {

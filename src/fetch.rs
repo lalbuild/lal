@@ -14,10 +14,10 @@ fn clean_input(component_dir: &Path) {
 ///
 /// This will read, and HTTP GET all the dependencies at the specified versions.
 /// If the `core` bool is set, then `devDependencies` are not installed.
-pub fn fetch<T: CachedBackend + ?Sized>(
+pub fn fetch(
     component_dir: &Path,
     manifest: &Manifest,
-    backend: &T,
+    backend: &dyn CachedBackend,
     core: bool,
     env: &str,
 ) -> LalResult<()> {
