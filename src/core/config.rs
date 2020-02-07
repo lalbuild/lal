@@ -206,19 +206,21 @@ impl Config {
 
     /// Resolve an arbitrary environment shorthand
     pub fn get_environment(&self, env_name: &OsStr) -> LalResult<Environment> {
+        // Convert to `String`, while `self.environments` is still keyed on `String`.
+        // This is needed until `OsString`s in `Config` can be serialised
+        // See: https://github.com/serde-rs/json/issues/550
         let env = env_name.to_string_lossy().to_string();
         if let Some(environment) = self.environments.get(&env) {
             return Ok(environment.clone());
         }
-        Err(CliError::MissingEnvironment(env))
+        Err(CliError::MissingEnvironment(env_name.to_owned()))
     }
 
     /// Resolve an arbitrary container shorthand
-    pub fn get_container(&self, env: String) -> LalResult<Container> {
-        let env_name = OsString::from(&env);
+    pub fn get_container(&self, env_name: &OsStr) -> LalResult<Container> {
         match self.get_environment(&env_name)? {
             Environment::Container(container) => Ok(container),
-            Environment::None => Err(CliError::MissingEnvironment(env)),
+            Environment::None => Err(CliError::MissingEnvironment(env_name.to_owned())),
         }
     }
 }

@@ -29,7 +29,7 @@ pub fn set(component_dir: &Path, opts_: &StickyOptions, cfg: &Config, env: &str)
     let env_name = OsString::from(env);
     let env = env.to_owned();
     if !cfg.environments.contains_key(&env_name) {
-        return Err(CliError::MissingEnvironment(env));
+        return Err(CliError::MissingEnvironment(env_name));
     }
     // mutate a temporary copy - lal binary is done after this function anyway
     let mut opts = opts_.clone();
