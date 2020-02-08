@@ -336,15 +336,15 @@ pub struct ArtifactoryBackend {
     /// Artifactory config and credentials
     pub config: ArtifactoryConfig,
     /// Cache directory
-    pub cache: String,
+    pub cache: PathBuf,
 }
 
 impl ArtifactoryBackend {
-    pub fn new(cfg: &ArtifactoryConfig, cache: &str) -> Self {
+    pub fn new(cfg: &ArtifactoryConfig, cache: &Path) -> Self {
         // TODO: create hyper clients in here rather than once per download
         ArtifactoryBackend {
             config: cfg.clone(),
-            cache: cache.into(),
+            cache: cache.to_path_buf(),
         }
     }
 }
@@ -394,7 +394,7 @@ impl Backend for ArtifactoryBackend {
         Ok(())
     }
 
-    fn get_cache_dir(&self) -> String {
+    fn get_cache_dir(&self) -> PathBuf {
         self.cache.clone()
     }
 

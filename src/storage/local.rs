@@ -22,11 +22,11 @@ pub struct LocalBackend {
     /// Local config
     pub config: LocalConfig,
     /// Cache directory
-    pub cache: String,
+    pub cache: PathBuf,
 }
 
 impl LocalBackend {
-    pub fn new(cfg: &LocalConfig, cache: &str) -> Self {
+    pub fn new(cfg: &LocalConfig, cache: &Path) -> Self {
         match fs::create_dir(&cache) {
             Ok(()) => Ok(()),
             Err(ref e) if e.kind() == ErrorKind::AlreadyExists => Ok(()),
@@ -36,7 +36,7 @@ impl LocalBackend {
 
         LocalBackend {
             config: cfg.clone(),
-            cache: cache.into(),
+            cache: cache.to_path_buf(),
         }
     }
 }
@@ -47,7 +47,10 @@ impl LocalBackend {
 /// specific low-level use cases, these methods can be used directly.
 impl Backend for LocalBackend {
     fn get_versions(&self, name: &str, loc: &str) -> LalResult<Vec<u32>> {
-        let tar_dir = format!("{}/environments/{}/{}/", self.cache, loc, name);
+        let tar_dir = format!(
+            "{}/environments/{}/{}/",
+            self.cache.display(), loc, name
+        );
         let dentries = fs::read_dir(config_dir(None).join(tar_dir));
         let mut versions = vec![];
         for entry in dentries? {
@@ -80,7 +83,7 @@ impl Backend for LocalBackend {
         };
         let loc = format!(
             "{}/environments/{}/{}/{}/{}.tar.gz",
-            self.cache, loc, name, v, name
+            self.cache.display(), loc, name, v, name
         );
         Ok(Component {
             name: name.into(),
@@ -104,14 +107,17 @@ impl Backend for LocalBackend {
         let lockfile = artifactdir.join("lockfile.json");
 
         // prefix with environment
-        let tar_dir = format!("{}/environments/{}/{}/{}/", self.cache, env, name, version);
+        let tar_dir = format!(
+            "{}/environments/{}/{}/{}/",
+            self.cache.display(), env, name, version
+        );
         let tar_path = format!(
             "{}/environments/{}/{}/{}/{}.tar.gz",
-            self.cache, env, name, version, name
+            self.cache.display(), env, name, version, name
         );
         let lock_path = format!(
             "{}/environments/{}/{}/{}/lockfile.json",
-            self.cache, env, name, version
+            self.cache.display(), env, name, version
         );
 
         let full_tar_dir = config_dir(home).join(tar_dir);
@@ -123,7 +129,7 @@ impl Backend for LocalBackend {
         Ok(())
     }
 
-    fn get_cache_dir(&self) -> String {
+    fn get_cache_dir(&self) -> PathBuf {
         self.cache.clone()
     }
 

@@ -47,7 +47,7 @@ pub struct Config {
     /// Configuration settings for the `Backend`
     pub backend: BackendConfiguration,
     /// Cache directory for global and stashed builds
-    pub cache: String,
+    pub cache: PathBuf,
     /// Environments shorthands that are allowed and their full meaning
     pub environments: BTreeMap<String, Environment>,
     /// Time of last upgrade
@@ -128,8 +128,7 @@ impl Config {
     /// This will locate you homedir, and set last update check 2 days in the past.
     /// Thus, with a blank default config, you will always trigger an upgrade check.
     pub fn new(defaults: ConfigDefaults, home: Option<&Path>) -> Config {
-        let cachepath = config_dir(home).join("cache");
-        let cache = cachepath.as_path().to_str().unwrap().into();
+        let cache = config_dir(home).join("cache");
 
         // reset last update time
         let time = UTC::now();

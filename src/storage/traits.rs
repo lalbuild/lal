@@ -76,7 +76,7 @@ pub trait Backend {
     /// Return the base directory to be used to dump cached downloads
     ///
     /// This has to be in here for `CachedBackend` to have a straight dependency
-    fn get_cache_dir(&self) -> String;
+    fn get_cache_dir(&self) -> PathBuf;
 }
 
 /// A secondary trait that builds upon the Backend trait
