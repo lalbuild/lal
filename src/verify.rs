@@ -1,6 +1,6 @@
 use super::{LalResult, Lockfile, Manifest};
 use crate::input;
-use std::path::Path;
+use std::{ffi::OsStr, path::Path};
 
 /// Verifies that `./INPUT` satisfies all strictness conditions.
 ///
@@ -19,7 +19,7 @@ use std::path::Path;
 /// Users can use `lal verify --simple` or `lal build -s` aka. `--simple-verify`,
 /// instead of having to use `lal build --force` when just using stashed components.
 /// This avoids problems with different environments going undetected.
-pub fn verify(component_dir: &Path, m: &Manifest, env: &str, simple: bool) -> LalResult<()> {
+pub fn verify(component_dir: &Path, m: &Manifest, env_name: &OsStr, simple: bool) -> LalResult<()> {
     // 1. Verify that the manifest is sane
     m.verify()?;
 
@@ -45,7 +45,7 @@ pub fn verify(component_dir: &Path, m: &Manifest, env: &str, simple: bool) -> La
     }
 
     // 5. verify all components are built in the same environment
-    input::verify_environment_consistency(&lf, env)?;
+    input::verify_environment_consistency(&lf, &env_name)?;
 
     info!("Dependencies fully verified");
     Ok(())

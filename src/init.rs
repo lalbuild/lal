@@ -11,8 +11,10 @@ use crate::core::manifest::*;
 ///
 /// The function will not overwrite an existing `manifest.json`,
 /// unless the `force` bool is set.
-pub fn init(cfg: &Config, force: bool, component_dir: &Path, env: &str) -> LalResult<()> {
-    cfg.get_environment(&OsStr::new(env))?;
+pub fn init(cfg: &Config, force: bool, component_dir: &Path, env_name: &OsStr) -> LalResult<()> {
+    let env = env_name.to_string_lossy().to_string();
+
+    cfg.get_environment(&env_name)?;
 
     let last_comp: Component<'_> = component_dir.components().last().unwrap();
     let dirname = last_comp.as_os_str().to_str().unwrap();
@@ -27,7 +29,7 @@ pub fn init(cfg: &Config, force: bool, component_dir: &Path, env: &str) -> LalRe
     create_lal_subdir(&component_dir.to_path_buf())?; // create the `.lal` subdir if it's not there already
     Manifest::new(
         dirname,
-        env,
+        &env,
         ManifestLocation::default().as_path(&component_dir.to_path_buf()),
     )
     .write()?;

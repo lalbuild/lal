@@ -1,9 +1,10 @@
-use std::{ffi::OsString, path::Path, process::Command, vec::Vec};
+use std::{ffi::OsStr, path::Path, process::Command, vec::Vec};
 
 use super::{CliError, Config, Environment, LalResult, StickyOptions};
 
 /// Pull the current environment from docker
-pub fn update(component_dir: &Path, environment: &Environment, env: &str) -> LalResult<()> {
+pub fn update(component_dir: &Path, environment: &Environment, env_name: &OsStr) -> LalResult<()> {
+    let env = env_name.to_string_lossy().to_string();
     info!("Updating {} container", env);
 
     match environment {
@@ -25,14 +26,14 @@ pub fn update(component_dir: &Path, environment: &Environment, env: &str) -> Lal
 }
 
 /// Creates and sets the environment in the local .lal/opts file
-pub fn set(component_dir: &Path, opts_: &StickyOptions, cfg: &Config, env: &str) -> LalResult<()> {
-    let env_name = OsString::from(env);
+pub fn set(component_dir: &Path, opts_: &StickyOptions, cfg: &Config, env_name: &OsStr) -> LalResult<()> {
+    let env = env_name.to_string_lossy().to_string();
     if !cfg.has_environment(&env_name) {
-        return Err(CliError::MissingEnvironment(env_name));
+        return Err(CliError::MissingEnvironment(env_name.to_owned()));
     }
     // mutate a temporary copy - lal binary is done after this function anyway
     let mut opts = opts_.clone();
-    opts.env = Some(env.to_owned());
+    opts.env = Some(env);
     opts.write(&component_dir)?;
     Ok(())
 }

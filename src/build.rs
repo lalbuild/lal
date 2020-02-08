@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::{ffi::OsStr, fs, path::Path};
 
 use super::{
     ensure_dir_exists_fresh, output, CliError, Config, DockerRunFlags, Environment, LalResult, Lockfile,
@@ -71,9 +71,10 @@ pub fn build(
     cfg: &Config,
     manifest: &Manifest,
     opts: &BuildOptions,
-    envname: String,
+    env_name: &OsStr,
     _modes: ShellModes,
 ) -> LalResult<()> {
+    let env = env_name.to_string_lossy().to_string();
     let mut modes = _modes;
 
     // have a better warning on first file-io operation
@@ -87,7 +88,8 @@ pub fn build(
 
     // Verify INPUT
     let mut verify_failed = false;
-    if let Some(e) = verify(&component_dir, manifest, &envname, opts.simple_verify).err() {
+    if let Some(e) = verify(&component_dir, manifest, &env_name, opts.simple_verify).err() {
+
         if !opts.force {
             return Err(e);
         }
@@ -119,7 +121,7 @@ pub fn build(
     let lockfile = Lockfile::new(
         &component,
         &opts.environment,
-        &envname,
+        &env,
         opts.version.clone(),
         Some(&configuration_name),
     )
@@ -139,7 +141,7 @@ pub fn build(
 
     debug!("Build script is {:?} in {}", cmd, component_dir.display());
     if !modes.printonly {
-        info!("Running build script in {} environment", envname);
+        info!("Running build script in {} environment", env);
     }
 
     let run_flags = DockerRunFlags {
@@ -161,8 +163,8 @@ pub fn build(
         info!("Build succeeded with verified dependencies")
     }
     // environment is temporarily optional in manifest:
-    if envname != manifest.environment {
-        warn!("Build was using non-default {} environment", envname);
+    if env != manifest.environment {
+        warn!("Build was using non-default {} environment", env);
     }
 
     if opts.release && !modes.printonly {

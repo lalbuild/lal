@@ -108,7 +108,7 @@ fn handle_network_cmds(
     component_dir: &Path,
     mf: &Manifest,
     backend: &dyn Backend,
-    env: &str,
+    env_name: &OsStr,
 ) {
     let res = if let Some(a) = args.subcommand_matches("update") {
         let xs = a
@@ -123,7 +123,7 @@ fn handle_network_cmds(
             xs,
             a.is_present("save"),
             a.is_present("savedev"),
-            env,
+            &env_name,
         )
     } else if let Some(a) = args.subcommand_matches("update-all") {
         lal::update_all(
@@ -132,10 +132,10 @@ fn handle_network_cmds(
             backend,
             a.is_present("save"),
             a.is_present("dev"),
-            env,
+            &env_name,
         )
     } else if let Some(a) = args.subcommand_matches("fetch") {
-        lal::fetch(&component_dir, mf, backend, a.is_present("core"), env)
+        lal::fetch(&component_dir, mf, backend, a.is_present("core"), &env_name)
     } else {
         return; // not a network cmnd
     };
@@ -162,7 +162,7 @@ fn handle_env_command(
     // resolve env updates and sticky options before main subcommands
     if let Some(a) = args.subcommand_matches("env") {
         if a.subcommand_matches("update").is_some() {
-            result_exit("env update", lal::env::update(&component_dir, &environment, env))
+            result_exit("env update", lal::env::update(&component_dir, &environment, &OsStr::new(env)))
         } else if a.subcommand_matches("reset").is_some() {
             // NB: if .lal/opts.env points at an environment not in config
             // reset will fail.. possible to fix, but complects this file too much
@@ -170,9 +170,10 @@ fn handle_env_command(
             // would be purely the users fault for editing it manually
             result_exit("env clear", lal::env::clear(&component_dir))
         } else if let Some(sa) = a.subcommand_matches("set") {
+            let environment = sa.value_of("environment").unwrap();
             result_exit(
                 "env override",
-                lal::env::set(&component_dir, stickies, cfg, sa.value_of("environment").unwrap()),
+                lal::env::set(&component_dir, stickies, cfg, &OsStr::new(environment)),
             )
         } else {
             // just print current environment
@@ -223,7 +224,7 @@ fn handle_docker_cmds(
     let res = if let Some(a) = args.subcommand_matches("verify") {
         // not really a docker related command, but it needs
         // the resolved env to verify consistent dependency usage
-        lal::verify(&component_dir, mf, env, a.is_present("simple"))
+        lal::verify(&component_dir, mf, &OsStr::new(env), a.is_present("simple"))
     } else if let Some(a) = args.subcommand_matches("build") {
         let bopts = BuildOptions {
             name: a.value_of("component").map(String::from),
@@ -241,7 +242,7 @@ fn handle_docker_cmds(
             host_networking: a.is_present("net-host"),
             env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
         };
-        lal::build(&component_dir, cfg, mf, &bopts, env.into(), modes)
+        lal::build(&component_dir, cfg, mf, &bopts, &OsStr::new(env), modes)
     } else if let Some(a) = args.subcommand_matches("shell") {
         let xs = if a.is_present("cmd") {
             Some(a.values_of("cmd").unwrap().collect::<Vec<_>>())
@@ -637,13 +638,15 @@ fn main() {
     let component_dir = current_dir().unwrap();
     // Allow lal init / clean without manifest existing in PWD
     if let Some(a) = args.subcommand_matches("init") {
+        let force = a.is_present("force");
+        let environment = a.value_of("environment").unwrap();
         result_exit(
             "init",
             lal::init(
                 &config,
-                a.is_present("force"),
+                force,
                 &component_dir,
-                a.value_of("environment").unwrap(),
+                &OsStr::new(environment),
             ),
         );
     } else if let Some(a) = args.subcommand_matches("clean") {
@@ -712,7 +715,7 @@ fn main() {
     }
 
     // Main subcommands
-    handle_network_cmds(&args, &component_dir, &manifest, backend.deref(), &env);
+    handle_network_cmds(&args, &component_dir, &manifest, backend.deref(), &OsStr::new(&env));
     handle_docker_cmds(&args, &component_dir, &manifest, &config, &env, &environment);
 
     unreachable!("Subcommand valid, but not implemented");

@@ -1,6 +1,6 @@
 use super::{CliError, LalResult, Manifest};
 use crate::storage::CachedBackend;
-use std::{cmp::Ordering, path::Path};
+use std::{cmp::Ordering, ffi::OsStr, path::Path};
 
 /// Update specific dependencies outside the manifest
 ///
@@ -17,9 +17,10 @@ pub fn update<T: CachedBackend + ?Sized>(
     components: Vec<String>,
     save: bool,
     savedev: bool,
-    env: &str,
+    env_name: &OsStr,
 ) -> LalResult<()> {
     debug!("Update specific deps: {:?}", components);
+    let env = env_name.to_string_lossy().to_string();
 
     let mut error = None;
     let mut updated = Vec::with_capacity(components.len());
@@ -32,7 +33,7 @@ pub fn update<T: CachedBackend + ?Sized>(
                     return Err(CliError::InvalidComponentName(pair[0].into()));
                 }
                 // standard fetch with an integer version
-                match backend.unpack_published_component(&component_dir, pair[0], Some(n), env) {
+                match backend.unpack_published_component(&component_dir, pair[0], Some(n), &env) {
                     Ok(c) => updated.push(c),
                     Err(e) => {
                         warn!("Failed to update {} ({})", pair[0], e);
@@ -65,7 +66,7 @@ pub fn update<T: CachedBackend + ?Sized>(
                 .ok_or_else(|| CliError::NoIntersectedVersion(comp.clone()))?;
             info!("Fetch {} {}={}", env, comp, ver);
 
-            match backend.unpack_published_component(&component_dir, comp, Some(ver), env) {
+            match backend.unpack_published_component(&component_dir, comp, Some(ver), &env) {
                 Ok(c) => updated.push(c),
                 Err(e) => {
                     warn!("Failed to update {} ({})", &comp, e);
@@ -122,13 +123,14 @@ pub fn update_all<T: CachedBackend + ?Sized>(
     backend: &T,
     save: bool,
     dev: bool,
-    env: &str,
+    env_name: &OsStr,
 ) -> LalResult<()> {
     let deps: Vec<String> = if dev {
         manifest.devDependencies.keys().cloned().collect()
     } else {
         manifest.dependencies.keys().cloned().collect()
     };
+
     update(
         &component_dir,
         manifest,
@@ -136,6 +138,6 @@ pub fn update_all<T: CachedBackend + ?Sized>(
         deps,
         save && !dev,
         save && dev,
-        env,
+        &env_name,
     )
 }

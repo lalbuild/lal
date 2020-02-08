@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::{ffi::OsStr, fs, path::Path};
 
 use super::{CliError, LalResult, Lockfile, Manifest};
 use crate::storage::CachedBackend;
@@ -19,8 +19,10 @@ pub fn fetch<T: CachedBackend + ?Sized>(
     manifest: &Manifest,
     backend: &T,
     core: bool,
-    env: &str,
+    env_name: &OsStr,
 ) -> LalResult<()> {
+    let env = env_name.to_string_lossy().to_string();
+
     // first ensure manifest is sane:
     manifest.verify()?;
 
@@ -81,7 +83,7 @@ pub fn fetch<T: CachedBackend + ?Sized>(
         }
 
         let _ = backend
-            .unpack_published_component(&component_dir, &k, Some(v), env)
+            .unpack_published_component(&component_dir, &k, Some(v), &env)
             .map_err(|e| {
                 warn!("Failed to completely install {} ({})", k, e);
                 // likely symlinks inside tarball that are being dodgy
