@@ -120,9 +120,6 @@ pub enum CliError {
     MissingPrefixPermissions(String),
     /// Failing to validate latest lal version
     UpgradeValidationFailure(String),
-
-    /// Option is None, used until `try_trait` is stable
-    OptionIsNone,
 }
 
 // Format implementation used when printing an error
@@ -231,7 +228,6 @@ impl fmt::Display for CliError {
                 write!(f, "Failed to validate new lal version - rolling back ({})", s)
             }
             CliError::UploadFailure(ref up) => write!(f, "Upload failure: {}", up),
-            CliError::OptionIsNone => write!(f, "Option is None"),
         }
     }
 }
