@@ -8,11 +8,11 @@ use crate::{
     storage::{Backend, CachedBackend, Component},
 };
 
-fn is_cached<T: Backend + ?Sized>(backend: &T, name: &str, version: u32, env: &str) -> bool {
+fn is_cached(backend: &dyn Backend, name: &str, version: u32, env: &str) -> bool {
     get_cache_dir(backend, name, version, env).is_dir()
 }
 
-fn get_cache_dir<T: Backend + ?Sized>(backend: &T, name: &str, version: u32, env: &str) -> PathBuf {
+fn get_cache_dir(backend: &dyn Backend, name: &str, version: u32, env: &str) -> PathBuf {
     let cache = backend.get_cache_dir();
     Path::new(&cache)
         .join("environments")
@@ -21,8 +21,8 @@ fn get_cache_dir<T: Backend + ?Sized>(backend: &T, name: &str, version: u32, env
         .join(version.to_string())
 }
 
-fn stored_tarball_location<T: Backend + ?Sized>(
-    backend: &T,
+fn stored_tarball_location(
+    backend: &dyn Backend,
     name: &str,
     version: u32,
     env: &str,
@@ -78,10 +78,7 @@ fn extract_tarball_to_input(tarname: PathBuf, component_dir: &Path, component: &
 ///
 /// Most subcommands should be OK with just using this trait rather than using
 /// `Backend` directly as this does the stuff you normally would want done.
-impl<T: ?Sized> CachedBackend for T
-where
-    T: Backend,
-{
+impl<T: Backend> CachedBackend for T {
     /// Get the latest versions of a component across all supported environments
     ///
     /// Because the versions have to be available in all environments, these numbers may

@@ -82,7 +82,7 @@ pub trait Backend {
 /// A secondary trait that builds upon the Backend trait
 ///
 /// This wraps the common fetch commands in a caching layer on the cache dir.
-pub trait CachedBackend {
+pub trait CachedBackend: Backend {
     /// Get the latest version of a component across all supported environments
     fn get_latest_supported_versions(&self, name: &str, environments: Vec<String>) -> LalResult<Vec<u32>>;
 

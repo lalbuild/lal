@@ -1,8 +1,8 @@
 use std::path::Path;
 
-pub fn stash<T: lal::CachedBackend + lal::Backend>(
+pub fn stash(
     component_dir: &Path,
-    backend: &T,
+    backend: &dyn lal::CachedBackend,
     stash_name: &str,
 ) -> lal::LalResult<()> {
     let manifest = lal::Manifest::read(&component_dir)?;
