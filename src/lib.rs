@@ -27,6 +27,10 @@
 
 
 // re-exports
+
+/// App module for clap argument parsing
+pub mod app;
+
 mod core;
 pub use crate::core::*;
 
