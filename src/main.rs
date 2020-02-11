@@ -24,6 +24,17 @@ fn result_exit<T>(name: &str, x: LalResult<T>) {
     process::exit(0);
 }
 
+fn get_backend(config: &Config) -> Box<dyn CachedBackend> {
+    match config.backend {
+        BackendConfiguration::Artifactory(ref cfg) => {
+            Box::new(ArtifactoryBackend::new(&cfg, &config.cache))
+        }
+        BackendConfiguration::Local(ref cfg) => {
+            Box::new(LocalBackend::new(&cfg, &config.cache))
+        }
+    }
+}
+
 // functions that work without a manifest, and thus can run without a set env
 fn handle_manifest_agnostic_cmds(
     args: &ArgMatches<'_>,
@@ -620,12 +631,7 @@ fn main() {
         .unwrap();
 
     // Create a storage backend (something that implements storage/traits.rs)
-    let backend: Box<dyn CachedBackend> = match config.backend {
-        BackendConfiguration::Artifactory(ref art_cfg) => {
-            Box::new(ArtifactoryBackend::new(&art_cfg, &config.cache))
-        }
-        BackendConfiguration::Local(ref local_cfg) => Box::new(LocalBackend::new(&local_cfg, &config.cache)),
-    };
+    let backend: Box<dyn CachedBackend> = get_backend(&config);
 
     // Ensure SSL is initialized before using the backend
     openssl_probe::init_ssl_cert_env_vars();
