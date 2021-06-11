@@ -1,13 +1,12 @@
 use fs_extra;
 use lal;
 use loggerv;
-use tempdir;
-
+use tempfile;
 
 use crate::common::{
     fs_extra::dir::{copy, CopyOptions},
     loggerv::init_with_verbosity,
-    tempdir::TempDir,
+    tempfile::TempDir,
 };
 
 use std::{
@@ -50,13 +49,14 @@ pub fn setup() -> TestState {
         init_with_verbosity(2).expect("Setting up test logging");
     });
 
-    let demo_config = PathBuf::from("./configs/demo.json");
     let testdir = PathBuf::from("./tests");
 
     // Do all lal tests in a tempdir as it messes with the manifest
-    let tempdir = TempDir::new("laltest").unwrap();
+    let tempdir = TempDir::new().unwrap();
 
-    let backend = configure_local_backend(&demo_config, &tempdir.path());
+    let backend = configure_local_backend(&tempdir.path());
+    configure_test_environment(&tempdir.path(), "default");
+    configure_test_environment(&tempdir.path(), "alpine");
 
     TestState {
         backend,
@@ -65,14 +65,13 @@ pub fn setup() -> TestState {
     }
 }
 
-fn configure_local_backend(demo_config: &PathBuf, home: &Path) -> LocalBackend {
+fn configure_local_backend(home: &Path) -> LocalBackend {
     let config = Config::read(Some(&home));
     assert!(config.is_err(), "no config at this point");
 
     let r = lal::configure(
         true,
         false,
-        demo_config.as_os_str().to_str().unwrap(),
         Some(&home),
     );
     assert!(r.is_ok(), "configure succeeded");
@@ -86,6 +85,31 @@ fn configure_local_backend(demo_config: &PathBuf, home: &Path) -> LocalBackend {
         &BackendConfiguration::Local(ref local_cfg) => LocalBackend::new(&local_cfg, &cfgu.cache),
         _ => unreachable!(), // demo.json uses local backend
     }
+}
+
+pub fn configure_test_environment(home: &Path, env_name: &str)
+{
+    let mut config = Config::read(Some(&home)).expect("no configuration file");
+
+    let environment = match env_name {
+        "default" => lal::Environment::None,
+        "alpine" =>  lal::Environment::Container(
+            lal::Container{
+                name: "clux/lal-alpine".to_string(),
+                tag: "3.6".to_string(),
+            }
+        ),
+        "xenial" =>  lal::Environment::Container(
+            lal::Container{
+                name: "clux/lal-xenial".to_string(),
+                tag: "latest".to_string(),
+            }
+        ),
+        _ => panic!("Unknown environment"),
+    };
+
+    config.environments.insert(env_name.to_string(), environment);
+    config.write(false, Some(&home)).expect("wrote testing config");
 }
 
 // Copies the component to a temporary location for this test
@@ -167,10 +191,11 @@ pub fn stash_component(
     stash_name: &str,
 ) -> lal::LalResult<PathBuf> {
     let component_dir = clone_component_dir(component, &state);
-    let build_opts = build::options(Some(&state.tempdir.path()), &env_name)?;
+    let manifest = lal::Manifest::read(&component_dir)?;
+    let build_opts = build::options(Some(&state.tempdir.path()), &env_name, &manifest)?;
 
     fetch::fetch_input(&component_dir, &env_name, &state.backend)?;
-    build::build_with_options(&component_dir, &env_name, &state.tempdir.path(), &build_opts)?;
+    build::build_with_options(&component_dir, &manifest, &env_name, &state.tempdir.path(), &build_opts)?;
     stash::stash(&component_dir, &state.backend, stash_name)?;
 
     Ok(component_dir)

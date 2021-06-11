@@ -6,7 +6,7 @@ use std::{
     vec::Vec,
 };
 
-use super::{CliError, LalResult};
+use super::{CliError, LalResult, Environment};
 
 /// A startup helper used in a few places
 pub fn create_lal_subdir(pwd: &Path) -> LalResult<()> {
@@ -19,7 +19,7 @@ pub fn create_lal_subdir(pwd: &Path) -> LalResult<()> {
 
 /// Representation of a value of the manifest.components hash
 #[allow(non_snake_case)]
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ComponentConfiguration {
     /// The default config to use if not passed in - default is "release"
     pub defaultConfig: String,
@@ -38,7 +38,7 @@ impl Default for ComponentConfiguration {
 
 /// Representation of `manifest.json`
 #[allow(non_snake_case)]
-#[derive(Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct Manifest {
     /// Name of the main component
     pub name: String,
@@ -46,6 +46,8 @@ pub struct Manifest {
     pub environment: String,
     /// All the environments dependencies can currently be found in
     pub supportedEnvironments: Vec<String>,
+    /// Custom environment definitions, or fallback to ~/.lal/config
+    pub environments: BTreeMap<String, Environment>,
     /// Components and their available configurations that are buildable
     pub components: BTreeMap<String, ComponentConfiguration>,
     /// Dependencies that are always needed
@@ -99,7 +101,6 @@ impl ManifestLocation {
         }
     }
 }
-
 
 impl Manifest {
     /// Initialize a manifest struct based on a name
@@ -189,5 +190,13 @@ impl Manifest {
             return Err(CliError::UnsupportedEnvironment);
         }
         Ok(())
+    }
+
+    /// Resolve an arbitrary environment
+    pub fn get_environment(&self, env: &str) -> LalResult<Environment> {
+        if let Some(environment) = self.environments.get(env) {
+            return Ok(environment.clone());
+        }
+        Err(CliError::MissingEnvironment(env.to_string()))
     }
 }

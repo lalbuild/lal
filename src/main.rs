@@ -144,12 +144,13 @@ fn handle_env_command(
     args: &ArgMatches<'_>,
     component_dir: &Path,
     cfg: &Config,
+    mf: &Manifest,
     env: &str,
     stickies: &StickyOptions,
 ) -> Environment {
     // lookup associated container from
-    let environment = cfg
-        .get_environment(env.into())
+    let environment = mf.get_environment(env)
+        .or_else(|_| cfg.get_environment(env))
         .map_err(|e| {
             error!("Environment error: {}", e);
             println!("Ensure that manifest.environment has a corresponding entry in ~/.lal/config");
@@ -170,7 +171,7 @@ fn handle_env_command(
         } else if let Some(sa) = a.subcommand_matches("set") {
             result_exit(
                 "env override",
-                lal::env::set(&component_dir, stickies, cfg, sa.value_of("environment").unwrap()),
+                lal::env::set(&component_dir, stickies, cfg, mf, sa.value_of("environment").unwrap()),
             )
         } else {
             // just print current environment
@@ -208,7 +209,6 @@ fn handle_upgrade(args: &ArgMatches, cfg: &Config) {
         debug!("Upgrade check done - continuing to requested operation\n");
     }
 }
-
 
 fn handle_docker_cmds(
     args: &ArgMatches<'_>,
@@ -261,11 +261,9 @@ fn handle_docker_cmds(
             &component_dir,
         )
     } else if let Some(a) = args.subcommand_matches("run") {
-        let xs = if a.is_present("parameters") {
-            a.values_of("parameters").unwrap().collect::<Vec<_>>()
-        } else {
-            vec![]
-        };
+        let xs: Vec<&str> = a.values_of("parameters")
+            .map_or_else(Vec::new, |p| p.collect());
+
         let modes = ShellModes {
             printonly: a.is_present("print"),
             x11_forwarding: a.is_present("x11"),
@@ -300,10 +298,10 @@ fn main() {
         .unwrap();
 
     // Allow lal configure without assumptions
-    if let Some(a) = args.subcommand_matches("configure") {
+    if let Some(_a) = args.subcommand_matches("configure") {
         result_exit(
             "configure",
-            lal::configure(true, true, a.value_of("file").unwrap(), None),
+            lal::configure(true, true, None),
         );
     }
 
@@ -312,11 +310,7 @@ fn main() {
         .map_err(|e| {
             error!("Configuration error: {}", e);
             println!();
-            println!("If you just got upgraded use `lal configure <site-config>`");
-            println!(
-                "Site configs are found in {{install_prefix}}/share/lal/configs/ \
-                 and should auto-complete"
-            );
+            println!("If you have just installed or upgraded, run `lal configure`");
             process::exit(1);
         })
         .unwrap();
@@ -362,7 +356,7 @@ fn main() {
     let explicit_env = args.value_of("environment");
     if let Some(env) = explicit_env {
         config
-            .get_environment(env.into())
+            .get_environment(env)
             .map_err(|e| {
                 error!("Environment error: {}", e);
                 process::exit(1)
@@ -392,7 +386,7 @@ fn main() {
     } else {
         manifest.environment.clone()
     };
-    let environment = handle_env_command(&args, &component_dir, &config, &env, &stickies);
+    let environment = handle_env_command(&args, &component_dir, &config, &manifest, &env, &stickies);
 
     // Warn users who are using an unsupported environment
     let sub = args.subcommand_name().unwrap();

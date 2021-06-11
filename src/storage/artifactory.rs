@@ -1,6 +1,7 @@
 #![allow(missing_docs)]
 
 use std::{
+    fmt,
     fs::File,
     io::{Read, Write},
     path::{Path, PathBuf},
@@ -30,8 +31,18 @@ pub struct Credentials {
     pub password: String,
 }
 
+// Impl Debug without exposing `password`
+impl fmt::Debug for Credentials {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.debug_struct("Credentals")
+            .field("username", &self.username)
+            .field("password", &format!("*** ({} characters)", self.password.len()))
+            .finish()
+    }
+}
+
 /// Static Artifactory locations
-#[derive(Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct ArtifactoryConfig {
     /// Location of artifactory API master (for API queries)
     pub master: String,

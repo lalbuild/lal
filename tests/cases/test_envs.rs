@@ -13,7 +13,7 @@ fn test_change_envs(env_name: &str) {
     fs::create_dir(&component_dir).expect("create new_component dir");
 
     let r = init::init(&component_dir, &env_name, &state.tempdir.path());
-    assert!(r.is_ok(), "new component created");
+    assert!(r.is_ok(), "new component created: {:?}", r);
 
     // Read sticky options
     let sticky = lal::StickyOptions::read(&component_dir).expect("read sticky options");
@@ -22,8 +22,9 @@ fn test_change_envs(env_name: &str) {
     assert_eq!(sticky.env, None);
 
     // Change env (even works with unsupported envs)
+    configure_test_environment(&state.tempdir.path(), "xenial");
     let r = envs::set_environment(&component_dir, &state.tempdir.path(), &sticky, "xenial");
-    assert!(r.is_ok(), "environment set to xenial");
+    assert!(r.is_ok(), "environment set to xenial: {:?}", r);
 
     // Reread sticky options
     let sticky = lal::StickyOptions::read(&component_dir).expect("reread sticky options");

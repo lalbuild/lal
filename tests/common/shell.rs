@@ -2,7 +2,7 @@ use std::path::Path;
 
 pub fn run(env_name: &str, home: &Path, component_dir: &Path, command_args: Vec<&str>) -> lal::LalResult<()> {
     let cfg = lal::Config::read(Some(&home))?;
-    let environment = cfg.get_environment(env_name.into())?;
+    let environment = cfg.get_environment(env_name)?;
     let modes = lal::ShellModes::default();
 
     let mut args = Vec::<String>::new();
@@ -28,7 +28,7 @@ pub fn run_script(
     script_args: Vec<&str>,
 ) -> lal::LalResult<()> {
     let cfg = lal::Config::read(Some(&home))?;
-    let environment = cfg.get_environment(env_name.into())?;
+    let environment = cfg.get_environment(env_name)?;
     let modes = lal::ShellModes::default();
 
     lal::script(

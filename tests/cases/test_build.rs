@@ -28,15 +28,16 @@ fn test_build_with_force(env_name: &str) {
 
     // Test basic build functionality with heylib component
     let component_dir = clone_component_dir("heylib", &state);
+    let manifest = lal::Manifest::read(&component_dir).expect("read manifest");
 
     let r = fetch::fetch_input(&component_dir, &env_name, &state.backend);
     assert!(r.is_ok(), "installed heylib dependencies");
 
     // Force build the component
-    let mut build_opts = build::options(Some(&state.tempdir.path()), &env_name).expect("build options");
+    let mut build_opts = build::options(Some(&state.tempdir.path()), &env_name, &manifest).expect("build options");
     build_opts.force = true;
 
-    let r = build::build_with_options(&component_dir, &env_name, &state.tempdir.path(), &build_opts);
+    let r = build::build_with_options(&component_dir, &manifest, &env_name, &state.tempdir.path(), &build_opts);
     assert!(r.is_ok(), "built heylib with force");
 }
 
@@ -49,15 +50,16 @@ fn test_build_with_force_in_wrong_environment(env_name: &str) {
 
     // Test basic build functionality with heylib component
     let component_dir = clone_component_dir("heylib", &state);
+    let manifest = lal::Manifest::read(&component_dir).expect("read manifest");
 
     let r = fetch::fetch_input(&component_dir, &env_name, &state.backend);
     assert!(r.is_ok(), "installed heylib dependencies");
 
     // Force build the component
-    let mut build_opts = build::options(Some(&state.tempdir.path()), &env_name).expect("build options");
+    let mut build_opts = build::options(Some(&state.tempdir.path()), &env_name, &manifest).expect("build options");
     build_opts.force = true;
 
-    let r = build::build_with_options(&component_dir, "nonexistant", &state.tempdir.path(), &build_opts);
+    let r = build::build_with_options(&component_dir, &manifest, "nonexistant", &state.tempdir.path(), &build_opts);
     assert!(r.is_ok(), "built heylib with force in nonexistant environment");
 }
 
@@ -70,11 +72,13 @@ fn test_build_with_printonly(env_name: &str) {
 
     // Test basic build functionality with heylib component
     let component_dir = clone_component_dir("heylib", &state);
+    let manifest = lal::Manifest::read(&component_dir).expect("read manifest");
+
     let r = fetch::fetch_input(&component_dir, &env_name, &state.backend);
     assert!(r.is_ok(), "installed heylib dependencies");
 
     // Default build options
-    let build_opts = build::options(Some(&state.tempdir.path()), &env_name).expect("build options");
+    let build_opts = build::options(Some(&state.tempdir.path()), &env_name, &manifest).expect("build options");
 
     // Print commands, don't execute
     let mut modes = lal::ShellModes::default();

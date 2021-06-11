@@ -1,7 +1,14 @@
 {
   "name": "lal",
-  "environment": "rust",
-  "supportedEnvironments": ["rust"],
+  "environment": "default",
+  "supportedEnvironments": ["default", "rust"],
+  "environments": {
+    "default": null,
+    "rust": {
+        "name": "clux/muslrust",
+        "tag": "latest"
+    }
+  },
   "components": {
     "lal": {
       "defaultConfig": "release",

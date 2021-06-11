@@ -49,14 +49,59 @@ lal configure cfg.json
 These are built on [CI](https://github.com/lalbuild/lal/releases) via [muslrust](https://github.com/clux/muslrust). You can drop `sudo` if you own or `chown` your install prefix.
 
 ## Building
-Clone, install from source with [rust](https://www.rust-lang.org/en-US/install.html), setup autocomplete, and select your site-config:
+Clone, install from source with [rust](https://www.rust-lang.org/en-US/install.html), setup autocomplete, and site configuration.
+
+The following sections assume you are working from a local git clone of the repository.
 
 ```sh
-git clone git@github.com:lalbuild/lal.git && cd lal
-cargo install
+git clone git@github.com:lalbuild/lal.git
+cd lal
 echo "source $PWD/lal.complete.sh" >> ~/.bash_completion
-lal configure configs/demo.json
 ```
+
+### Native (with cargo)
+
+If you don't have `lal` installed yet, you can install it using `cargo install` from git.
+It doesn't use `docker` if you don't have it and it doesn't depend on having `lal` installed.
+
+However, this is not the cleanest build method, and may dynamically link against your system libraries.
+The compiled binary may break with future system updates.
+
+```sh
+cargo install
+
+# Set the initial configuration from defaults
+lal configure
+```
+
+### Native (with lal)
+
+If you already have `lal` installed, you can build `lal` with `lal`.
+
+```sh
+lal build
+cp -v ./OUTPUT/bin/lal ~/bin/lal
+
+# Pick up configuration updates by reconfiguring with the new binary
+lal configure
+```
+This is our preferred way to update lal from source.
+It doesn't use `docker` if you don't have it, as it uses your local rustup toolchains.
+The compiled binary is statically linked, using our configuration options by default.
+
+### Docker (with muslrust)
+
+If you have `docker` and `lal` installed, but don't have a rust compiler, you can use our shared toolchain.
+
+```sh
+# Set a temporary override to use a prepared `rust` environment.
+lal env set rust
+
+lal build
+cp -v ./OUTPUT/bin/lal ~/bin/lal
+lal configure
+```
+The compiled binary is statically linked, using our build toolchain for reproducibility.
 
 ## Usage
 

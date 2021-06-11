@@ -1,6 +1,7 @@
 {
   "name": "prop-mid-1",
   "environment": "alpine",
+  "environments": {},
   "supportedEnvironments": [
     "alpine"
   ],
