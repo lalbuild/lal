@@ -58,4 +58,4 @@ path = "src/lib.rs"
 
 [dev-dependencies]
 fs_extra = "1.1.0"
-parameterized-macro = "0.1.1"
+parameterized-macro = "0.3.1"
