@@ -11,7 +11,7 @@ readme = "README.md"
 edition = "2018"
 
 [badges]
-travis-ci = { repository = "lalbuild/lal", branch = "master" }
+github = { repository = "lalbuild/lal", branch = "master" }
 coveralls = { repository = "lalbuild/lal", branch = "master" }
 
 [[bin]]
