@@ -1,5 +1,5 @@
 # lal
-[![build status](https://secure.travis-ci.org/lalbuild/lal.svg)](http://travis-ci.org/lalbuild/lal)
+[![build status](https://github.com/lalbuild/lal/workflows/pull_request/badge.svg)](http://github.com/lalbuild/lal/actions)
 [![coverage status](http://img.shields.io/coveralls/lalbuild/lal.svg)](https://coveralls.io/r/lalbuild/lal)
 [![crates status](https://img.shields.io/crates/v/lal.svg)](https://crates.io/crates/lal)
 
@@ -46,7 +46,7 @@ curl -sSL https://raw.githubusercontent.com/lalbuild/lal/master/configs/demo.jso
 lal configure cfg.json
 ```
 
-These are built on [CI](https://travis-ci.org/lalbuild/lal/builds) via [muslrust](https://github.com/clux/muslrust). You can drop `sudo` if you own or `chown` your install prefix.
+These are built on [CI](https://github.com/lalbuild/lal/releases) via [muslrust](https://github.com/clux/muslrust). You can drop `sudo` if you own or `chown` your install prefix.
 
 ## Building
 Clone, install from source with [rust](https://www.rust-lang.org/en-US/install.html), setup autocomplete, and select your site-config:

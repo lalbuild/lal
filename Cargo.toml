@@ -11,7 +11,7 @@ readme = "README.md"
 edition = "2018"
 
 [badges]
-travis-ci = { repository = "lalbuild/lal", branch = "master" }
+github = { repository = "lalbuild/lal", branch = "master" }
 coveralls = { repository = "lalbuild/lal", branch = "master" }
 
 [[bin]]
@@ -58,4 +58,4 @@ path = "src/lib.rs"
 
 [dev-dependencies]
 fs_extra = "1.1.0"
-parameterized-macro = "0.1.1"
+parameterized-macro = "0.3.1"

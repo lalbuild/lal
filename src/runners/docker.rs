@@ -29,12 +29,12 @@ pub struct ShellModes {
     pub env_vars: Vec<String>,
 }
 
-/// Verifies that `id -u` and `id -g` are both 1000
+/// Verifies that `id -u` and `id -g` are sane
 ///
 /// Docker user namespaces are not properly supported by our setup,
 /// so for builds to work with the default containers, user ids and group ids
-/// should match a defined linux setup of 1000:1000.
-fn permission_sanity_check() -> LalResult<()> {
+/// should match inside and outside of the container.
+fn permission_sanity_check() -> LalResult<(u32, u32)> {
     let uid_output = Command::new("id").arg("-u").output()?;
     let uid_str = String::from_utf8_lossy(&uid_output.stdout);
     let uid = uid_str.trim().parse::<u32>().unwrap(); // trust `id -u` is sane
@@ -43,15 +43,15 @@ fn permission_sanity_check() -> LalResult<()> {
     let gid_str = String::from_utf8_lossy(&gid_output.stdout);
     let gid = gid_str.trim().parse::<u32>().unwrap(); // trust `id -g` is sane
 
-    if uid != 1000 || gid != 1000 {
+    if uid == 0 || gid == 0 {
         return Err(CliError::DockerPermissionSafety(
-            "UID and GID are not 1000:1000".to_string(),
+            "Cannot run container as root user".into(),
             uid,
             gid,
         ));
     }
 
-    Ok(())
+    Ok((uid, gid))
 }
 
 /// Gets the ID of a docker container
@@ -184,30 +184,12 @@ pub fn docker_run(
     modes: &ShellModes,
     component_dir: &Path,
 ) -> LalResult<()> {
-    let mut modified_container_option: Option<Container> = None;
-
     debug!("Performing docker permission sanity check");
-    if let Err(e) = permission_sanity_check() {
-        match e {
-            CliError::DockerPermissionSafety(_, u, g) => {
-                if u == 0 {
-                    // Do not run as root
-                    return Err(CliError::DockerPermissionSafety(
-                        "Cannot run container as root user".into(),
-                        u,
-                        g,
-                    ));
-                }
-                modified_container_option = Some(fixup_docker_container(container, u, g)?);
-            }
-            x => {
-                return Err(x);
-            }
-        }
-    };
+    let (uid, gid) = permission_sanity_check()?;
+    let modified_container: LalResult<Container> = fixup_docker_container(container, uid, gid);
 
     // Shadow container here
-    let container = modified_container_option.as_ref().unwrap_or(container);
+    let container = modified_container.as_ref().unwrap_or(container);
 
     debug!("Finding home and cwd");
     let home = dirs::home_dir().unwrap(); // crash if no $HOME
@@ -218,11 +200,11 @@ pub fn docker_run(
         debug!(" - mounting {}", mount.src);
         args.push("-v".into());
         let mnt = format!(
-            "{}:{}{}",
-            mount.src,
-            mount.dest,
-            if mount.readonly { ":ro" } else { "" }
-        );
+                "{}:{}{}",
+                mount.src,
+                mount.dest,
+                if mount.readonly { ":ro" } else { "" }
+                );
         args.push(mnt);
     }
     debug!(" - mounting {}", &component_dir.display());
@@ -256,7 +238,7 @@ pub fn docker_run(
     args.push("-w".into());
     args.push("/home/lal/volume".into());
     args.push("--user".into());
-    args.push("lal".into());
+    args.push(format!("{}:{}", uid, gid));
 
     // If no command, then override entrypoint to /bin/bash
     // This happens when we use `lal shell` without args

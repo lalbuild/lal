@@ -7,6 +7,7 @@ libhey.a: hey.o
 	ar rcs libhey.a hey.o
 
 output: libhey.a hey.h
+	mkdir -p OUTPUT/
 	cp libhey.a OUTPUT/
 	cp hey.h OUTPUT/
 
