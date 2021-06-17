@@ -4,12 +4,7 @@ use super::{CliError, LalResult};
 use crate::storage::CachedBackend;
 
 /// Export a specific component from the storage backend
-pub fn export(
-    backend: &dyn CachedBackend,
-    comp: &str,
-    output: &Path,
-    _env: Option<&str>,
-) -> LalResult<()> {
+pub fn export(backend: &dyn CachedBackend, comp: &str, output: &Path, _env: Option<&str>) -> LalResult<()> {
     let env = match _env {
         None => {
             error!("export is no longer allowed without an explicit environment");

@@ -47,10 +47,7 @@ impl LocalBackend {
 /// specific low-level use cases, these methods can be used directly.
 impl Backend for LocalBackend {
     fn get_versions(&self, name: &str, loc: &str) -> LalResult<Vec<u32>> {
-        let tar_dir = format!(
-            "{}/environments/{}/{}/",
-            self.cache.display(), loc, name
-        );
+        let tar_dir = format!("{}/environments/{}/{}/", self.cache.display(), loc, name);
         let dentries = fs::read_dir(config_dir(None).join(tar_dir));
         let mut versions = vec![];
         for entry in dentries? {
@@ -83,7 +80,11 @@ impl Backend for LocalBackend {
         };
         let loc = format!(
             "{}/environments/{}/{}/{}/{}.tar.gz",
-            self.cache.display(), loc, name, v, name
+            self.cache.display(),
+            loc,
+            name,
+            v,
+            name
         );
         Ok(Component {
             name: name.into(),
@@ -109,15 +110,25 @@ impl Backend for LocalBackend {
         // prefix with environment
         let tar_dir = format!(
             "{}/environments/{}/{}/{}/",
-            self.cache.display(), env, name, version
+            self.cache.display(),
+            env,
+            name,
+            version
         );
         let tar_path = format!(
             "{}/environments/{}/{}/{}/{}.tar.gz",
-            self.cache.display(), env, name, version, name
+            self.cache.display(),
+            env,
+            name,
+            version,
+            name
         );
         let lock_path = format!(
             "{}/environments/{}/{}/{}/lockfile.json",
-            self.cache.display(), env, name, version
+            self.cache.display(),
+            env,
+            name,
+            version
         );
 
         let full_tar_dir = config_dir(home).join(tar_dir);

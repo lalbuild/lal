@@ -19,12 +19,8 @@ fn result_exit<T>(name: &str, x: LalResult<T>) {
 
 fn get_backend(config: &Config) -> Box<dyn CachedBackend> {
     match config.backend {
-        BackendConfiguration::Artifactory(ref cfg) => {
-            Box::new(ArtifactoryBackend::new(&cfg, &config.cache))
-        }
-        BackendConfiguration::Local(ref cfg) => {
-            Box::new(LocalBackend::new(&cfg, &config.cache))
-        }
+        BackendConfiguration::Artifactory(ref cfg) => Box::new(ArtifactoryBackend::new(&cfg, &config.cache)),
+        BackendConfiguration::Local(ref cfg) => Box::new(LocalBackend::new(&cfg, &config.cache)),
     }
 }
 
