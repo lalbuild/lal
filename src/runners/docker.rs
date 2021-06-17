@@ -200,11 +200,11 @@ pub fn docker_run(
         debug!(" - mounting {}", mount.src);
         args.push("-v".into());
         let mnt = format!(
-                "{}:{}{}",
-                mount.src,
-                mount.dest,
-                if mount.readonly { ":ro" } else { "" }
-                );
+            "{}:{}{}",
+            mount.src,
+            mount.dest,
+            if mount.readonly { ":ro" } else { "" }
+        );
         args.push(mnt);
     }
     debug!(" - mounting {}", &component_dir.display());

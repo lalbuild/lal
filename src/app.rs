@@ -1,4 +1,4 @@
-use clap::{App, AppSettings, Arg, SubCommand, crate_version};
+use clap::{crate_version, App, AppSettings, Arg, SubCommand};
 
 fn is_integer(v: String) -> Result<(), String> {
     if v.parse::<u32>().is_ok() {
