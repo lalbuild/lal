@@ -205,7 +205,7 @@ fn create_lal_dir(home: Option<&Path>) -> LalResult<PathBuf> {
 ///
 /// A boolean option to discard the output is supplied for tests.
 /// A defaults file must be supplied to seed the new config with defined environments
-pub fn configure(save: bool, interactive: bool, defaults: &str, home: Option<&Path>) -> LalResult<Config> {
+pub fn configure(save: bool, interactive: bool, home: Option<&Path>) -> LalResult<Config> {
     let _ = create_lal_dir(home)?;
 
     for exe in ["tar", "touch", "id", "find", "mkdir", "chmod", "uname"].iter() {
@@ -223,14 +223,14 @@ pub fn configure(save: bool, interactive: bool, defaults: &str, home: Option<&Pa
     ssl_cert_sanity()?;
     non_root_sanity()?;
 
-    let def = ConfigDefaults::read(defaults)?;
+    let defaults = ConfigDefaults::new();
 
     // Enforce minimum_lal version check here if it's set in the defaults file
-    if let Some(minlal) = def.minimum_lal.clone() {
+    if let Some(minlal) = defaults.minimum_lal.clone() {
         lal_version_check(&minlal)?;
     }
 
-    let mut cfg = Config::new(def, home);
+    let mut cfg = Config::new(defaults, home);
     cfg.interactive = interactive; // need to override default for tests
     if save {
         cfg.write(false, home)?;

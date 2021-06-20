@@ -1,8 +1,9 @@
 #!/bin/bash
+set -e
+
+export PKG_CONFIG_ALLOW_CROSS=1
 
 main() {
-  # build in the currently available muslrust container
-  set -e
   if [ ! -d ~/.cargo/registry ]; then
     echo "Ensure you have created a cargo-cache docker volume to speed up subsequent builds"
     echo "If this is your first build, this is normal"
@@ -10,17 +11,31 @@ main() {
     echo "Continuing from blank cache..."
   fi
   if [[ $1 == "lal" ]]; then
-    mkdir -p OUTPUT/{bin,share/lal/configs}
-    cp configs/*.json OUTPUT/share/lal/configs/
+    mkdir -p OUTPUT/{bin,share/lal}
     cp lal.complete* OUTPUT/share/lal/
     if [[ $2 == "slim" ]]; then
-      (set -x; cargo build --no-default-features --release --verbose)
+      (
+        set -x; cargo build \
+        --target x86_64-unknown-linux-musl \
+        --no-default-features \
+        --release \
+        --verbose
+      )
       cp ./target/x86_64-unknown-linux-musl/release/lal OUTPUT/bin/
     elif [[ $2 == "release" ]]; then
-      (set -x; cargo build --release --verbose)
+      (
+        set -x; cargo build \
+        --target x86_64-unknown-linux-musl \
+        --release \
+        --verbose
+      )
       cp ./target/x86_64-unknown-linux-musl/release/lal OUTPUT/bin/
     elif [[ $2 == "debug" ]]; then
-      (set -x; cargo build --verbose)
+      (
+        set -x; cargo build \
+        --target x86_64-unknown-linux-musl \
+        --verbose
+      )
       cp ./target/x86_64-unknown-linux-musl/debug/lal OUTPUT/bin/
     else
       echo "No such configuration $2 found"

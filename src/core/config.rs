@@ -8,7 +8,7 @@ use std::{
 };
 
 use super::{CliError, Container, Environment, LalResult};
-use crate::storage::BackendConfiguration;
+use crate::storage::{BackendConfiguration, LocalConfig};
 
 fn find_home_dir() -> PathBuf {
     // Either we have LAL_CONFIG_HOME evar, or HOME
@@ -29,7 +29,7 @@ pub fn config_dir(home: Option<&Path>) -> PathBuf {
 }
 
 /// Docker volume mount representation
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Mount {
     /// File or folder to mount
     pub src: String,
@@ -41,7 +41,7 @@ pub struct Mount {
 
 /// Representation of `~/.lal/config`
 #[allow(non_snake_case)]
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
     /// Configuration settings for the `Backend`
     pub backend: BackendConfiguration,
@@ -78,16 +78,14 @@ pub struct ConfigDefaults {
 
 impl ConfigDefaults {
     /// Open and deserialize a defaults file
-    pub fn read(file: &str) -> LalResult<ConfigDefaults> {
-        let pth = Path::new(file);
-        if !pth.exists() {
-            error!("No such defaults file '{}'", file); // file open will fail below
+    pub fn new() -> Self {
+        ConfigDefaults {
+            backend: BackendConfiguration::Local(LocalConfig{}),
+            environments: BTreeMap::<String, Environment>::new(),
+            mounts: Vec::<Mount>::new(),
+            minimum_lal: Option::<String>::None,
+
         }
-        let mut f = fs::File::open(&pth)?;
-        let mut data = String::new();
-        f.read_to_string(&mut data)?;
-        let defaults: ConfigDefaults = serde_json::from_str(&data)?;
-        Ok(defaults)
     }
 }
 
@@ -119,7 +117,6 @@ fn check_mount(name: &str) -> LalResult<String> {
         Err(CliError::MissingMount(src.clone()))
     }
 }
-
 
 impl Config {
     /// Initialize a Config with ConfigDefaults
@@ -202,18 +199,18 @@ impl Config {
     }
 
     /// Resolve an arbitrary environment shorthand
-    pub fn get_environment(&self, env: String) -> LalResult<Environment> {
-        if let Some(environment) = self.environments.get(&env) {
+    pub fn get_environment(&self, env: &str) -> LalResult<Environment> {
+        if let Some(environment) = self.environments.get(env) {
             return Ok(environment.clone());
         }
-        Err(CliError::MissingEnvironment(env))
+        Err(CliError::MissingEnvironment(env.to_string()))
     }
 
     /// Resolve an arbitrary container shorthand
-    pub fn get_container(&self, env: String) -> LalResult<Container> {
-        match self.get_environment(env.clone())? {
+    pub fn get_container(&self, env: &str) -> LalResult<Container> {
+        match self.get_environment(env)? {
             Environment::Container(container) => Ok(container),
-            Environment::None => Err(CliError::MissingEnvironment(env)),
+            Environment::None => Err(CliError::MissingEnvironment(env.to_string())),
         }
     }
 }

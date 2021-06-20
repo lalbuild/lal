@@ -10,9 +10,8 @@ use std::{
 
 use crate::core::{config_dir, ensure_dir_exists_fresh, CliError, LalResult};
 
-
 /// LocalBackend configuration options (currently none)
-#[derive(Serialize, Deserialize, Clone, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct LocalConfig {}
 
 use super::{Backend, Component};

@@ -1,6 +1,13 @@
 {
   "name": "hello",
   "environment": "default",
+  "environments": {
+    "default": null,
+    "alpine": {
+      "name": "clux/lal-alpine",
+      "tag": "3.6"
+    }
+  },
   "supportedEnvironments": [
     "default"
   ],

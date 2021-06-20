@@ -6,6 +6,7 @@ pub fn fetch_input(
     backend: &dyn lal::CachedBackend,
 ) -> lal::LalResult<()> {
     let manifest = lal::Manifest::read(&component_dir)?;
+    debug!("Component manifest: {:?}", manifest);
 
     lal::fetch(&component_dir, &manifest, backend, true, &env_name)
 }

@@ -11,11 +11,13 @@ pub fn test_heylib_echo(env_name: &str) {
     // Test basic build functionality with heylib component
     let component_dir = clone_component_dir("heylib", &state);
 
-    let r = shell::run(&env_name, &state.tempdir.path(), &component_dir, vec![
-        "echo",
-        "# echo from docker",
-    ]);
-    assert!(r.is_ok(), "shell echoed");
+    let r = shell::run(
+        &env_name,
+        &state.tempdir.path(),
+        &component_dir,
+        vec!["echo", "# echo from docker"],
+    );
+    assert!(r.is_ok(), "shell echoed: {:?}", r);
 }
 
 #[parameterized(env_name = {"default", "alpine"})]
@@ -28,10 +30,12 @@ pub fn test_shell_permissions(env_name: &str) {
     // Test basic build functionality with heylib component
     let component_dir = clone_component_dir("heylib", &state);
 
-    let r = shell::run(&env_name, &state.tempdir.path(), &component_dir, vec![
-        "touch",
-        "README.md",
-    ]);
+    let r = shell::run(
+        &env_name,
+        &state.tempdir.path(),
+        &component_dir,
+        vec!["touch", "README.md"],
+    );
     assert!(r.is_ok(), "could touch files in container");
 }
 

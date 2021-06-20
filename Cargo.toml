@@ -41,7 +41,7 @@ sha1 = "0.3.0"
 tar = "0.4.26"
 walkdir = "1.0.7"
 dirs = "2.0.2"
-tempdir = "0.3.7"
+tempfile = "3"
 
 [dependencies.indicatif]
 optional = true

@@ -7,7 +7,7 @@ use crate::core::LalResult;
 ///
 /// Any other implementations should be imported and listed here.
 /// Currently only artifactory is supported.
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum BackendConfiguration {
     /// Config for the `ArtifactoryBackend`
     #[serde(rename = "artifactory")]
@@ -24,7 +24,6 @@ impl Default for BackendConfiguration {
         BackendConfiguration::Artifactory(ArtifactoryConfig::default())
     }
 }
-
 
 /// The basic definition of a component as it exists online
 ///

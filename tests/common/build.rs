@@ -1,8 +1,12 @@
 use std::path::Path;
 
-pub fn options(home: Option<&Path>, env_name: &str) -> lal::LalResult<lal::BuildOptions> {
+pub fn options(home: Option<&Path>, env_name: &str, manifest: &lal::Manifest) -> lal::LalResult<lal::BuildOptions> {
     let config = lal::Config::read(home)?;
-    let environment = config.get_environment(env_name.to_string())?;
+    debug!("options: config: {:#?}", config);
+
+    let environment = manifest.get_environment(env_name)
+        .or(config.get_environment(env_name))?;
+    debug!("options: environment: {}", environment);
 
     Ok(lal::BuildOptions {
         name: None,
@@ -22,20 +26,21 @@ pub fn build_for_release(
     home: &Path,
     version: &str,
 ) -> lal::LalResult<()> {
-    let mut build_opts = options(Some(&home), &env_name)?;
+    let manifest = lal::Manifest::read(&component_dir)?;
+    let mut build_opts = options(Some(&home), &env_name, &manifest)?;
     build_opts.version = Some(version.to_string());
 
-    build_with_options(&component_dir, &env_name, &home, &build_opts)
+    build_with_options(&component_dir, &manifest, &env_name, &home, &build_opts)
 }
 
 pub fn build_with_options(
     component_dir: &Path,
+    manifest: &lal::Manifest,
     env_name: &str,
     home: &Path,
     build_opts: &lal::BuildOptions,
 ) -> lal::LalResult<()> {
     let config = lal::Config::read(Some(&home))?;
-    let manifest = lal::Manifest::read(&component_dir)?;
     let modes = lal::ShellModes::default();
 
     lal::build(
