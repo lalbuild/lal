@@ -180,10 +180,7 @@ pub fn verify_consistent_dependency_versions(lf: &Lockfile, m: &Manifest) -> Lal
         debug!("Found version(s) for {} as {:?}", name, vers);
         assert!(!vers.is_empty(), "found versions");
         if vers.len() != 1 && m.dependencies.contains_key(&name) {
-            warn!(
-                "Multiple version requirements on {} found in lockfile",
-                name
-            );
+            warn!("Multiple version requirements on {} found in lockfile", name);
             warn!(
                 "If you are trying to propagate {0} into the tree, \
                  you need to follow `lal propagate {0}`",
