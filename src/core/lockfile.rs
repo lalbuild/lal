@@ -1,10 +1,6 @@
 use chrono::UTC;
 
-use std::{
-    fs::File,
-    io::prelude::*,
-    path::Path,
-};
+use std::{fs::File, io::prelude::*, path::Path};
 
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
