@@ -1,7 +1,5 @@
 #[macro_use] extern crate clap;
 #[macro_use] extern crate log;
-use loggerv;
-use openssl_probe;
 
 use clap::ArgMatches;
 use lal::{self, *};
@@ -239,7 +237,7 @@ fn handle_docker_cmds(
             printonly: a.is_present("print"),
             x11_forwarding: a.is_present("x11"),
             host_networking: a.is_present("net-host"),
-            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
+            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_default(),
         };
         lal::build(&component_dir, cfg, mf, &bopts, env.into(), modes)
     } else if let Some(a) = args.subcommand_matches("shell") {
@@ -252,7 +250,7 @@ fn handle_docker_cmds(
             printonly: a.is_present("print"),
             x11_forwarding: a.is_present("x11"),
             host_networking: a.is_present("net-host"),
-            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
+            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_default(),
         };
         lal::shell(
             cfg,
@@ -272,7 +270,7 @@ fn handle_docker_cmds(
             printonly: a.is_present("print"),
             x11_forwarding: a.is_present("x11"),
             host_networking: a.is_present("net-host"),
-            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_else(|_| vec![]),
+            env_vars: values_t!(a.values_of("env-var"), String).unwrap_or_default(),
         };
         lal::script(
             cfg,
@@ -397,16 +395,15 @@ fn main() {
     let environment = handle_env_command(&args, &component_dir, &config, &env, &stickies);
 
     // Warn users who are using an unsupported environment
+    let sub = args.subcommand_name().unwrap();
     if !manifest
         .supportedEnvironments
         .clone()
         .into_iter()
         .any(|e| e == env)
     {
-        let sub = args.subcommand_name().unwrap();
         warn!("Running {} command in unsupported {} environment", sub, env);
     } else {
-        let sub = args.subcommand_name().unwrap();
         debug!("Running {} command in supported {} environent", sub, env);
     }
 

@@ -144,7 +144,7 @@ impl Backend for LocalBackend {
         self.cache.clone()
     }
 
-    fn raw_fetch(&self, src: &str, dest: &PathBuf) -> LalResult<()> {
+    fn raw_fetch(&self, src: &str, dest: &Path) -> LalResult<()> {
         debug!("raw fetch {} -> {}", src, dest.display());
         fs::copy(src, dest)?;
         Ok(())

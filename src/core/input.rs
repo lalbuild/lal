@@ -1,6 +1,5 @@
 #![allow(missing_docs)]
 
-use serde_json;
 use std::{collections::BTreeMap, fs::File, io::prelude::*, path::Path};
 
 use walkdir::WalkDir;
@@ -183,7 +182,7 @@ pub fn verify_consistent_dependency_versions(lf: &Lockfile, m: &Manifest) -> Lal
         if vers.len() != 1 && m.dependencies.contains_key(&name) {
             warn!(
                 "Multiple version requirements on {} found in lockfile",
-                name.clone()
+                name
             );
             warn!(
                 "If you are trying to propagate {0} into the tree, \
@@ -201,7 +200,7 @@ pub fn verify_environment_consistency(lf: &Lockfile, env: &str) -> LalResult<()>
     for (name, envs) in lf.find_all_environments() {
         debug!("Found environment(s) for {} as {:?}", name, envs);
         if envs.len() != 1 {
-            warn!("Multiple environments used to build {}", name.clone());
+            warn!("Multiple environments used to build {}", name);
             return Err(CliError::MultipleEnvironments(name));
         } else {
             let used_env = envs.iter().next().unwrap();

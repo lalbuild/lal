@@ -306,5 +306,5 @@ pub fn new<'a>() -> App<'a, 'a> {
             .subcommand(SubCommand::with_name("upgrade").about("Attempts to upgrade lal from artifactory"));
     }
 
-    return app;
+    app
 }

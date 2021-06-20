@@ -1,4 +1,3 @@
-use serde_json;
 use std::{
     fs,
     io::prelude::{Read, Write},
