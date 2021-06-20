@@ -1,5 +1,6 @@
 use std::{path::Path, process::Command, vec::Vec};
 
+use super::COMMAND_LOCK;
 use crate::core::{CliError, Config, Container, LalResult};
 
 /// Flags for docker run that vary for different use cases
@@ -267,6 +268,15 @@ pub fn docker_run(
         println!();
     } else {
         debug!("Entering docker");
+
+        // Take hold of the mutex before changing directory, and keep it until the
+        // command has finished executing. This is probably only useful for tests
+        // which are run in threads in the same process. Since a process can only
+        // exist in a single directory, this represents a race condition.
+        // unwrap() will poison the lock on panic, failing the script. This is the
+        // desired behaviour in all cases, whether or not we are in tests.
+        let _guard = COMMAND_LOCK.lock().unwrap();
+
         let s = Command::new("docker")
             .args(&args)
             .current_dir(&component_dir)
