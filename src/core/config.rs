@@ -1,5 +1,4 @@
 use chrono::UTC;
-use serde_json;
 use std::{
     collections::BTreeMap,
     env, fs,
@@ -185,7 +184,7 @@ impl Config {
     #[cfg(feature = "upgrade")]
     pub fn performed_upgrade(&mut self) -> LalResult<()> {
         self.lastUpgrade = UTC::now().to_rfc3339();
-        Ok(self.write(true, None)?)
+        self.write(true, None)
     }
 
     /// Overwrite `~/.lal/config` with serialized data from this struct

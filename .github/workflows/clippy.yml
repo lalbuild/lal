@@ -1,0 +1,22 @@
+on: 'push'
+name: 'Cargo Clippy'
+
+jobs:
+  clippy:
+    name: 'Cargo Clippy'
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: 'actions/checkout@v2'
+    - name: 'Install Stable Toolchain'
+      uses: 'actions-rs/toolchain@v1'
+      with:
+        toolchain: 'stable'
+        target: 'x86_64-unknown-linux-musl'
+        profile: 'minimal'
+        components: 'clippy'
+
+    - uses: 'actions-rs/clippy-check@v1'
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        args: '--all-features'

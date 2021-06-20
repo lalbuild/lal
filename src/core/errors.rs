@@ -1,5 +1,3 @@
-use hyper;
-use serde_json;
 use std::{fmt, io};
 
 /// The one and only error type for the lal library

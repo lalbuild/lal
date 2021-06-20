@@ -17,8 +17,6 @@ use hyper::{
     Client,
 };
 use hyper_native_tls::NativeTlsClient;
-use serde_json;
-use sha1;
 
 use crate::core::{CliError, LalResult};
 
@@ -76,7 +74,7 @@ fn hyper_req(url: &str) -> LalResult<String> {
 }
 
 // simple request downloader
-pub fn http_download_to_path(url: &str, save: &PathBuf) -> LalResult<()> {
+pub fn http_download_to_path(url: &str, save: &Path) -> LalResult<()> {
     debug!("GET {}", url);
     let client = Client::with_connector(HttpsConnector::new(NativeTlsClient::new().unwrap()));
     let mut res = client.get(url).send()?;
@@ -398,7 +396,7 @@ impl Backend for ArtifactoryBackend {
         self.cache.clone()
     }
 
-    fn raw_fetch(&self, url: &str, dest: &PathBuf) -> LalResult<()> {
+    fn raw_fetch(&self, url: &str, dest: &Path) -> LalResult<()> {
         http_download_to_path(url, dest)
     }
 }

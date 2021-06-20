@@ -1,4 +1,3 @@
-use serde_json;
 use std::{
     collections::BTreeMap,
     fs::{self, File},
@@ -10,7 +9,7 @@ use std::{
 use super::{CliError, LalResult};
 
 /// A startup helper used in a few places
-pub fn create_lal_subdir(pwd: &PathBuf) -> LalResult<()> {
+pub fn create_lal_subdir(pwd: &Path) -> LalResult<()> {
     let loc = pwd.join(".lal");
     if !loc.is_dir() {
         fs::create_dir(&loc)?
@@ -73,7 +72,7 @@ impl Default for ManifestLocation {
 }
 impl ManifestLocation {
     /// Generate path for Manifest assuming pwd is the root
-    pub fn as_path(&self, pwd: &PathBuf) -> PathBuf {
+    pub fn as_path(&self, pwd: &Path) -> PathBuf {
         match *self {
             ManifestLocation::RepoRoot => pwd.join("manifest.json"),
             ManifestLocation::LalSubfolder => pwd.join(".lal/manifest.json"),
@@ -83,7 +82,7 @@ impl ManifestLocation {
     /// Find the manifest file
     ///
     /// Looks first in `./.lal/manifest.json` and falls back to `./manifest.json`
-    pub fn identify(pwd: &PathBuf) -> LalResult<ManifestLocation> {
+    pub fn identify(pwd: &Path) -> LalResult<ManifestLocation> {
         if ManifestLocation::LalSubfolder.as_path(pwd).exists() {
             // Show a warning if we have two manifests - we only use the new one then
             // This could happen on other codebases - some javascript repos use manifest.json
@@ -131,11 +130,11 @@ impl Manifest {
 
     /// Read a manifest file in component dir
     pub fn read(component_dir: &Path) -> LalResult<Manifest> {
-        Ok(Manifest::read_from(&component_dir.to_path_buf())?)
+        Manifest::read_from(&component_dir.to_path_buf())
     }
 
     /// Read a manifest file in an arbitrary path
-    pub fn read_from(pwd: &PathBuf) -> LalResult<Manifest> {
+    pub fn read_from(pwd: &Path) -> LalResult<Manifest> {
         let mpath = ManifestLocation::identify(pwd)?.as_path(pwd);
         trace!("Using manifest in {}", mpath.display());
         let mut f = File::open(&mpath)?;

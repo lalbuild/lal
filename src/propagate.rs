@@ -1,5 +1,4 @@
 use super::{LalResult, Lockfile, Manifest};
-use serde_json;
 use std::{collections::BTreeSet, path::Path};
 
 

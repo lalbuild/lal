@@ -71,7 +71,7 @@ pub trait Backend {
     /// Raw fetch of location to a destination
     ///
     /// location can be a HTTPS url / a system path / etc (depending on the backend)
-    fn raw_fetch(&self, location: &str, dest: &PathBuf) -> LalResult<()>;
+    fn raw_fetch(&self, location: &str, dest: &Path) -> LalResult<()>;
 
     /// Return the base directory to be used to dump cached downloads
     ///

@@ -35,10 +35,11 @@ fn identify_exe() -> LalResult<ExeInfo> {
     trace!("lal at {}", pth.display());
     let ldd_output = Command::new("ldd").arg(&pth).output()?;
     let ldd_str = String::from_utf8_lossy(&ldd_output.stdout);
-    let is_dynamic = !ldd_str.contains("not a dynamic executable");
-    let pthstr: String = pth.to_str().unwrap().into();
-    let prefix = if pthstr.contains("/bin/") {
-        let v: Vec<&str> = pthstr.split("/bin/").collect();
+    let dynamic = !ldd_str.contains("not a dynamic executable");
+    let path: String = pth.to_str().unwrap().into();
+    let debug = path.contains("debug"); // cheap check for compiled versions
+    let prefix = if path.contains("/bin/") {
+        let v: Vec<&str> = path.split("/bin/").collect();
         if v.len() == 2 {
             Some(Path::new(v[0]).to_owned())
         } else {
@@ -48,17 +49,17 @@ fn identify_exe() -> LalResult<ExeInfo> {
         None
     };
     Ok(ExeInfo {
-        dynamic: is_dynamic,
-        debug: pthstr.contains("debug"), // cheap check for compiled versions
-        path: pthstr,
-        prefix: prefix,
+        dynamic,
+        debug,
+        path,
+        prefix,
         version: Version::parse(env!("CARGO_PKG_VERSION")).unwrap(),
     })
 }
 
 // basic tarball extractor
 // smaller than the INPUT extractor uses because it doesn't clear out anything
-fn extract_tarball(input: PathBuf, output: &PathBuf) -> LalResult<()> {
+fn extract_tarball(input: PathBuf, output: &Path) -> LalResult<()> {
     use flate2::read::GzDecoder;
     use tar::Archive;
 
@@ -154,7 +155,7 @@ pub fn upgrade(silent: bool) -> LalResult<bool> {
         // New version found - always full output now
         info!("A new version of lal is available: {}", latest.version);
         info!("You are running {} at {}", exe.version, exe.path);
-        println!("");
+        println!();
 
         if exe.dynamic {
             info!("Your version is built from source - please run (in source checkout):");
@@ -165,7 +166,7 @@ pub fn upgrade(silent: bool) -> LalResult<bool> {
             info!("Upgrading...");
             upgrade_exe(&latest, &exe)?;
             info!("lal upgraded successfully to {} at {}", latest.version, exe.path);
-            println!("");
+            println!();
         } else {
             // static, but no good guess of where to install - let user decide:
             info!("Your version is prebuilt but installed weirdly - please run:");
