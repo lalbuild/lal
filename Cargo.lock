@@ -367,6 +367,7 @@ dependencies = [
  "hyper",
  "hyper-native-tls",
  "indicatif",
+ "lazy_static 1.4.0",
  "log 0.3.9",
  "loggerv",
  "openssl-probe",
@@ -406,6 +407,12 @@ name = "libc"
 version = "0.2.97"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "12b8adadd720df158f4d70dfe7ccc6adb0472d7c55ca83445f6a5ab3e36f8fb6"
+
+[[package]]
+name = "linked-hash-map"
+version = "0.5.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7fb9b38af92608140b86b693604b9ffcc5824240a484d1ecd4795bacb2fe88f3"
 
 [[package]]
 name = "lock_api"
@@ -595,10 +602,11 @@ dependencies = [
 
 [[package]]
 name = "parameterized-macro"
-version = "0.1.1"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a01df7a2035840851c9bc9bcf132255a150b7914883e8d6958b3d628b7dd15b"
+checksum = "4c35d1acbab4b049fe1ce0f613038d46430ae92bb28bb441f9709ee192d4acb8"
 dependencies = [
+ "linked-hash-map",
  "proc-macro2",
  "quote",
  "syn",

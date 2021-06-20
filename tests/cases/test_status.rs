@@ -22,19 +22,19 @@ fn test_status_without_deps(env_name: &str) {
     let component_dir = clone_component_dir("heylib", &state);
 
     let r = fetch::fetch_input(&component_dir, &env_name, &state.backend);
-    assert!(r.is_ok(), "installed heylib dependencies");
+    assert!(r.is_ok(), "installed heylib dependencies: {:?}", r);
 
     let r = build::build_for_release(&component_dir, &env_name, &state.tempdir.path(), "1");
-    assert!(r.is_ok(), "built heylib release");
+    assert!(r.is_ok(), "built heylib release: {:?}", r);
 
     let r = status::status(&component_dir);
-    assert!(r.is_ok(), "checked heylib dependency status");
+    assert!(r.is_ok(), "checked heylib dependency status: {:?}", r);
 
     let r = status::full_status(&component_dir);
-    assert!(r.is_ok(), "checked full heylib dependency status");
+    assert!(r.is_ok(), "checked full heylib dependency status: {:?}", r);
 
     let r = status::full_descriptive_status(&component_dir);
-    assert!(r.is_ok(), "checked fully described heylib dependencies");
+    assert!(r.is_ok(), "checked fully described heylib dependencies: {:?}", r);
 }
 
 #[parameterized(env_name = {"default", "alpine"})]

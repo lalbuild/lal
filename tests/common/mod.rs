@@ -101,6 +101,7 @@ pub fn clone_component_dir(component: &str, state: &TestState) -> PathBuf {
     }
 
     copy(&from, state.tempdir.path(), &copy_options).expect("copy component to tempdir");
+    info!("clone_component_dir: {:?}", to);
     return to;
 }
 

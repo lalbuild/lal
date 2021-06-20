@@ -1,40 +1,24 @@
-use std::{path::Path, process::Command};
+use flate2::{write::GzEncoder, Compression};
+use std::{fs::File, path::Path};
+use tar::Builder;
 
-use super::{CliError, LalResult};
+use super::LalResult;
 
 /// Helper for stash and build
 pub fn tar(component_dir: &Path, tarball: &Path) -> LalResult<()> {
     info!("Taring OUTPUT");
-    let mut args: Vec<String> = vec![
-        "czf".into(),
-        tarball.to_str().unwrap().into(), // path created internally - always valid unicode
-        "--transform=s,^OUTPUT/,,".into(), // remove leading OUTPUT
-    ];
 
-    // Avoid depending on wildcards (which would also hide hidden files)
-    // All links, hidden files, and regular files should go into the tarball.
-    let findargs = vec!["OUTPUT/", "-type", "f", "-o", "-type", "l"];
-    debug!("find {}", findargs.join(" "));
-    let find_output = Command::new("find")
-        .args(&findargs)
-        .current_dir(&component_dir)
-        .output()?;
-    let find_str = String::from_utf8_lossy(&find_output.stdout);
+    let tarball = File::create(tarball)?;
+    let compressor = GzEncoder::new(tarball, Compression::default());
+    let mut archive = Builder::new(compressor);
 
-    // append each file as an arg to the main tar process
-    for f in find_str.trim().split('\n') {
-        args.push(f.into())
-    }
+    // Don't dereference symlinks, archive them as-is.
+    // Dereferencing symlinks makes the archive larger, as we will then store two copies  of the
+    // same file. Additionally, if OUTPUT contains dangling symlinks, adding them to the archive
+    // will fail with a NotFound error.
+    archive.follow_symlinks(false);
 
-    // basically `tar czf component.tar.gz --transform.. $(find OUTPUT -type f -o -type l)`:
-    debug!("tar {}", args.join(" "));
-    let s = Command::new("tar")
-        .args(&args)
-        .current_dir(&component_dir)
-        .status()?;
+    archive.append_dir_all(".", component_dir.join("OUTPUT"))?;
 
-    if !s.success() {
-        return Err(CliError::SubprocessFailure(s.code().unwrap_or(1001)));
-    }
     Ok(())
 }
